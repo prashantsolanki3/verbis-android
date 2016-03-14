@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/word_of_the_day"
+    tools:context="com.blackshift.verbis.WordOfTheDayFragment">
+
+    <TextView
+        android:paddingTop="35dp"
+        android:paddingLeft="35dp"
+        android:textStyle="italic"
+        android:id="@+id/word_of_the_day_text"
+        android:textSize="15sp"
+        android:text="Word of the Day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:paddingTop="35dp"
+        android:paddingRight="35dp"
+        android:textStyle="italic"
+        android:textSize="15sp"
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_centerInParent="true"
+        android:textStyle="bold|italic"
+        android:textAppearance="@android:style/Widget.Holo.EditText"
+        android:textSize="50dp"
+        android:id="@+id/word"
+        android:text="Word of the Day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/word"
+        android:textStyle="bold|italic"
+        android:textSize="30dp"
+        android:id="@+id/meaning"
+        android:text="Word of the Day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/meaning"
+        android:textStyle="bold|italic"
+        android:textSize="20dp"
+        android:id="@+id/pronunciation"
+        android:text="Word of the Day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <net.steamcrafted.materialiconlib.MaterialIconView
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:paddingBottom="25dp"
+        android:paddingRight="25dp"
+        android:id="@+id/speaker"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+
+</RelativeLayout>
