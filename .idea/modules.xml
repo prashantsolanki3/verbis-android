@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Verbis.iml" filepath="$PROJECT_DIR$/Verbis.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/verbis-android.iml" filepath="$PROJECT_DIR$/verbis-android.iml" />
     </modules>
   </component>
 </project>

@@ -1,8 +1,11 @@
-package com.blackshift.verbis;
+package com.blackshift.verbis.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.blackshift.verbis.ui.fragments.HomePageTab1Fragment;
+import com.blackshift.verbis.ui.fragments.HomePageTab2Fragment;
 
 /**
  * Created by Devika on 13-03-2016.

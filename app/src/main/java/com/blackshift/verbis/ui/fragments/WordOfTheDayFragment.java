@@ -1,4 +1,4 @@
-package com.blackshift.verbis;
+package com.blackshift.verbis.ui.fragments;
 
 
 import android.os.Bundle;
@@ -6,12 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
-import net.steamcrafted.materialiconlib.MaterialIconView;
+import com.blackshift.verbis.R;
 
 import java.util.Date;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 /**
@@ -19,38 +22,33 @@ import java.util.Date;
  * Use the {@link WordOfTheDayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WordOfTheDayFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class WordOfTheDayFragment extends VerbisFragment {
+
     private static final String ARG_PARAM1 = "word";
     private static final String ARG_PARAM2 = "meaning";
     private static final String ARG_PARAM3 = "pronunciation";
 
-    // TODO: Rename and change types of parameters
     private String mWord;
     private String mMeaning;
     private String mPronunciation;
 
-    private TextView wordOfTheDayText;
-    private TextView date;
-    private TextView word;
-    private TextView meaning;
-    private TextView pronunciation;
-    private MaterialIconView speaker;
+    @Bind(R.id.word_of_the_day_text)
+    TextView wordOfTheDayText;
+    @Bind(R.id.date)
+    TextView date;
+    @Bind(R.id.word)
+    TextView word;
+    @Bind(R.id.meaning)
+    TextView meaning;
+    @Bind(R.id.pronunciation)
+    TextView pronunciation;
+    @Bind(R.id.speaker)
+    ImageView speaker;
 
     public WordOfTheDayFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param word Parameter 1.
-     * @param meaning Parameter 2.
-     * @return A new instance of fragment WordOfTheDayFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static WordOfTheDayFragment newInstance(String word, String meaning, String pronunciation) {
         WordOfTheDayFragment fragment = new WordOfTheDayFragment();
         Bundle args = new Bundle();
@@ -76,8 +74,9 @@ public class WordOfTheDayFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_word_of_the_day, container, false);
+        //To initialize the views
+        ButterKnife.bind(this, view);
 
-        init(view);
         populatingTextView();
 
         return view;
@@ -85,20 +84,14 @@ public class WordOfTheDayFragment extends Fragment {
 
     private void populatingTextView() {
         Date d = new Date();
+        //TODO: Didi don't do this. :p Har jaga date format same nai hota. Use the method. isme kabi b error aa skta h.
         date.setText(d.toString().split("I")[0]);
         word.setText(mWord);
         meaning.setText(mMeaning);
         pronunciation.setText(mPronunciation);
-        speaker.setIcon(MaterialDrawableBuilder.IconValue.MICROPHONE);
+        //TODO: Set Speaker icon using Iconify
     }
 
-    private void init(View view) {
-        wordOfTheDayText = (TextView) view.findViewById(R.id.word_of_the_day_text);
-        date = (TextView) view.findViewById(R.id.date);
-        word = (TextView) view.findViewById(R.id.word);
-        meaning = (TextView) view.findViewById(R.id.meaning);
-        pronunciation = (TextView) view.findViewById(R.id.pronunciation);
-        speaker = (MaterialIconView) view.findViewById(R.id.speaker);
-    }
+
 
 }

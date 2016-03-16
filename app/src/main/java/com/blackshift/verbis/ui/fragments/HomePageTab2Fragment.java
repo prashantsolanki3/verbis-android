@@ -1,4 +1,4 @@
-package com.blackshift.verbis;
+package com.blackshift.verbis.ui.fragments;
 
 
 import android.os.Bundle;
@@ -7,13 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.blackshift.verbis.R;
+
+import butterknife.ButterKnife;
+
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link HomePageTab1Fragment#newInstance} factory method to
+ * Use the {@link HomePageTab2Fragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomePageTab1Fragment extends Fragment {
+public class HomePageTab2Fragment extends VerbisFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -24,7 +28,7 @@ public class HomePageTab1Fragment extends Fragment {
     private String mParam2;
 
 
-    public HomePageTab1Fragment() {
+    public HomePageTab2Fragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +38,11 @@ public class HomePageTab1Fragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomePageTab1Fragment.
+     * @return A new instance of fragment HomePageTab2Fragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePageTab1Fragment newInstance(String param1, String param2) {
-        HomePageTab1Fragment fragment = new HomePageTab1Fragment();
+    public static HomePageTab2Fragment newInstance(String param1, String param2) {
+        HomePageTab2Fragment fragment = new HomePageTab2Fragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,7 +63,10 @@ public class HomePageTab1Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_page_tab1, container, false);
+        View view = inflater.inflate(R.layout.fragment_home_page_tab2, container, false);
+        ButterKnife.bind(this,view);
+
+        return view;
     }
 
 }

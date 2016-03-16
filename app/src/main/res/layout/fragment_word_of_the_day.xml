@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/word_of_the_day"
-    tools:context="com.blackshift.verbis.WordOfTheDayFragment">
+    tools:context=".ui.fragments.WordOfTheDayFragment">
 
     <TextView
         android:paddingTop="35dp"
@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <net.steamcrafted.materialiconlib.MaterialIconView
+    <ImageView
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

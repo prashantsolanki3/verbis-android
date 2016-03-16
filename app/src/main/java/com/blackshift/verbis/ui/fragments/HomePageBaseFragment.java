@@ -1,4 +1,4 @@
-package com.blackshift.verbis;
+package com.blackshift.verbis.ui.fragments;
 
 
 import android.os.Bundle;
@@ -9,13 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.blackshift.verbis.R;
+import com.blackshift.verbis.adapters.HomePageBaseAdapter;
+import com.blackshift.verbis.ui.activity.HomePageActivity;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomePageBaseFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomePageBaseFragment extends Fragment {
+public class HomePageBaseFragment extends VerbisFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -57,6 +64,7 @@ public class HomePageBaseFragment extends Fragment {
         }
     }
 
+    @Bind(R.id.home_page_base_pager)
     ViewPager viewPager;
 
     @Override
@@ -64,7 +72,7 @@ public class HomePageBaseFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home_page_base, container, false);
-        viewPager = (ViewPager) view.findViewById(R.id.home_page_base_pager);
+        ButterKnife.bind(this,view);
         viewPager.setAdapter(new HomePageBaseAdapter(getActivity().getSupportFragmentManager()));
 
         ((HomePageActivity)getActivity()).getTabLayout().setupWithViewPager(viewPager);

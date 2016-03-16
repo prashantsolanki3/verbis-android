@@ -1,4 +1,4 @@
-package com.blackshift.verbis;
+package com.blackshift.verbis.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +22,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackshift.verbis.R;
+import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
+import com.blackshift.verbis.ui.fragments.HomePageBaseFragment;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.history.SearchHistoryTable;
@@ -159,6 +162,8 @@ public class HomePageActivity extends AppCompatActivity
         });
     }
 
+
+    //TODO: Switch to ButterKnife
     private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);

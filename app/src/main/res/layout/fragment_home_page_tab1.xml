@@ -2,8 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:scrollbars="vertical"
-    tools:context="com.blackshift.verbis.HomePageTab1Fragment">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ui.fragments.HomePageTab1Fragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
