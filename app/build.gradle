@@ -12,6 +12,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url 'https://dl.bintray.com/lisawray/maven' }
 }
 
 
@@ -65,6 +66,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.android.support:design:23.2.0'
     compile 'com.android.support:support-v4:23.2.0'
+    //for password field
+    compile 'com.github.lisawray:passwordview:863c58fa25'
 
     //Butterknife for view injection
     compile 'com.jakewharton:butterknife:7.0.1'
