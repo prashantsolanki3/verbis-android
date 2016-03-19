@@ -2,11 +2,14 @@ package com.blackshift.verbis;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.blackshift.verbis.rest.service.DictionaryService;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
@@ -68,6 +71,19 @@ public class App extends Application {
 
         if(dictionaryService ==null)
             dictionaryService = retrofit.create(DictionaryService.class);
+
+        //For Anonymous Authentication
+        App.getApp().getFirebase().authAnonymously(new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                Log.d("Firebase Uid",authData.getUid());
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                Log.e("Firebase auth",firebaseError.getMessage());
+            }
+        });
 
     }
 
