@@ -10,4 +10,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\n</string>
+    <string name="title_activity_dictionary">DictionaryActivity</string>
+    <string name="search_label">Search a Word</string>
 </resources>

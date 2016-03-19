@@ -1,5 +1,11 @@
 package com.blackshift.verbis.rest.service;
 
+import com.blackshift.verbis.rest.model.DictionaryResults;
+
+import retrofit.Call;
+import retrofit.http.GET;
+import retrofit.http.Header;
+
 /**
  * Package com.blackshift.verbis.rest.service
  * <p>
@@ -10,5 +16,7 @@ package com.blackshift.verbis.rest.service;
  */
 public interface DictionaryService {
 
+    @GET("ldoce5/entries")
+    Call<DictionaryResults> getWordDetail(@Header("headword") String string);
 
 }

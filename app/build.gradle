@@ -102,4 +102,5 @@ dependencies {
     //Firebase
     compile 'com.firebase:firebase-client-android:2.5.1+'
 
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

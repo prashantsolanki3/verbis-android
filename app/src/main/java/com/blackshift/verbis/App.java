@@ -32,10 +32,10 @@ import static com.prashantsolanki.secureprefmanager.SecurePrefManagerInit.Initia
 public class App extends Application {
 
     final static public String FIREBASE_BASE_URL="https://verbis.firebaseio.com";
-    final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries";
+    final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries/";
 
 
-    DictionaryService dictionaryService = null;
+    static DictionaryService dictionaryService = null;
     static App app;
     private Firebase firebase;
 
@@ -83,7 +83,7 @@ public class App extends Application {
         return firebase;
     }
 
-    public synchronized DictionaryService getDictionaryService(){
+    public synchronized static DictionaryService getDictionaryService(){
         return dictionaryService;
     }
 
