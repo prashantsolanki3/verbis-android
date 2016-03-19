@@ -1,5 +1,7 @@
 package com.blackshift.verbis.rest.model;
 
+import com.blackshift.verbis.utils.annotations.PrivacyLevel;
+
 /**
  * Package com.blackshift.verbis.rest.model
  * <p/>
@@ -12,16 +14,35 @@ public class WordList {
     private String id;
     private String title;
 
+    @PrivacyLevel
+    private Integer privacy;
+
     public WordList() {
+        privacy = PrivacyLevel.PRIVATE;
     }
 
     public WordList(String title) {
+        this();
         this.title = title;
     }
 
     public WordList(String id, String title) {
+        this(title);
         this.id = id;
-        this.title = title;
+    }
+
+    public WordList(String id, String title,@PrivacyLevel Integer privacy) {
+        this(id,title);
+        this.privacy = privacy;
+    }
+
+    @PrivacyLevel
+    public Integer getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(@PrivacyLevel Integer privacy) {
+        this.privacy = privacy;
     }
 
     public String getId() {

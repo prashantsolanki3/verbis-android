@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.WordList;
+import com.blackshift.verbis.utils.annotations.PrivacyLevel;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.listeners.WordListener;
 import com.firebase.client.Firebase;
@@ -111,6 +112,10 @@ public class WordListManager {
                 handleListener(firebaseError, null, listener);
             }
         });
+    }
+
+    public void getWordLists(@PrivacyLevel int privacy){
+        Firebase firebase = getBaseFirebaseRef();
     }
 
     public void addWord(@NonNull Word word,WordList wordList, WordListener listener){
