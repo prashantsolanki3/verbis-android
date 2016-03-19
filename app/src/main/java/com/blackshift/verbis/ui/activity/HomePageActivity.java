@@ -1,5 +1,6 @@
 package com.blackshift.verbis.ui.activity;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -23,8 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackshift.verbis.R;
+import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
-import com.blackshift.verbis.ui.fragments.HomePageBaseFragment;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.history.SearchHistoryTable;
@@ -46,7 +47,7 @@ public class HomePageActivity extends AppCompatActivity
     NavigationView navigationView;
     SearchView searchView;
     FloatingActionButton fab;
-    ViewPager pager;
+    ViewPager pager, baseViewpager;
     TabLayout tabLayout;
 
     @Override
@@ -60,7 +61,16 @@ public class HomePageActivity extends AppCompatActivity
         manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
+        mangeBaseViewPager();
 
+    }
+
+    private void mangeBaseViewPager() {
+        baseViewpager.setAdapter(new HomePageBaseAdapter(getSupportFragmentManager()));
+
+        tabLayout.setupWithViewPager(baseViewpager);
+        baseViewpager.addOnPageChangeListener(new TabLayout.
+                TabLayoutOnPageChangeListener(tabLayout));
     }
 
     private void manageWordOfTheDayViewPager() {
@@ -115,12 +125,15 @@ public class HomePageActivity extends AppCompatActivity
                 searchView.hide(false);
                 mHistoryDatabase.addItem(new SearchItem(query));
                 Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
-                return true;
+                Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
+                intent.putExtra(SearchManager.QUERY, query);
+                startActivity(intent);
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return true;
+                return false;
             }
         });
         searchView.setOnSearchViewListener(new SearchView.SearchViewListener() {
@@ -145,6 +158,10 @@ public class HomePageActivity extends AppCompatActivity
                 CharSequence text = textView.getText();
                 mHistoryDatabase.addItem(new SearchItem(text));
                 Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
+                intent.putExtra(SearchManager.QUERY, text);
+                startActivity(intent);
             }
         });
 
@@ -162,8 +179,6 @@ public class HomePageActivity extends AppCompatActivity
         });
     }
 
-
-    //TODO: Switch to ButterKnife
     private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -177,10 +192,8 @@ public class HomePageActivity extends AppCompatActivity
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, HomePageBaseFragment.newInstance(" ", " "))
-                .commit();
+        baseViewpager = (ViewPager) findViewById(R.id.home_page_base_pager);
+
     }
 
     private void manageToolbar() {
@@ -267,8 +280,9 @@ public class HomePageActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
+/*
     public TabLayout getTabLayout(){
         return tabLayout;
     }
+    */
 }

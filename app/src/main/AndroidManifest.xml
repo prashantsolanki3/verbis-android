@@ -26,16 +26,36 @@
             android:name="io.fabric.ApiKey"
             android:value="1c16a9c7d4d0660fb337122543fe726dc3f456b6" />
 
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".DictionaryActivity" />
+
         <activity
-            android:name=".ui.activity.WordListActivity"
-            android:label="@string/title_activity_word_list"
+            android:name=".ui.activity.DictionaryActivity"
+            android:label="@string/title_activity_dictionary"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.activity.HomePageActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.blackshift.verbis.ui.activity.HomePageActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
+        <provider
+            android:authorities="com.blackshift.verbis.rest.providers.RecentSuggestionsProvider"
+            android:name=".rest.providers.RecentSuggestionsProvider" >
+        </provider>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
