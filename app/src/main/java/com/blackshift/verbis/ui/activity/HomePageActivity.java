@@ -19,20 +19,30 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.ui.fragments.HomePageBaseFragment;
+import com.bumptech.glide.Glide;
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.history.SearchHistoryTable;
 import com.lapism.searchview.view.SearchCodes;
 import com.lapism.searchview.view.SearchView;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+import static com.blackshift.verbis.App.getApp;
 
 public class HomePageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,11 +53,15 @@ public class HomePageActivity extends AppCompatActivity
     CollapsingToolbarLayout collapsingToolbarLayout;
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
-    NavigationView navigationView;
+
     SearchView searchView;
     FloatingActionButton fab;
     ViewPager pager;
     TabLayout tabLayout;
+    View header;
+    ImageView imgview;
+    NavigationView navigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +74,10 @@ public class HomePageActivity extends AppCompatActivity
         manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
+        ButterKnife.bind(this);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View header =navigationView.getHeaderView(0);
+        imgview = (ImageView) header.findViewById(R.id.imageView);
 
     }
 
@@ -78,7 +96,18 @@ public class HomePageActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
 */
+        Firebase ref= getApp().getFirebase();
+        ref.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    String imgurl = (String) authData.getProviderData().get("profileImageURL");
+                    Glide.with(getApplicationContext()).load(imgurl).into(imgview);
+                }
+            }
+        });
         navigationView.setNavigationItemSelectedListener(this);
     }
 
