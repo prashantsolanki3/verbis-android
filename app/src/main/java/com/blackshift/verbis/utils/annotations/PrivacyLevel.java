@@ -16,5 +16,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({PrivacyLevel.PUBLIC, PrivacyLevel.PRIVATE,PrivacyLevel.FRIENDS})
 public @interface PrivacyLevel {
-    Integer PUBLIC=10,PRIVATE=0,FRIENDS=5;
+    int PUBLIC=10,PRIVATE=0,FRIENDS=5;
 }

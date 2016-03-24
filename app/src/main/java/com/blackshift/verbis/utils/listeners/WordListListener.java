@@ -1,8 +1,5 @@
 package com.blackshift.verbis.utils.listeners;
 
-import android.support.annotation.Nullable;
-
-import com.blackshift.verbis.rest.model.WordList;
 import com.firebase.client.FirebaseError;
 
 /**
@@ -18,11 +15,8 @@ public abstract class WordListListener {
     /**
      * Called if the execution was successful.
      *
-     * @param wordList object containing the information about the wordlist on which the current operation (create, update) was performed.
-     *                 or
-     *                 null if the wordlist was deleted.
      * */
-    public abstract void onSuccess(@Nullable WordList wordList);
+    public abstract void onSuccess();
 
     /**
      * Called if the execution was unsuccessful.

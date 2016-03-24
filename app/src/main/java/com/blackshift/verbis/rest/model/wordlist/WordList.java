@@ -1,4 +1,4 @@
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.wordlist;
 
 import com.blackshift.verbis.utils.annotations.PrivacyLevel;
 
@@ -13,6 +13,8 @@ import com.blackshift.verbis.utils.annotations.PrivacyLevel;
 public class WordList {
     private String id;
     private String title;
+    private Long createdAt;
+    private Long modifiedAt;
 
     @PrivacyLevel
     private Integer privacy;
@@ -59,5 +61,21 @@ public class WordList {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Long modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }

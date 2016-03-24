@@ -2,7 +2,6 @@ package com.blackshift.verbis;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import com.blackshift.verbis.rest.service.DictionaryService;
 import com.crashlytics.android.Crashlytics;
@@ -72,16 +71,16 @@ public class App extends Application {
         if(dictionaryService ==null)
             dictionaryService = retrofit.create(DictionaryService.class);
 
-        //For Anonymous Authentication
-        App.getApp().getFirebase().authAnonymously(new Firebase.AuthResultHandler() {
+        //For Authentication
+        App.getApp().getFirebase().authWithPassword("solankisrp2@gmail.com", "qwerty", new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                Log.d("Firebase Uid",authData.getUid());
+
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                Log.e("Firebase auth",firebaseError.getMessage());
+
             }
         });
 

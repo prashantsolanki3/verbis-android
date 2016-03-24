@@ -11,4 +11,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\n</string>
     <string name="title_activity_word_list">Your WordLists</string>
+    <string name="title_activity_dictionary">Dictionary</string>
+    <string name="title_activity_word_list_view_pager">Your WordLists</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

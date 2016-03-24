@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.wordlist.WordList;
+import com.blackshift.verbis.rest.model.wordlist.Word;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,21 +19,21 @@ import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapViewHol
  * Email: solankisrp2@gmail.com
  * Github: @prashantsolanki3
  */
-public class WordListTitleViewHolder extends SnapViewHolder<WordList> {
+public class WordViewHolder extends SnapViewHolder<Word> {
 
     @Bind(R.id.wordlist_title)
     TextView title;
     @Bind(R.id.wordlist_item_count)
     TextView count;
 
-    public WordListTitleViewHolder(View itemView, Context context) {
+    public WordViewHolder(View itemView, Context context) {
         super(itemView, context);
         ButterKnife.bind(this,itemView);
     }
 
     @Override
-    public void populateViewHolder(WordList wordList, int i) {
-        title.setText(wordList.getTitle());
+    public void populateViewHolder(Word wordList, int i) {
+        title.setText(wordList.getHeadword());
         count.setText(wordList.getId());
     }
 }

@@ -11,5 +11,7 @@ package com.blackshift.verbis.utils;
 public interface FirebaseKeys {
 
     String WORD_LIST = "/wordlist";
+    String WORD_LIST_LISTS = "lists";
+    String WORD_LIST_CONTENT = "content";
 
 }
