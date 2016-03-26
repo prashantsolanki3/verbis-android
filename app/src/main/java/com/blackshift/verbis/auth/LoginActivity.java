@@ -16,9 +16,13 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +74,8 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
     CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.name)
     EditText name;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LogInActivity";
@@ -88,19 +94,88 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
     EditText signemail;
     @Bind(R.id.signpassword)
     EditText signpassword;
+    @Bind(R.id.tilemail)
+    TextInputLayout tilemail;
+    @Bind(R.id.tilemail2) TextInputLayout tilemail2;
+    @Bind(R.id.forgotpassgrp) LinearLayout forgotpassgrp;
+    @Bind(R.id.forgotemailfield) EditText forgotemailfiled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         CoordinatorLayout.LayoutParams cl = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         abl.setLayoutParams(cl);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         collapsingToolbarLayout.setTitle("Verbis");
-        //Google LOGIN
+        Firebase firebase = getApp().getFirebase();
+        firebase.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    startMainActivity();
+                } else {
+
+                    abl.setExpanded(false, true);
+
+                }
+            }
+        });
+
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isValidEmail(s) == false) {
+                    tilemail.setErrorEnabled(true);
+                    tilemail.setError("Enter a valid email");
+                }
+                else if(isValidEmail(s)==true){
+                        tilemail2.setErrorEnabled(false);
+                    }
+                }
+
+
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+
+            }
+        });
+            signemail.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if(isValidEmail(s)==false) {
+                        tilemail2.setErrorEnabled(true);
+                        tilemail2.setError("Enter a valid email");
+                    }
+                        else if(isValidEmail(s)==true){
+                            tilemail2.setErrorEnabled(false);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
+
+
+        ///Google LOGIN
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -120,22 +195,34 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        })
+        ;
     }
 
     @OnClick(R.id.link_signin)
     void signuptosignin() {
         signingrp.setVisibility(View.VISIBLE);
         signupgrp.setVisibility(View.GONE);
+        forgotpassgrp.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.link_signup)
     void signintosignup() {
         signingrp.setVisibility(View.GONE);
         signupgrp.setVisibility(View.VISIBLE);
+        forgotpassgrp.setVisibility(View.GONE);
     }
 
-   
+    @OnClick(R.id.link_forgotpass)
+    void forgotpass(){
+        signingrp.setVisibility(View.GONE);
+        signupgrp.setVisibility(View.GONE);
+        forgotpassgrp.setVisibility(View.VISIBLE);
+
+    }
+    public final static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
     @OnClick(R.id.signupbtn)
     void signup() {
         final ProgressDialog progressDialog=new ProgressDialog(LoginActivity.this);
@@ -163,6 +250,24 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         });
 
     }
+
+    @OnClick(R.id.resetpass)
+    void reset(){
+        Firebase ref=getApp().getFirebase();
+        String reset = forgotemailfiled.getText().toString();
+        ref.resetPassword(reset, new Firebase.ResultHandler() {
+            @Override
+            public void onSuccess() {
+                signuptosignin();
+                Snackbar.make(signingrp, "Password Has been Reset. Please check your mail.", Snackbar.LENGTH_LONG);
+            }
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                Snackbar.make(forgotpassgrp,"Something went wrong",Snackbar.LENGTH_LONG);
+            }
+        });
+    }
+
 
     //Google stuff start
 
@@ -244,22 +349,6 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
         });
     }
-
-   /* class myAuthResultHandler implements Firebase.AuthResultHandler {
-        @Override
-        public void onAuthenticated(AuthData authData) {
-            String res = "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider();
-            Snackbar.make(findViewById(R.id.signingrp), res, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            checkSession();
-        }
-
-        @Override
-        public void onAuthenticationError(FirebaseError firebaseError) {
-            Snackbar.make(findViewById(R.id.signingrp), "Some Error occured", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-
-        }*/
 
         //google stuff end
 
