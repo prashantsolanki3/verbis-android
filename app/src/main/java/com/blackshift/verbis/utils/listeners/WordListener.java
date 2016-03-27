@@ -16,7 +16,7 @@ public abstract class WordListener {
      * Called if the execution was successful.
      *
      * */
-    public abstract void onSuccess();
+    public abstract void onSuccess(String firebaseReferenceString);
 
     /**
      * Called if the execution was unsuccessful.

@@ -62,7 +62,7 @@ public class WordListManager {
         firebase.setValue(wordList, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, listener);
+                handleListener(firebaseError, firebase.getPath().toString(), listener);
             }
         });
     }
@@ -113,7 +113,7 @@ public class WordListManager {
         firebase.child(id).removeValue(new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, listener);
+                handleListener(firebaseError, firebase.getPath().toString(), listener);
             }
         });
     }
@@ -209,7 +209,7 @@ public class WordListManager {
             firebase.child(wordListId).child(id).setValue(word, new Firebase.CompletionListener() {
                 @Override
                 public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                    handleListener(firebaseError,listener);
+                    handleListener(firebaseError, firebase.getPath().toString(), listener);
                 }
             });
         }catch (Exception e){
@@ -228,7 +228,7 @@ public class WordListManager {
         firebase.child(wordListId).child(id).removeValue(new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, listener);
+                handleListener(firebaseError, firebase.getPath().toString(), listener);
             }
         });
     }
@@ -238,7 +238,7 @@ public class WordListManager {
         firebase.child(wordlistId).removeValue(new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, listener);
+                handleListener(firebaseError, firebase.getPath().toString(),listener);
             }
         });
     }
@@ -262,7 +262,7 @@ public class WordListManager {
         firebase.updateChildren(map, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, listener);
+                handleListener(firebaseError,firebase.getPath().toString(), listener);
             }
         });
     }
@@ -274,13 +274,11 @@ public class WordListManager {
         firebase.updateChildren(map, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError,listener);
+                handleListener(firebaseError,firebase.getPath().toString(), listener);
             }
         });
     }
 
-    //TODO: Like wordlists.
-    //TODO: onSuccess return id of the word or wordlist.
     public void updateWordlist(final String id,@NonNull Map<String,Object> map, final WordListListener listener){
         if(map!=null)
             updateModifiedAtWordlist(id, map, listener);
@@ -300,7 +298,7 @@ public class WordListManager {
         firebase.updateChildren(map, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, listener);
+                handleListener(firebaseError, firebase.getPath().toString(), listener);
             }
         });
     }
@@ -311,7 +309,7 @@ public class WordListManager {
      * @param firebaseError
      * @param listener
      * */
-    private void handleListener(FirebaseError firebaseError, WordListListener listener){
+    private void handleListener(FirebaseError firebaseError, String referenceString, WordListListener listener){
         if(firebaseError!=null){
             //Some Error has occurred.
             if (listener!=null)
@@ -319,7 +317,7 @@ public class WordListManager {
         }else{
             //List saved successfully.
             if(listener!=null)
-                listener.onSuccess();
+                listener.onSuccess(referenceString);
         }
     }
 
@@ -329,7 +327,7 @@ public class WordListManager {
      * @param firebaseError
      * @param listener
      * */
-    private void handleListener(FirebaseError firebaseError, WordListener listener){
+    private void handleListener(FirebaseError firebaseError, String referenceString, WordListener listener){
         if(firebaseError!=null){
             //Some Error has occurred.
             if (listener!=null)
@@ -337,7 +335,7 @@ public class WordListManager {
         }else{
             //List saved successfully.
             if(listener!=null)
-                listener.onSuccess();
+                listener.onSuccess(referenceString);
         }
     }
 
@@ -382,6 +380,8 @@ public class WordListManager {
             return null;
         }
     }
+
+    //TODO: Like wordlists. in Future Releases.
 
 }
 

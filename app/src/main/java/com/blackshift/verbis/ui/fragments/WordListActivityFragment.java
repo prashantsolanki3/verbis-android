@@ -61,8 +61,9 @@ public class WordListActivityFragment extends Fragment {
             @Override
             public void onItemClick(SnapViewHolder snapViewHolder, View view, int i) {
                 wordListManager.renameWordList("Renamed " + i, (WordList) snapViewHolder.getItemData(), new WordListListener() {
+
                     @Override
-                    public void onSuccess() {
+                    public void onSuccess(String firebaseReferenceString) {
 
                     }
 
@@ -77,7 +78,7 @@ public class WordListActivityFragment extends Fragment {
             public void onItemLongPress(SnapViewHolder snapViewHolder, View view, int i) {
                 wordListManager.deleteWordList((WordList) snapViewHolder.getItemData(), new WordListListener() {
                     @Override
-                    public void onSuccess() {
+                    public void onSuccess(String firebaseReferenceString) {
 
                     }
 

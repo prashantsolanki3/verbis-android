@@ -30,7 +30,7 @@ public class WordListRecyclerViewActivity extends AppCompatActivity {
                 WordListManager wordListManager = new WordListManager(App.getContext());
                 wordListManager.createWordList("Title" + SystemClock.elapsedRealtime(), new WordListListener() {
                     @Override
-                    public void onSuccess() {
+                    public void onSuccess(String s) {
 
                     }
 
