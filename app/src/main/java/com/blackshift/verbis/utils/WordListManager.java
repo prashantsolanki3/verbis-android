@@ -202,8 +202,7 @@ public class WordListManager {
     public void addWord(String headWord,String url,String wordListId, final WordListener listener){
         Firebase firebase = getContentFirebaseRef();
         try{
-            //TODO: Create url without slashes.
-            String id = url;
+            String id = urlToWordId(url);
             final Word word = new Word(id,headWord,url);
             word.setAddedOn(DateUtils.getTimestampUTC());
 
@@ -338,6 +337,28 @@ public class WordListManager {
         return firebase.child(FirebaseKeys.WORD_LIST)
                 .child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_CONTENT);
+    }
+
+    public String urlToWordId(String url){
+        try {
+            String wordId = encryptor.encrypt(url);
+            wordId = wordId.replace("/","#_");
+            return wordId;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String wordIdToUrl(String wordId){
+        try {
+            String url = encryptor.decrypt(wordId);
+            url = url.replace("#_","/");
+            return url;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
