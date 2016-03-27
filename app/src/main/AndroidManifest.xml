@@ -10,17 +10,16 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.NoActionBar">
         <activity
+            android:launchMode="singleInstance"
             android:name=".ui.activity.HomePageActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>
-              <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
+        <activity
+            android:name=".ui.activity.WordListRecyclerViewActivity"
+            android:label="@string/title_activity_word_list"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -28,7 +27,47 @@
 
         <activity
             android:name=".auth.LoginActivity"
-            android:label="@string/title_activity_login"
+            android:label="@string/title_activity_login">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".DictionaryActivity" />
+
+        <activity
+            android:name=".ui.activity.DictionaryActivity"
+            android:label="@string/title_activity_dictionary"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.activity.HomePageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.blackshift.verbis.ui.activity.HomePageActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
+        <provider
+            android:name=".rest.providers.RecentSuggestionsProvider"
+            android:authorities="com.blackshift.verbis.rest.providers.RecentSuggestionsProvider"/>
+        <!--
+             ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".ui.activity.WordListViewPagerActivity"
+            android:label="@string/title_activity_word_list_view_pager"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,6 +75,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

@@ -377,7 +377,9 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
         void startMainActivity() {
             this.finish();
-            this.startActivity(new Intent(this, HomePageActivity.class));
+            Intent i = new Intent(this, HomePageActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            this.startActivity(i);
         }
 
         void checkSession() {

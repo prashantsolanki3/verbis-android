@@ -1,6 +1,8 @@
 package com.blackshift.verbis.ui.activity;
 
+import android.app.SearchManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -23,9 +25,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
+import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
-import com.blackshift.verbis.ui.fragments.HomePageBaseFragment;
 import com.bumptech.glide.Glide;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
@@ -35,11 +38,9 @@ import com.lapism.searchview.history.SearchHistoryTable;
 import com.lapism.searchview.view.SearchCodes;
 import com.lapism.searchview.view.SearchView;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static com.blackshift.verbis.App.getApp;
@@ -56,7 +57,7 @@ public class HomePageActivity extends AppCompatActivity
 
     SearchView searchView;
     FloatingActionButton fab;
-    ViewPager pager;
+    ViewPager pager, baseViewpager;
     TabLayout tabLayout;
     View header;
     ImageView imgview;
@@ -78,7 +79,16 @@ public class HomePageActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header =navigationView.getHeaderView(0);
         imgview = (ImageView) header.findViewById(R.id.imageView);
+        mangeBaseViewPager();
 
+    }
+
+    private void mangeBaseViewPager() {
+        baseViewpager.setAdapter(new HomePageBaseAdapter(getSupportFragmentManager()));
+
+        tabLayout.setupWithViewPager(baseViewpager);
+        baseViewpager.addOnPageChangeListener(new TabLayout.
+                TabLayoutOnPageChangeListener(tabLayout));
     }
 
     private void manageWordOfTheDayViewPager() {
@@ -144,12 +154,15 @@ public class HomePageActivity extends AppCompatActivity
                 searchView.hide(false);
                 mHistoryDatabase.addItem(new SearchItem(query));
                 Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
-                return true;
+                Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
+                intent.putExtra(SearchManager.QUERY, query);
+                startActivity(intent);
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return true;
+                return false;
             }
         });
         searchView.setOnSearchViewListener(new SearchView.SearchViewListener() {
@@ -174,6 +187,10 @@ public class HomePageActivity extends AppCompatActivity
                 CharSequence text = textView.getText();
                 mHistoryDatabase.addItem(new SearchItem(text));
                 Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
+                intent.putExtra(SearchManager.QUERY, text);
+                startActivity(intent);
             }
         });
 
@@ -191,8 +208,6 @@ public class HomePageActivity extends AppCompatActivity
         });
     }
 
-
-    //TODO: Switch to ButterKnife
     private void init() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -206,10 +221,8 @@ public class HomePageActivity extends AppCompatActivity
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, HomePageBaseFragment.newInstance(" ", " "))
-                .commit();
+        baseViewpager = (ViewPager) findViewById(R.id.home_page_base_pager);
+
     }
 
     private void manageToolbar() {
@@ -264,17 +277,22 @@ public class HomePageActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home_activity) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_search_activity) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_wordlist_vp_activity) {
+            this.finish();
+            startActivity(new Intent(this,WordListViewPagerActivity.class));
+        }  else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_user_log_out) {
+            App.getApp().getFirebase().unauth();
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+            if(Build.VERSION.SDK_INT>=21)
+                this.finishAndRemoveTask();
+            else
+                this.finish();
 
         }
 
@@ -296,8 +314,9 @@ public class HomePageActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
+/*
     public TabLayout getTabLayout(){
         return tabLayout;
     }
+    */
 }

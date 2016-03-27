@@ -107,5 +107,10 @@ dependencies {
     compile 'com.firebase:firebase-client-android:2.5.1+'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
 
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+
+    compile 'joda-time:joda-time:2.9.2'
+
+    compile 'com.viewpagerindicator:library:2.4.1'
 }
 apply plugin: 'com.google.gms.google-services'

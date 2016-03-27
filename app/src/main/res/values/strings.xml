@@ -15,7 +15,9 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
-
-
     </string>
+    <string name="title_activity_word_list">Your WordLists</string>
+    <string name="title_activity_dictionary">Dictionary</string>
+    <string name="title_activity_word_list_view_pager">Your WordLists</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>
