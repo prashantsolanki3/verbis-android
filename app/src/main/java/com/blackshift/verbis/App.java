@@ -12,7 +12,6 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
@@ -56,12 +55,7 @@ public class App extends Application {
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
-                if(authData != null)
-                {
-                    startMainActivity();
-                }
-                else
-                {
+                if(authData == null){
                     startLoginActivity();
                 }
             }
