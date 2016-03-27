@@ -255,9 +255,31 @@ public class WordListManager {
         updateWordlist(wordListId, map, listener);
     }
 
-    //TODO: Update list privacy, add create and modify dates to every method.
+    public void starWordlist(String wordList, final WordListListener listener){
+        Firebase firebase = getListFirebaseRef().child(wordList);
+        Map<String,Object> map =new HashMap<>();
+        map.put("starred",true);
+        firebase.updateChildren(map, new Firebase.CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                handleListener(firebaseError, listener);
+            }
+        });
+    }
+
+    public void unstarWordlist(String wordList, final WordListListener listener){
+        Firebase firebase = getListFirebaseRef().child(wordList);
+        Map<String,Object> map =new HashMap<>();
+        map.put("starred",false);
+        firebase.updateChildren(map, new Firebase.CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                handleListener(firebaseError,listener);
+            }
+        });
+    }
+
     //TODO: Like wordlists.
-    //TODO: Common method to update wordlists.
     //TODO: onSuccess return id of the word or wordlist.
     public void updateWordlist(final String id,@NonNull Map<String,Object> map, final WordListListener listener){
         if(map!=null)

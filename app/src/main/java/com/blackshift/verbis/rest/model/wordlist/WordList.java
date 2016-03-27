@@ -2,6 +2,8 @@ package com.blackshift.verbis.rest.model.wordlist;
 
 import com.blackshift.verbis.utils.annotations.PrivacyLevel;
 
+import java.util.List;
+
 /**
  * Package com.blackshift.verbis.rest.model
  * <p/>
@@ -18,6 +20,8 @@ public class WordList {
 
     @PrivacyLevel
     private Integer privacy;
+    private List<String> likedBy;
+    private boolean starred;
 
     public WordList() {
         privacy = PrivacyLevel.PRIVATE;
@@ -77,5 +81,21 @@ public class WordList {
 
     public void setModifiedAt(Long modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public List<String> getLikedBy() {
+        return likedBy;
+    }
+
+    public void setLikedBy(List<String> likedBy) {
+        this.likedBy = likedBy;
+    }
+
+    public boolean isStarred() {
+        return starred;
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred = starred;
     }
 }
