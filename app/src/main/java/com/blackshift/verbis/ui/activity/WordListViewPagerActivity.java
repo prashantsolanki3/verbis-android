@@ -1,49 +1,33 @@
 package com.blackshift.verbis.ui.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.wordlist.Word;
+import com.blackshift.verbis.adapters.WordListViewPagerAdapter;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
-import com.blackshift.verbis.ui.viewholders.WordViewHolder;
-import com.blackshift.verbis.utils.DateUtils;
 import com.blackshift.verbis.utils.WordListManager;
-import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -51,8 +35,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
-import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter;
-import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
 
 public class WordListViewPagerActivity extends AppCompatActivity {
 
@@ -93,6 +75,9 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if(getSupportActionBar()!=null)
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mWordListViewPagerAdapter = new WordListViewPagerAdapter(getSupportFragmentManager(),this);
@@ -114,7 +99,6 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
         mViewPager.setPageMargin(56);
-        mViewPager.setOffscreenPageLimit(1);
 
         newWordlistTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -184,6 +168,7 @@ public class WordListViewPagerActivity extends AppCompatActivity {
                         handleFabStatus(FabStatus.ADD);
                         showAddWordlistLayout(false);
                         fab.setEnabled(true);
+                        newWordlistTitle.setText(null);
                     }
 
                     @Override
@@ -302,209 +287,4 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         String ADD="add",ACCEPT = "accept",CANCEL = "cancel";
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment{
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_WORDLIST_ID = "wordlist_id";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(String wordlistId) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putString(ARG_WORDLIST_ID, wordlistId);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        String wordlistId;
-        WordListManager manager;
-
-        @Bind(R.id.wordlist_toolbar)
-        Toolbar wordlistToolbar;
-        @Bind(R.id.list_words)
-        RecyclerView recyclerView;
-        WordList wordList=null;
-
-        Context context;
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            context = getContext();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_word_list_view_pager, container, false);
-            ButterKnife.bind(this,rootView);
-            manager = new WordListManager(getContext());
-            wordlistId = getArguments().getString(ARG_WORDLIST_ID);
-            SnapLayoutWrapper wrapper = new SnapLayoutWrapper(Word.class, WordViewHolder.class,R.layout.word_item,1);
-            final SnapAdapter<Word> adapter = new SnapAdapter<>(getActivity(),wrapper,recyclerView);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            //TODO: Create Menu for Deleting, starring, etc.
-            wordlistToolbar.inflateMenu(R.menu.menu_word_list);
-
-            wordlistToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.action_delete_word_list:
-                            manager.deleteWordList(wordlistId, new WordListListener() {
-                                @Override
-                                public void onSuccess(String firebaseReferenceString) {
-                                    Snackbar.make(mViewPager, "Wordlist deleted.", Snackbar.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onFailure(FirebaseError firebaseError) {
-                                    Snackbar.make(mViewPager, "Unable to delete Wordlist.", Snackbar.LENGTH_SHORT).show();
-                                }
-                            });
-                            return true;
-                        case R.id.action_star_word_list:
-                            if (wordList != null)
-                                if (wordList.isStarred())
-                                    manager.unstarWordlist(wordlistId, null);
-                                else
-                                    manager.starWordlist(wordlistId, null);
-                    }
-                    return false;
-                }
-            });
-
-            wordlistToolbar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    manager.addWord(DateUtils.getTimestampUTC() + "Timsestmp", DateUtils.getTimestampUTC() + "id", wordlistId, null);
-                }
-            });
-
-            manager.getWordsFromWordList(wordlistId, new WordArrayListener() {
-                @Override
-                public void onSuccess(@Nullable List<Word> word) {
-                    if (word != null)
-                        adapter.set(word);
-                }
-
-                @Override
-                public void onFailure(FirebaseError firebaseError) {
-
-                }
-            });
-
-            manager.getListFirebaseRef().child(wordlistId).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    wordList = dataSnapshot.getValue(WordList.class);
-                    if (wordList != null) {
-                        wordlistToolbar.setTitle(wordList.getTitle());
-                        MaterialIcons star;
-                        if (wordList.isStarred())
-                            star = MaterialIcons.md_star;
-                        else
-                            star = MaterialIcons.md_star_border;
-
-/*                        int colorRes;
-                        if(Build.VERSION.SDK_INT>=23)
-                           colorRes = getResources().getColor(android.R.color.darker_gray,getActivity().getTheme());
-                        else
-                            colorRes = getResources().getColor(android.R.color.darker_gray);*/
-
-                        wordlistToolbar.getMenu()
-                                .findItem(R.id.action_star_word_list)
-                                .setIcon(new IconDrawable(context, star)
-                                        .actionBarSize());
-                    }
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
-            });
-
-            return rootView;
-        }
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class WordListViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        List<WordList> wordLists;
-        Context context;
-
-        public WordListViewPagerAdapter(FragmentManager fm, Context context) {
-            this(fm,new ArrayList<WordList>(),context);
-        }
-
-        public WordListViewPagerAdapter(FragmentManager fm, List<WordList> wordLists, Context context) {
-            super(fm);
-            this.wordLists = wordLists;
-            this.context = context;
-        }
-
-        public void set(List<WordList> wordLists){
-            this.wordLists.clear();
-            this.wordLists = wordLists;
-            this.notifyDataSetChanged();
-        }
-
-        public void add(WordList wordList){
-            this.wordLists.add(wordList);
-            this.notifyDataSetChanged();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(wordLists.get(position).getId());
-        }
-
-        @Override
-        public int getCount() {
-            if(wordLists!=null)
-                return wordLists.size();
-
-            return 0;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            if(getCount()>position&&wordLists!=null)
-                return wordLists.get(position).getTitle();
-
-            return "";
-        }
-
-
-        @Override
-        public int getItemPosition(Object object) {
-            //To update fragment every time user navigates to it.
-            return POSITION_NONE;
-        }
-
-        @Override
-        public float getPageWidth(int position) {
-            return 0.90f;
-        }
-    }
 }

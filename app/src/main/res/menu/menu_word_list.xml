@@ -10,10 +10,16 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_share_word_list"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_menu_share"
         android:orderInCategory="80"
         android:title="Share"
-        android:actionProviderClass="android.widget.ShareActionProvider" />
+        />
+    <item
+        android:id="@+id/action_delete_word"
+        android:orderInCategory="100"
+        android:title="Delete Word"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_delete_word_list"
         android:orderInCategory="100"

@@ -7,7 +7,7 @@
     android:paddingBottom="16dp"
     android:background="@android:color/holo_blue_bright"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.blackshift.verbis.ui.activity.WordListViewPagerActivity$PlaceholderFragment">
+    tools:context=".ui.activity.WordListViewPagerActivity$WordListFragment">
 
         <android.support.v7.widget.RecyclerView
             android:layout_marginTop="56dp"

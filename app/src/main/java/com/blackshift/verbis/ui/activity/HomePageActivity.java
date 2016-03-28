@@ -282,7 +282,6 @@ public class HomePageActivity extends AppCompatActivity
         } else if (id == R.id.nav_search_activity) {
 
         } else if (id == R.id.nav_wordlist_vp_activity) {
-            this.finish();
             startActivity(new Intent(this,WordListViewPagerActivity.class));
         }  else if (id == R.id.nav_share) {
 
