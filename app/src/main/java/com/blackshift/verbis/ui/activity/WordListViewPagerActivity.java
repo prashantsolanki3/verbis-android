@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,8 +69,7 @@ public class WordListViewPagerActivity extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    @Bind(R.id.container)
-    ViewPager mViewPager;
+    static ViewPager mViewPager = null;
     private WordListManager wordListManager;
     @Bind(R.id.viewpager_indicator)
     CirclePageIndicator pageIndicator;
@@ -90,6 +89,8 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_word_list_view_pager);
         wordListManager = new WordListManager(this);
         ButterKnife.bind(this);
+        handleFabStatus(FabStatus.ADD);
+        mViewPager = (ViewPager) findViewById(R.id.container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -113,6 +114,7 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
         mViewPager.setPageMargin(56);
+        mViewPager.setOffscreenPageLimit(1);
 
         newWordlistTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -138,7 +140,7 @@ public class WordListViewPagerActivity extends AppCompatActivity {
     }
 
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_word_list_view_pager, menu);
@@ -158,7 +160,7 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @OnClick(R.id.fab)
     void fabclick(){
@@ -217,7 +219,7 @@ public class WordListViewPagerActivity extends AppCompatActivity {
             //Currently not in use.
             case FabStatus.CANCEL:
                 newWordlistTitle.setEnabled(true);
-                fab.animate().rotation(135).start();
+                fab.animate().rotation(225).start();
                 break;
         }
 
@@ -332,11 +334,20 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         Toolbar wordlistToolbar;
         @Bind(R.id.list_words)
         RecyclerView recyclerView;
+        WordList wordList=null;
+
+        Context context;
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            context = getContext();
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_word_list_view_pager, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_word_list_view_pager, container, false);
             ButterKnife.bind(this,rootView);
             manager = new WordListManager(getContext());
             wordlistId = getArguments().getString(ARG_WORDLIST_ID);
@@ -346,10 +357,32 @@ public class WordListViewPagerActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             //TODO: Create Menu for Deleting, starring, etc.
+            wordlistToolbar.inflateMenu(R.menu.menu_word_list);
 
             wordlistToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_delete_word_list:
+                            manager.deleteWordList(wordlistId, new WordListListener() {
+                                @Override
+                                public void onSuccess(String firebaseReferenceString) {
+                                    Snackbar.make(mViewPager, "Wordlist deleted.", Snackbar.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailure(FirebaseError firebaseError) {
+                                    Snackbar.make(mViewPager, "Unable to delete Wordlist.", Snackbar.LENGTH_SHORT).show();
+                                }
+                            });
+                            return true;
+                        case R.id.action_star_word_list:
+                            if (wordList != null)
+                                if (wordList.isStarred())
+                                    manager.unstarWordlist(wordlistId, null);
+                                else
+                                    manager.starWordlist(wordlistId, null);
+                    }
                     return false;
                 }
             });
@@ -357,14 +390,14 @@ public class WordListViewPagerActivity extends AppCompatActivity {
             wordlistToolbar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    manager.addWord(DateUtils.getTimestampUTC()+"Timsestmp",DateUtils.getTimestampUTC()+"id", wordlistId,null);
+                    manager.addWord(DateUtils.getTimestampUTC() + "Timsestmp", DateUtils.getTimestampUTC() + "id", wordlistId, null);
                 }
             });
 
             manager.getWordsFromWordList(wordlistId, new WordArrayListener() {
                 @Override
                 public void onSuccess(@Nullable List<Word> word) {
-                    if(word!=null)
+                    if (word != null)
                         adapter.set(word);
                 }
 
@@ -377,8 +410,26 @@ public class WordListViewPagerActivity extends AppCompatActivity {
             manager.getListFirebaseRef().child(wordlistId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    WordList wordList = dataSnapshot.getValue(WordList.class);
-                    wordlistToolbar.setTitle(wordList.getTitle());
+                    wordList = dataSnapshot.getValue(WordList.class);
+                    if (wordList != null) {
+                        wordlistToolbar.setTitle(wordList.getTitle());
+                        MaterialIcons star;
+                        if (wordList.isStarred())
+                            star = MaterialIcons.md_star;
+                        else
+                            star = MaterialIcons.md_star_border;
+
+/*                        int colorRes;
+                        if(Build.VERSION.SDK_INT>=23)
+                           colorRes = getResources().getColor(android.R.color.darker_gray,getActivity().getTheme());
+                        else
+                            colorRes = getResources().getColor(android.R.color.darker_gray);*/
+
+                        wordlistToolbar.getMenu()
+                                .findItem(R.id.action_star_word_list)
+                                .setIcon(new IconDrawable(context, star)
+                                        .actionBarSize());
+                    }
                 }
 
                 @Override

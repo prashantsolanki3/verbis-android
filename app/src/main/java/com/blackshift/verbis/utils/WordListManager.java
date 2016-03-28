@@ -20,6 +20,8 @@ import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +150,23 @@ public class WordListManager {
                         WordList wordList = snapshot.getValue(WordList.class);
                         wordLists.add(wordList);
                     }
+
+                    //Starred comes first, then comes modified
+                    Collections.sort(wordLists, new Comparator<WordList>() {
+                        @Override
+                        public int compare(WordList lhs, WordList rhs) {
+                            if (lhs.isStarred())
+                                return -1;
+
+                            if(rhs.isStarred())
+                                return 1;
+
+                            if(lhs.getModifiedAt()>rhs.getModifiedAt())
+                                return -1;
+                            else
+                                return 1;
+                        }
+                    });
                     listener.onSuccess(wordLists);
                 } catch (Exception e) {
                     e.printStackTrace();
