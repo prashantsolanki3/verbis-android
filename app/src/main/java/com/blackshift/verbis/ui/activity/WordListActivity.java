@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.WordList;
-import com.blackshift.verbis.utils.WordListManager;
+import com.blackshift.verbis.utils.manager.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.firebase.client.FirebaseError;
 

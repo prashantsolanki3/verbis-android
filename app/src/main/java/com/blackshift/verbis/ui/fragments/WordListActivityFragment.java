@@ -14,7 +14,7 @@ import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.WordList;
 import com.blackshift.verbis.ui.viewholders.WordListTitleViewHolder;
 import com.blackshift.verbis.utils.FirebaseKeys;
-import com.blackshift.verbis.utils.WordListManager;
+import com.blackshift.verbis.utils.manager.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;

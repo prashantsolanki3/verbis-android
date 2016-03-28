@@ -20,15 +20,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".DictionaryActivity" />
+
         </activity>
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="1c16a9c7d4d0660fb337122543fe726dc3f456b6" />
-
-        <meta-data
-            android:name="android.app.default_searchable"
-            android:value=".DictionaryActivity" />
 
         <activity
             android:name=".ui.activity.DictionaryActivity"
@@ -36,6 +37,16 @@
             android:launchMode="singleTop"
             android:parentActivityName=".ui.activity.HomePageActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="www.google.com"
+                    android:pathPrefix="/" />
+                <data android:scheme="google"
+                    android:host="*" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <category android:name="android.intent.category.DEFAULT" />

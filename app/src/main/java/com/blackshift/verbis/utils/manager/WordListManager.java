@@ -1,4 +1,4 @@
-package com.blackshift.verbis.utils;
+package com.blackshift.verbis.utils.manager;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.WordList;
+import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.annotations.PrivacyLevel;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.listeners.WordListener;
@@ -74,7 +75,7 @@ public class WordListManager {
     public void renameWordList(@NonNull final String title,@NonNull final String id, final WordListListener listener){
 
         Firebase firebase = App.getApp().getFirebase();
-        firebase=firebase.child(FirebaseKeys.WORD_LIST).child(firebase.getAuth().getUid()).child(id);
+        firebase = firebase.child(FirebaseKeys.WORD_LIST).child(firebase.getAuth().getUid()).child(id);
 
         Map<String,Object> map = new HashMap<>();
         map.put("title",title);

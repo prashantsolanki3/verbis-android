@@ -1,9 +1,9 @@
 package com.blackshift.verbis.ui.activity;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,15 +17,20 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
+import com.blackshift.verbis.utils.listeners.WordListener;
+import com.blackshift.verbis.utils.manager.RecentWordsManager;
+import com.firebase.client.FirebaseError;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.history.SearchHistoryTable;
@@ -38,17 +43,21 @@ import java.util.List;
 public class HomePageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String DATA_TRANSFER_TEXT = "data_transfer";
     private SearchHistoryTable mHistoryDatabase;
     private List<SearchItem> mSuggestionsList;
+    private int mVersion = SearchCodes.VERSION_TOOLBAR;
+    private int mStyle = SearchCodes.STYLE_TOOLBAR_CLASSIC;
+    private int mTheme = SearchCodes.THEME_LIGHT;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbarLayout;
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
     NavigationView navigationView;
-    SearchView searchView;
     FloatingActionButton fab;
     ViewPager pager, baseViewpager;
     TabLayout tabLayout;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,28 +116,44 @@ public class HomePageActivity extends AppCompatActivity
         mHistoryDatabase = new SearchHistoryTable(this);
         mSuggestionsList = new ArrayList<>();
 
+        // SearchView basic attributes  ------------------------------------------------------------
         searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setVersion(SearchCodes.VERSION_TOOLBAR);
-        searchView.setStyle(SearchCodes.STYLE_TOOLBAR_CLASSIC);
-        searchView.setTheme(SearchCodes.THEME_LIGHT);
-
+        searchView.setVersion(mVersion);
+        searchView.setStyle(mStyle);
+        searchView.setTheme(mTheme);
+        // -----------------------------------------------------------------------------------------
         searchView.setDivider(false);
-        searchView.setHint(getString(R.string.search));
+        searchView.setHint("Search");
+        searchView.setHint(R.string.search);
         searchView.setHintSize(getResources().getDimension(R.dimen.search_text_medium));
         searchView.setVoice(true);
-        searchView.setVoiceText(getString(R.string.voice));
+        searchView.setVoiceText("Voice");
         searchView.setAnimationDuration(300);
         searchView.setShadowColor(ContextCompat.getColor(this, R.color.search_shadow_layout));
+        showSearchView();
+        searchView.show(true);
+        searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchView.hide(false);
                 mHistoryDatabase.addItem(new SearchItem(query));
                 Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
-                intent.putExtra(SearchManager.QUERY, query);
-                startActivity(intent);
-                return false;
+                searchView.clearFocus();
+                RecentWordsManager recentWordsManager = new RecentWordsManager(App.getContext());
+                recentWordsManager.addRecentWord(query, new WordListener() {
+                    @Override
+                    public void onSuccess(@Nullable Object word) {
+                        Log.d("Firebase_Recent_Words", "added");
+                    }
+
+                    @Override
+                    public void onFailure(FirebaseError firebaseError) {
+
+                        Log.d("Firebase_Recent_Words", "not added \n" + firebaseError.getMessage());
+                    }
+                });
+                openDictionaryActivity(query);
+                return true;
             }
 
             @Override
@@ -139,44 +164,48 @@ public class HomePageActivity extends AppCompatActivity
         searchView.setOnSearchViewListener(new SearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                fab.hide();
+                // mFab.hide();
             }
 
             @Override
             public void onSearchViewClosed() {
-                fab.show();
+                // mFab.show();
             }
         });
 
-        List<SearchItem> mResultsList = new ArrayList<>();
-        SearchAdapter mSearchAdapter = new SearchAdapter(this, mResultsList, mSuggestionsList, SearchCodes.VERSION_MENU_ITEM);
-        mSearchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                searchView.hide(false);
-                TextView textView = (TextView) view.findViewById(R.id.textView_item_text);
-                CharSequence text = textView.getText();
-                mHistoryDatabase.addItem(new SearchItem(text));
-                Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
-                intent.putExtra(SearchManager.QUERY, text);
-                startActivity(intent);
-            }
-        });
-
-        searchView.setAdapter(mSearchAdapter);
-
-        if (mHistoryDatabase.getAllItems().size() > 0) {
-            mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
-            searchView.show(true);
-        }
         searchView.setOnSearchMenuListener(new SearchView.SearchMenuListener() {
             @Override
             public void onMenuClick() {
                 drawer.openDrawer(GravityCompat.START);
             }
         });
+
+        List<SearchItem> mResultsList = new ArrayList<>();
+        SearchAdapter mSearchAdapter = new SearchAdapter(this, mResultsList, mSuggestionsList, mTheme);
+        mSearchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                TextView textView = (TextView) view.findViewById(R.id.textView_item_text);
+                CharSequence text = textView.getText();
+                mHistoryDatabase.addItem(new SearchItem(text));
+                Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
+                searchView.clearFocus();
+                openDictionaryActivity(text.toString());
+            }
+        });
+        searchView.setAdapter(mSearchAdapter);
+    }
+
+    private void openDictionaryActivity(String text) {
+        Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
+        intent.setAction(Intent.ACTION_SEARCH);
+        intent.putExtra(DATA_TRANSFER_TEXT, text);
+        startActivity(intent);
+    }
+
+    private void showSearchView() {
+        mSuggestionsList.clear();
+        mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
     }
 
     private void init() {
@@ -203,7 +232,6 @@ public class HomePageActivity extends AppCompatActivity
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-
     }
 
     @Override
@@ -280,6 +308,7 @@ public class HomePageActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 /*
     public TabLayout getTabLayout(){
         return tabLayout;

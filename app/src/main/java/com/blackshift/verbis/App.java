@@ -69,10 +69,9 @@ public class App extends Application {
                 .client(new OkHttpClient())
                 .build();
 
-        if(dictionaryService ==null)
+        if(dictionaryService == null)
             dictionaryService = retrofit.create(DictionaryService.class);
 
-        //For Anonymous Authentication
         App.getApp().getFirebase().authAnonymously(new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
@@ -84,7 +83,6 @@ public class App extends Application {
                 Log.e("Firebase auth",firebaseError.getMessage());
             }
         });
-
     }
 
     public synchronized static App getApp(){
