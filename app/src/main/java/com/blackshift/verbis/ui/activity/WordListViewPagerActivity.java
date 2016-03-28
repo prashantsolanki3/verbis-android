@@ -3,6 +3,9 @@ package com.blackshift.verbis.ui.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -12,11 +15,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.EditText;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.wordlist.Word;
@@ -26,16 +33,24 @@ import com.blackshift.verbis.utils.DateUtils;
 import com.blackshift.verbis.utils.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
+import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.codetail.animation.SupportAnimator;
+import io.codetail.animation.ViewAnimationUtils;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter;
 import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
 
@@ -57,9 +72,17 @@ public class WordListViewPagerActivity extends AppCompatActivity {
     @Bind(R.id.container)
     ViewPager mViewPager;
     private WordListManager wordListManager;
-    static int count = 0;
     @Bind(R.id.viewpager_indicator)
     CirclePageIndicator pageIndicator;
+
+    @Bind(R.id.add_list_layout)
+    View overlayToolbar;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
+    @Bind(R.id.new_wordlist_title)
+    EditText newWordlistTitle;
+
+    SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +95,12 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mWordListViewPagerAdapter = new WordListViewPagerAdapter(getSupportFragmentManager(),this);
+        overlayToolbar.setVisibility(View.INVISIBLE);
+        ((CollapsingToolbarLayout)findViewById(R.id.toolbar_layout)).setTitleEnabled(false);
 
         wordListManager.getAllWordLists(new WordListArrayListener() {
             @Override
             public void onSuccess(@Nullable List<WordList> wordList) {
-                count++;
                 mWordListViewPagerAdapter.set(wordList);
             }
 
@@ -91,8 +115,38 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
         mViewPager.setPageMargin(56);
-        //TODO: FAB TO CREATE NEW LIST
 
+        newWordlistTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    handleFabStatus(FabStatus.ADD);
+                    newWordlistTitle.setText(null);
+                }
+            }
+        });
+
+        newWordlistTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //TODO: Better validation so that user can't enter special chars.
+                if(newWordlistTitle.isEnabled())
+                if(s.toString().isEmpty())
+                    handleFabStatus(FabStatus.CANCEL);
+                else
+                    handleFabStatus(FabStatus.ACCEPT);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -116,6 +170,103 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.fab)
+    void fabclick(){
+        WordListManager wordListManager = new WordListManager(this);
+        switch ((String)fab.getTag()){
+            case FabStatus.ADD:
+                //Because Next state should be Cancel
+                handleFabStatus(FabStatus.CANCEL);
+
+                //Show Edit Text
+                newWordlistTitle.requestFocus();
+                showAddWordlistLayout(true);
+                break;
+            case FabStatus.ACCEPT:
+                fab.setEnabled(false);
+                newWordlistTitle.setEnabled(false);
+                wordListManager.createWordList(newWordlistTitle.getText().toString(), new WordListListener() {
+                    @Override
+                    public void onSuccess(String firebaseReferenceString) {
+                        //Because Next state should be ADD
+                        handleFabStatus(FabStatus.ADD);
+                        showAddWordlistLayout(false);
+                        fab.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(FirebaseError firebaseError) {
+                        fab.setEnabled(true);
+                    }
+                });
+                break;
+            //Currently not in use.
+            case FabStatus.CANCEL:
+                //Because Next state should be ADD
+                handleFabStatus(FabStatus.ADD);
+                newWordlistTitle.setText(null);
+                showAddWordlistLayout(false);
+                break;
+            default:
+                handleFabStatus(FabStatus.ADD);
+        }
+    }
+
+    void handleFabStatus(@FabStatus String status){
+        MaterialIcons icons = MaterialIcons.md_add;
+        switch (status){
+            case FabStatus.ADD:
+                newWordlistTitle.setEnabled(false);
+                break;
+            case FabStatus.ACCEPT:
+                newWordlistTitle.setEnabled(true);
+                icons = MaterialIcons.md_check;
+                break;
+            //Currently not in use.
+            case FabStatus.CANCEL:
+                newWordlistTitle.setEnabled(true);
+                icons = MaterialIcons.md_clear;
+                break;
+        }
+
+        fab.setImageDrawable(new IconDrawable(this,icons).colorRes(android.R.color.white));
+        fab.setTag(status);
+    }
+
+    void showAddWordlistLayout(boolean visibility){
+        View fab = findViewById(R.id.fab);
+        // get the center for the clipping circle
+        int cx = (fab.getLeft() + fab.getRight()) / 2;
+        int cy = (fab.getTop() + fab.getBottom()) / 2;
+
+        // get the final radius for the clipping circle
+        int dx = Math.max(cx, overlayToolbar.getWidth() - cx);
+        int dy = Math.max(cy, overlayToolbar.getHeight() - cy);
+        float finalRadius = (float) Math.hypot(dx, dy);
+
+        overLayoutToolbarAnimator =
+                ViewAnimationUtils.createCircularReveal(overlayToolbar, cx, cy, 0, finalRadius);
+        overlayToolbar.setVisibility(View.INVISIBLE);
+        overLayoutToolbarAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        overLayoutToolbarAnimator.setDuration(500);
+        reverseOverlayToolbarAnimator = overLayoutToolbarAnimator.reverse();
+
+        if(visibility) {
+            overlayToolbar.setVisibility(View.VISIBLE);
+            overLayoutToolbarAnimator.start();
+        }else {
+            //TODO: Reverse Circular Reveal
+            reverseOverlayToolbarAnimator.start();
+            overlayToolbar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({FabStatus.ADD,FabStatus.ACCEPT,FabStatus.CANCEL})
+    @interface FabStatus{
+        String ADD="add",ACCEPT = "accept",CANCEL = "cancel";
     }
 
     /**
@@ -163,6 +314,15 @@ public class WordListViewPagerActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            //TODO: Create Menu for Deleting, starring, etc.
+
+            wordlistToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    return false;
+                }
+            });
+
             wordlistToolbar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

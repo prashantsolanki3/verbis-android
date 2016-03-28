@@ -23,9 +23,9 @@ public class WordViewHolder extends SnapViewHolder<Word> {
 
     @Bind(R.id.wordlist_title)
     TextView title;
-    @Bind(R.id.wordlist_item_count)
+    /*@Bind(R.id.wordlist_item_count)
     TextView count;
-
+*/
     public WordViewHolder(View itemView, Context context) {
         super(itemView, context);
         ButterKnife.bind(this,itemView);
@@ -34,6 +34,6 @@ public class WordViewHolder extends SnapViewHolder<Word> {
     @Override
     public void populateViewHolder(Word wordList, int i) {
         title.setText(wordList.getHeadword());
-        count.setText(wordList.getId());
+  //      count.setText(wordList.getId());
     }
 }
