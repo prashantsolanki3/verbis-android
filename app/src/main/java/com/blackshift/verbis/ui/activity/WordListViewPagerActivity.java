@@ -96,8 +96,6 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         // primary sections of the activity.
         mWordListViewPagerAdapter = new WordListViewPagerAdapter(getSupportFragmentManager(),this);
         overlayToolbar.setVisibility(View.INVISIBLE);
-        ((CollapsingToolbarLayout)findViewById(R.id.toolbar_layout)).setTitleEnabled(false);
-
         wordListManager.getAllWordLists(new WordListArrayListener() {
             @Override
             public void onSuccess(@Nullable List<WordList> wordList) {
@@ -115,16 +113,6 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
         mViewPager.setPageMargin(56);
-
-        newWordlistTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
-                    handleFabStatus(FabStatus.ADD);
-                    newWordlistTitle.setText(null);
-                }
-            }
-        });
 
         newWordlistTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -219,15 +207,17 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         switch (status){
             case FabStatus.ADD:
                 newWordlistTitle.setEnabled(false);
+                fab.animate().rotation(0).start();
                 break;
             case FabStatus.ACCEPT:
                 newWordlistTitle.setEnabled(true);
+                fab.animate().rotation(360).start();
                 icons = MaterialIcons.md_check;
                 break;
             //Currently not in use.
             case FabStatus.CANCEL:
                 newWordlistTitle.setEnabled(true);
-                icons = MaterialIcons.md_clear;
+                fab.animate().rotation(135).start();
                 break;
         }
 
@@ -248,18 +238,59 @@ public class WordListViewPagerActivity extends AppCompatActivity {
 
         overLayoutToolbarAnimator =
                 ViewAnimationUtils.createCircularReveal(overlayToolbar, cx, cy, 0, finalRadius);
-        overlayToolbar.setVisibility(View.INVISIBLE);
         overLayoutToolbarAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         overLayoutToolbarAnimator.setDuration(500);
         reverseOverlayToolbarAnimator = overLayoutToolbarAnimator.reverse();
 
         if(visibility) {
-            overlayToolbar.setVisibility(View.VISIBLE);
+            overLayoutToolbarAnimator.addListener(new SupportAnimator.AnimatorListener() {
+                @Override
+                public void onAnimationStart() {
+                    overlayToolbar.setVisibility(View.VISIBLE);
+                    ((CollapsingToolbarLayout) findViewById(R.id.toolbar_layout)).setTitleEnabled(false);
+                }
+
+                @Override
+                public void onAnimationEnd() {
+
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationRepeat() {
+
+                }
+            });
             overLayoutToolbarAnimator.start();
         }else {
             //TODO: Reverse Circular Reveal
             reverseOverlayToolbarAnimator.start();
-            overlayToolbar.setVisibility(View.INVISIBLE);
+            reverseOverlayToolbarAnimator.addListener(new SupportAnimator.AnimatorListener() {
+                @Override
+                public void onAnimationStart() {
+
+                }
+
+                @Override
+                public void onAnimationEnd() {
+                    overlayToolbar.setVisibility(View.INVISIBLE);
+                    ((CollapsingToolbarLayout) findViewById(R.id.toolbar_layout)).setTitleEnabled(true);
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationRepeat() {
+
+                }
+            });
         }
     }
 
