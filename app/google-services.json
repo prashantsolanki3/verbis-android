@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_id": "blackshift-verbis",
+    "project_number": "884193976507",
+    "name": "Verbis"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884193976507:android:27d6981b09e0e7af",
+        "client_id": "android:com.blackshift.verbis",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.blackshift.verbis",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884193976507-8d52e24pcd8vjb7gke7ns64tc8q6jenb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis",
+            "certificate_hash": "8C9DAAAF9D7F83C919127388183AEBD8E45F68BD"
+          }
+        },
+        {
+          "client_id": "884193976507-l00p7996i4q76v9bge245s0hr9rutakb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884193976507-l00p7996i4q76v9bge245s0hr9rutakb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 2,
+          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

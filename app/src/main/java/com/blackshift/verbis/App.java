@@ -1,15 +1,17 @@
 package com.blackshift.verbis;
 
+
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
 
+import com.blackshift.verbis.auth.LoginActivity;
 import com.blackshift.verbis.rest.service.DictionaryService;
+import com.blackshift.verbis.ui.activity.HomePageActivity;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
@@ -41,6 +43,7 @@ public class App extends Application {
     static DictionaryService dictionaryService = null;
     static App app;
     private Firebase firebase;
+    private AuthData authData;
 
     @Override
     public void onCreate() {
@@ -49,6 +52,14 @@ public class App extends Application {
         Fabric.with(this, new Crashlytics(),new Answers());
         Firebase.setAndroidContext(this);
         firebase = new Firebase(FIREBASE_BASE_URL);
+        firebase.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if(authData == null) {
+                    startLoginActivity();
+                }
+            }
+        });
         Iconify.with(new MaterialModule());
         Shoot.with(this);
         Utiloid.init(this);
@@ -72,17 +83,6 @@ public class App extends Application {
         if(dictionaryService == null)
             dictionaryService = retrofit.create(DictionaryService.class);
 
-        App.getApp().getFirebase().authAnonymously(new Firebase.AuthResultHandler() {
-            @Override
-            public void onAuthenticated(AuthData authData) {
-                Log.d("Firebase Uid",authData.getUid());
-            }
-
-            @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-                Log.e("Firebase auth",firebaseError.getMessage());
-            }
-        });
     }
 
     public synchronized static App getApp(){
@@ -100,5 +100,14 @@ public class App extends Application {
     public synchronized static DictionaryService getDictionaryService(){
         return dictionaryService;
     }
-
+    void startMainActivity(){
+        Intent i = new Intent(this, HomePageActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(i);
+    }
+    void startLoginActivity(){
+        Intent i = new Intent(this, LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(i);
+    }
 }

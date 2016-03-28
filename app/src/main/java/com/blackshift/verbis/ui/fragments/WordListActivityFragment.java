@@ -9,17 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.WordList;
+import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.ui.viewholders.WordListTitleViewHolder;
-import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.manager.WordListManager;
+import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -63,8 +61,9 @@ public class WordListActivityFragment extends Fragment {
             @Override
             public void onItemClick(SnapViewHolder snapViewHolder, View view, int i) {
                 wordListManager.renameWordList("Renamed " + i, (WordList) snapViewHolder.getItemData(), new WordListListener() {
-                    @Override
-                    public void onSuccess(@Nullable WordList wordList) {
+
+                        @Override
+                    public void onSuccess(String firebaseReferenceString) {
 
                     }
 
@@ -79,7 +78,7 @@ public class WordListActivityFragment extends Fragment {
             public void onItemLongPress(SnapViewHolder snapViewHolder, View view, int i) {
                 wordListManager.deleteWordList((WordList) snapViewHolder.getItemData(), new WordListListener() {
                     @Override
-                    public void onSuccess(@Nullable WordList wordList) {
+                    public void onSuccess(String firebaseReferenceString) {
 
                     }
 
@@ -94,20 +93,15 @@ public class WordListActivityFragment extends Fragment {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         wordlistTitlesRecycler.setLayoutManager(layoutManager);
         wordlistTitlesRecycler.setAdapter(wordListSnapAdapter);
-        Firebase firebase = App.getApp().getFirebase();
-        firebase.child(FirebaseKeys.WORD_LIST)
-                .child(firebase.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+        WordListManager wordListManager = new WordListManager(getContext());
+        wordListManager.getAllWordLists(new WordListArrayListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                wordListSnapAdapter.clear();
-                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    WordList wordList = snapshot.getValue(WordList.class);
-                    wordListSnapAdapter.add(wordList);
-                }
+            public void onSuccess(@Nullable List<WordList> wordList) {
+                wordListSnapAdapter.set(wordList);
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onFailure(FirebaseError firebaseError) {
 
             }
         });

@@ -10,11 +10,24 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.NoActionBar">
         <activity
+            android:launchMode="singleInstance"
             android:name=".ui.activity.HomePageActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".ui.activity.WordListRecyclerViewActivity"
+            android:label="@string/title_activity_word_list"/>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="1c16a9c7d4d0660fb337122543fe726dc3f456b6" />
+
+        <activity
+            android:name=".auth.LoginActivity"
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,8 +41,8 @@
         </activity>
 
         <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="1c16a9c7d4d0660fb337122543fe726dc3f456b6" />
+            android:name="android.app.default_searchable"
+            android:value=".DictionaryActivity" />
 
         <activity
             android:name=".ui.activity.DictionaryActivity"
@@ -58,15 +71,29 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <provider
-            android:authorities="com.blackshift.verbis.rest.providers.RecentSuggestionsProvider"
-            android:name=".rest.providers.RecentSuggestionsProvider" >
-        </provider>
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+            android:name=".rest.providers.RecentSuggestionsProvider"
+            android:authorities="com.blackshift.verbis.rest.providers.RecentSuggestionsProvider"/>
+        <!--
+             ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".ui.activity.WordListViewPagerActivity"
+            android:label="@string/title_activity_word_list_view_pager"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

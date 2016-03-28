@@ -10,8 +10,10 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
+
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url 'https://dl.bintray.com/lisawray/maven' }
 }
 
 
@@ -90,6 +92,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.android.support:design:23.2.0'
     compile 'com.android.support:support-v4:23.2.0'
+    //for password field
+    compile 'com.github.lisawray:passwordview:863c58fa25'
+
+    //Butterknife for view injection
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.prashantsolanki3:Snap-RecyclerView-Utils:2.0.0-beta-2'
     compile 'com.github.prashantsolanki3:Secure-Pref-Manager:1.0.0'
@@ -103,6 +109,18 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.joanzapata.iconify:android-iconify-material:2.1.1'
     compile 'org.parceler:parceler-api:1.0.4'
+    //Fabric Kits
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true;
+    }
+    //Firebase
     compile 'com.firebase:firebase-client-android:2.5.2'
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
+
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+
+    compile 'joda-time:joda-time:2.9.2'
+
+    compile 'com.viewpagerindicator:library:2.4.1'
 }
+apply plugin: 'com.google.gms.google-services'

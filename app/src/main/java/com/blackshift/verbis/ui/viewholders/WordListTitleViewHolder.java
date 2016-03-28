@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.WordList;
+import com.blackshift.verbis.rest.model.wordlist.WordList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.utils.FirebaseKeys;
-import com.blackshift.verbis.utils.listeners.WordListener;
+import com.blackshift.verbis.utils.listeners.RecentWordListener;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
@@ -26,7 +26,7 @@ public class RecentWordsManager {
      * @param word recent word to be added into the database
      * @param listener listener assist the handling of type of response received
      */
-    public void addRecentWord(@NonNull String word, final WordListener listener){
+    public void addRecentWord(@NonNull String word, final RecentWordListener listener){
 
         //Go to RecentWords then push to create a new word
         Firebase firebase = getBaseFirebaseRef().push();
@@ -42,7 +42,7 @@ public class RecentWordsManager {
 
     }
 
-    private void handleListener(FirebaseError firebaseError,@Nullable RecentWord word, WordListener listener){
+    private void handleListener(FirebaseError firebaseError,@Nullable RecentWord word, RecentWordListener listener){
         if(firebaseError!=null){
             //Some Error has occurred.
             if (listener!=null)

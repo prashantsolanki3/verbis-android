@@ -1,9 +1,9 @@
 package com.blackshift.verbis.ui.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +29,12 @@ import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
-import com.blackshift.verbis.utils.listeners.WordListener;
+import com.blackshift.verbis.rest.model.RecentWord;
+import com.blackshift.verbis.utils.listeners.RecentWordListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
+import com.bumptech.glide.Glide;
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
@@ -39,6 +44,10 @@ import com.lapism.searchview.view.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.ButterKnife;
+
+import static com.blackshift.verbis.App.getApp;
 
 public class HomePageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -53,11 +62,13 @@ public class HomePageActivity extends AppCompatActivity
     CollapsingToolbarLayout collapsingToolbarLayout;
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
-    NavigationView navigationView;
+    SearchView searchView;
     FloatingActionButton fab;
     ViewPager pager, baseViewpager;
     TabLayout tabLayout;
-    SearchView searchView;
+    View header;
+    ImageView imgview;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +81,10 @@ public class HomePageActivity extends AppCompatActivity
         manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
+        ButterKnife.bind(this);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View header =navigationView.getHeaderView(0);
+        imgview = (ImageView) header.findViewById(R.id.imageView);
         mangeBaseViewPager();
 
     }
@@ -97,7 +112,18 @@ public class HomePageActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
 */
+        Firebase ref= getApp().getFirebase();
+        ref.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    String imgurl = (String) authData.getProviderData().get("profileImageURL");
+                    Glide.with(getApplicationContext()).load(imgurl).into(imgview);
+                }
+            }
+        });
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -140,15 +166,14 @@ public class HomePageActivity extends AppCompatActivity
                 Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
                 searchView.clearFocus();
                 RecentWordsManager recentWordsManager = new RecentWordsManager(App.getContext());
-                recentWordsManager.addRecentWord(query, new WordListener() {
+                recentWordsManager.addRecentWord(query, new RecentWordListener() {
                     @Override
-                    public void onSuccess(@Nullable Object word) {
+                    public void onSuccess(RecentWord word) {
                         Log.d("Firebase_Recent_Words", "added");
                     }
 
                     @Override
                     public void onFailure(FirebaseError firebaseError) {
-
                         Log.d("Firebase_Recent_Words", "not added \n" + firebaseError.getMessage());
                     }
                 });
@@ -276,17 +301,22 @@ public class HomePageActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home_activity) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_search_activity) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_wordlist_vp_activity) {
+            this.finish();
+            startActivity(new Intent(this,WordListViewPagerActivity.class));
+        }  else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_user_log_out) {
+            App.getApp().getFirebase().unauth();
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+            if(Build.VERSION.SDK_INT>=21)
+                this.finishAndRemoveTask();
+            else
+                this.finish();
 
         }
 
