@@ -8,7 +8,6 @@ import android.speech.RecognizerIntent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -18,7 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,56 +27,75 @@ import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
+import com.blackshift.verbis.rest.model.wordlist.WordList;
+import com.blackshift.verbis.ui.fragments.WordListTitlesRecyclerFragment;
+import com.blackshift.verbis.utils.WordListManager;
+import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.bumptech.glide.Glide;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.history.SearchHistoryTable;
 import com.lapism.searchview.view.SearchCodes;
 import com.lapism.searchview.view.SearchView;
+import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.github.prashantsolanki3.snaplibrary.snap.adapter.AbstractSnapSelectableAdapter;
+import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapSelectableAdapter;
 
 import static com.blackshift.verbis.App.getApp;
 
 public class HomePageActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,WordListTitlesRecyclerFragment.WordListSelectionListener {
 
     private SearchHistoryTable mHistoryDatabase;
     private List<SearchItem> mSuggestionsList;
+
+    @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
+    @Bind(R.id.drawer_layout)
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
-
+    @Bind(R.id.searchView)
     SearchView searchView;
+    @Bind(R.id.fab)
     FloatingActionButton fab;
-    ViewPager pager, baseViewpager;
+    @Bind(R.id.words_of_day_pager)
+    ViewPager viewPagerWordOfTheDay;
+    @Bind(R.id.home_page_base_pager)
+    ViewPager baseViewpager;
+    @Bind(R.id.viewpager_indicator)
+    CirclePageIndicator pageIndicator;
+    @Bind(R.id.tabs)
     TabLayout tabLayout;
-    View header;
-    ImageView imgview;
+    @Bind(R.id.nav_view)
     NavigationView navigationView;
-
+    //Manually Init
+    View header;
+    ImageView imgView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-
+        ButterKnife.bind(this);
         init();
         manageToolbar();
         manageSearchView();
-        manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
-        ButterKnife.bind(this);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View header =navigationView.getHeaderView(0);
-        imgview = (ImageView) header.findViewById(R.id.imageView);
         mangeBaseViewPager();
 
     }
@@ -93,10 +110,11 @@ public class HomePageActivity extends AppCompatActivity
 
     private void manageWordOfTheDayViewPager() {
 
-        pager.setAdapter(new WordsOfTheWeekAdapter(getSupportFragmentManager()));
+        viewPagerWordOfTheDay.setAdapter(new WordsOfTheWeekAdapter(getSupportFragmentManager()));
+        pageIndicator.setViewPager(viewPagerWordOfTheDay);
         //Bind the title indicator to the adapter
         //TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.titles);
-        //titleIndicator.setViewPager(pager);
+        //titleIndicator.setViewPager(viewPagerWordOfTheDay);
 
     }
 
@@ -108,27 +126,43 @@ public class HomePageActivity extends AppCompatActivity
         toggle.syncState();
 
 */
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if(wordListSnapAdapter!=null&&wordListSnapAdapter.isSelectionEnabled())
+                wordListSnapAdapter.setSelectionEnabled(false);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if(wordListSnapAdapter!=null){
+                    if((newState==DrawerLayout.STATE_SETTLING||newState==DrawerLayout.STATE_DRAGGING)
+                            &&wordListSnapAdapter.isSelectionEnabled())
+                        wordListSnapAdapter.setSelectionEnabled(false);
+                }
+            }
+        });
         Firebase ref= getApp().getFirebase();
         ref.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
                 if (authData != null) {
                     String imgurl = (String) authData.getProviderData().get("profileImageURL");
-                    Glide.with(getApplicationContext()).load(imgurl).into(imgview);
+                    Glide.with(getApplicationContext()).load(imgurl).into(imgView);
                 }
             }
         });
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private void manageFab() {
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     private void manageSearchView() {
@@ -136,7 +170,6 @@ public class HomePageActivity extends AppCompatActivity
         mHistoryDatabase = new SearchHistoryTable(this);
         mSuggestionsList = new ArrayList<>();
 
-        searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setVersion(SearchCodes.VERSION_TOOLBAR);
         searchView.setStyle(SearchCodes.STYLE_TOOLBAR_CLASSIC);
         searchView.setTheme(SearchCodes.THEME_LIGHT);
@@ -165,17 +198,7 @@ public class HomePageActivity extends AppCompatActivity
                 return false;
             }
         });
-        searchView.setOnSearchViewListener(new SearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                fab.hide();
-            }
 
-            @Override
-            public void onSearchViewClosed() {
-                fab.show();
-            }
-        });
 
         List<SearchItem> mResultsList = new ArrayList<>();
         SearchAdapter mSearchAdapter = new SearchAdapter(this, mResultsList, mSuggestionsList, SearchCodes.VERSION_MENU_ITEM);
@@ -200,39 +223,30 @@ public class HomePageActivity extends AppCompatActivity
             mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
             searchView.show(true);
         }
+
         searchView.setOnSearchMenuListener(new SearchView.SearchMenuListener() {
             @Override
             public void onMenuClick() {
                 drawer.openDrawer(GravityCompat.START);
             }
         });
+
     }
 
     private void init() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        searchView = (SearchView) findViewById(R.id.searchView);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        //Set the pager with an adapter
-        pager = (ViewPager)findViewById(R.id.words_of_week_pager);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-
-        baseViewpager = (ViewPager) findViewById(R.id.home_page_base_pager);
-
+        //Cannot be Init by ButterKnife.
+        header =navigationView.getHeaderView(0);
+        imgView = (ImageView) header.findViewById(R.id.imageView);
+        fab.setImageDrawable(new IconDrawable(this, MaterialIcons.md_delete).colorRes(android.R.color.white));
+        fab.hide();
     }
 
     private void manageToolbar() {
         setSupportActionBar(toolbar);
-
         collapsingToolbarLayout.setTitleEnabled(false);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-
     }
 
     @Override
@@ -240,35 +254,11 @@ public class HomePageActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if(searchView.isSearchOpen()){
+            searchView.hide(true);
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home_page, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        /*
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                showSearchView();
-                return true;
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                // NavUtils.navigateUpTo();
-                // DatabaseUtils ... finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        */
-        return false;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -313,9 +303,67 @@ public class HomePageActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-/*
-    public TabLayout getTabLayout(){
-        return tabLayout;
+
+    SnapSelectableAdapter<WordList> wordListSnapAdapter;
+
+    @OnClick(R.id.fab)
+    void onClickFab(View view){
+        WordListManager wordListManager = new WordListManager(this);
+        List<WordList> selected = wordListSnapAdapter.getSelectedItems();
+        if(selected!=null&&selected.size()>0){
+            for(WordList wordList:selected)
+                wordListManager.deleteWordList(wordList, new WordListListener() {
+                    @Override
+                    public void onSuccess(String firebaseReferenceString) {
+                        if(wordListSnapAdapter.isSelectionEnabled())
+                            wordListSnapAdapter.setSelectionEnabled(false);
+                    }
+
+                    @Override
+                    public void onFailure(FirebaseError firebaseError) {
+
+                    }
+                });
+        }
     }
-    */
+
+    @Override
+    public void setSnapAdapter(SnapSelectableAdapter<WordList> adapter) {
+        this.wordListSnapAdapter = adapter;
+    }
+
+    @Override
+    public void onSelectionModeEnabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
+        fab.show();
+    }
+
+    @Override
+    public void onSelectionModeDisabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
+        fab.hide();
+    }
+
+    @Override
+    public void onItemSelected(WordList wordList, int i) {
+
+    }
+
+    @Override
+    public void onItemDeselected(WordList wordList, int i) {
+
+    }
+
+    @Override
+    public void onSelectionLimitReached() {
+
+    }
+
+    @Override
+    public void onSelectionLimitExceeding() {
+
+    }
+
+    @Override
+    public void onNoneSelected() {
+
+    }
 }
