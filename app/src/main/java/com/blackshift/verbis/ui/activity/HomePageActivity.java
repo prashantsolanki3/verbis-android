@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,7 +26,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
@@ -41,7 +42,10 @@ import com.lapism.searchview.view.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.github.prashantsolanki3.utiloid.Utiloid;
 
 import static com.blackshift.verbis.App.getApp;
 
@@ -54,20 +58,23 @@ public class HomePageActivity extends AppCompatActivity
     CollapsingToolbarLayout collapsingToolbarLayout;
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
-
     SearchView searchView;
     FloatingActionButton fab;
     ViewPager pager, baseViewpager;
     TabLayout tabLayout;
+    @Bind(R.id.bottomSheetView) View bottomSheetView;
+    BottomSheetBehavior mBottomSheetBehavior;
+    NavigationView navigationView;
     View header;
     ImageView imgview;
-    NavigationView navigationView;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+        ButterKnife.bind(this);
 
         init();
         manageToolbar();
@@ -75,13 +82,23 @@ public class HomePageActivity extends AppCompatActivity
         manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
-        ButterKnife.bind(this);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View header =navigationView.getHeaderView(0);
-        imgview = (ImageView) header.findViewById(R.id.imageView);
+
+
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.closeDrawer(GravityCompat.START);
+                mBottomSheetBehavior.setPeekHeight((int) Utiloid.CONVERSION_UTILS.dpiToPixels(300.0f));
+                if((mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_COLLAPSED)||mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                else if (mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_HIDDEN)
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
         mangeBaseViewPager();
 
     }
+
 
     private void mangeBaseViewPager() {
         baseViewpager.setAdapter(new HomePageBaseAdapter(getSupportFragmentManager()));
@@ -215,13 +232,17 @@ public class HomePageActivity extends AppCompatActivity
         searchView = (SearchView) findViewById(R.id.searchView);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
+        //BottomSheet
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetView);
+        header = navigationView.getHeaderView(0);
+        imgview = (ImageView) header.findViewById(R.id.imageView);
         //Set the pager with an adapter
         pager = (ViewPager)findViewById(R.id.words_of_week_pager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         baseViewpager = (ViewPager) findViewById(R.id.home_page_base_pager);
+
 
     }
 
