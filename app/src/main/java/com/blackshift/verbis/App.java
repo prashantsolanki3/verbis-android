@@ -49,9 +49,11 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         app =this;
-        Fabric.with(this, new Crashlytics(),new Answers());
+        Fabric.with(this, new Crashlytics(), new Answers());
         Firebase.setAndroidContext(this);
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
         firebase = new Firebase(FIREBASE_BASE_URL);
+        firebase.keepSynced(true);
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {

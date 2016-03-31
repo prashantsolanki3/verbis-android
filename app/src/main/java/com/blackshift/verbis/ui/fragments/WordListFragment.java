@@ -252,4 +252,23 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.Selection
             menu.findItem(R.id.action_delete_word).setVisible(!normal);
         }
 
+    /*public interface WordListSelectionListener extends SelectionListener<WordList> {
+        void setSnapAdapter(SnapSelectableAdapter<WordList> adapter);
+    }
+
+    WordListSelectionListener mCallback;
+
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(context);
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (WordListSelectionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+    }*/
+
     }

@@ -7,7 +7,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,7 +19,6 @@ import com.blackshift.verbis.adapters.WordListViewPagerAdapter;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.utils.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
-import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.firebase.client.FirebaseError;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -36,7 +34,7 @@ import butterknife.OnClick;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
 
-public class WordListViewPagerActivity extends AppCompatActivity {
+public class WordListViewPagerActivity extends VerbisActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -98,6 +96,22 @@ public class WordListViewPagerActivity extends AppCompatActivity {
         mViewPager.setAdapter(mWordListViewPagerAdapter);
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
+        pageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         mViewPager.setPageMargin(56);
 
         newWordlistTitle.addTextChangedListener(new TextWatcher() {
@@ -159,23 +173,12 @@ public class WordListViewPagerActivity extends AppCompatActivity {
                 showAddWordlistLayout(true);
                 break;
             case FabStatus.ACCEPT:
-                fab.setEnabled(false);
                 newWordlistTitle.setEnabled(false);
-                wordListManager.createWordList(newWordlistTitle.getText().toString(), new WordListListener() {
-                    @Override
-                    public void onSuccess(String firebaseReferenceString) {
-                        //Because Next state should be ADD
-                        handleFabStatus(FabStatus.ADD);
-                        showAddWordlistLayout(false);
-                        fab.setEnabled(true);
-                        newWordlistTitle.setText(null);
-                    }
-
-                    @Override
-                    public void onFailure(FirebaseError firebaseError) {
-                        fab.setEnabled(true);
-                    }
-                });
+                handleFabStatus(FabStatus.ADD);
+                showAddWordlistLayout(false);
+                fab.setEnabled(true);
+                newWordlistTitle.setText(null);
+                wordListManager.createWordList(newWordlistTitle.getText().toString(),null);
                 break;
             //Currently not in use.
             case FabStatus.CANCEL:

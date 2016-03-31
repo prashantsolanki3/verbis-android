@@ -3,7 +3,6 @@ package com.blackshift.verbis.ui.activity;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
@@ -14,7 +13,7 @@ import com.blackshift.verbis.utils.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.firebase.client.FirebaseError;
 
-public class WordListRecyclerViewActivity extends AppCompatActivity {
+public class WordListRecyclerViewActivity extends VerbisActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
