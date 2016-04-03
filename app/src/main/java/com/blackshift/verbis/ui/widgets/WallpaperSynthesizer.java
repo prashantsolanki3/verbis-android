@@ -14,9 +14,6 @@ import android.widget.TextView;
 import com.blackshift.verbis.R;
 import com.prashantsolanki.synthesize.lib.Synthesize;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 /**
  * Package com.blackshift.verbis.ui.widgets
  * <p>
@@ -28,15 +25,10 @@ import butterknife.ButterKnife;
 public class WallpaperSynthesizer extends Synthesize{
 
     View view;
-    @Bind(R.id.wallpaper_background)
     ImageView background;
-    @Bind(R.id.wallpaper_text_overlay)
     RelativeLayout textOverlay;
-    @Bind(R.id.wallpaper_part_of_speech)
     TextView partOfSpeech;
-    @Bind(R.id.wallpaper_word)
     TextView word;
-    @Bind(R.id.wallpaper_meaning)
     TextView meaning;
 
 
@@ -48,7 +40,12 @@ public class WallpaperSynthesizer extends Synthesize{
     public void setLayout(int layoutRes) {
         super.setLayout(layoutRes);
         view = getLayout();
-        ButterKnife.bind(this, view);
+
+        background = (ImageView) view.findViewById(R.id.wallpaper_background);
+        textOverlay = (RelativeLayout) view.findViewById(R.id.wallpaper_text_overlay);
+        partOfSpeech = (TextView) view.findViewById(R.id.wallpaper_part_of_speech);
+        word = (TextView) view.findViewById(R.id.wallpaper_word);
+        meaning =(TextView) view.findViewById(R.id.wallpaper_meaning);
     }
 
     public void setWallpaperBackground(Drawable drawable){

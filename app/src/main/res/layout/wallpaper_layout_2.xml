@@ -26,6 +26,7 @@
             android:id="@+id/wallpaper_word"
             android:text="Word"
             android:textStyle="bold"
+            android:textSize="46sp"
             android:textColor="@android:color/white"
             android:textAppearance="@android:style/TextAppearance.Large.Inverse"
             android:layout_width="wrap_content"
@@ -33,10 +34,9 @@
 
         <TextView
             android:text="(n.)"
-            android:paddingLeft="4dp"
-            android:paddingEnd="4dp"
-            android:paddingRight="4dp"
-            android:paddingStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="6dp"
             android:textColor="@android:color/white"
             android:textAppearance="@android:style/TextAppearance.Small.Inverse"
             android:id="@+id/wallpaper_part_of_speech"
@@ -45,10 +45,17 @@
             android:layout_alignBottom="@id/wallpaper_word"
             android:layout_toEndOf="@id/wallpaper_word"
             android:layout_toRightOf="@id/wallpaper_word"/>
-
-        <TextView
+        <View
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:id="@+id/divider"
             android:layout_below="@id/wallpaper_word"
-            android:text="This is the meaning. This is the meaning. This is the meaning. This is the meaning."
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <TextView
+            android:layout_below="@id/divider"
+            android:text="This is the meaning. This is the meaning. This is the meaning. This is the meaning. This is the meaning. This is the meaning.\n"
             android:textAppearance="@android:style/TextAppearance.Medium.Inverse"
             android:id="@+id/wallpaper_meaning"
             android:textColor="@android:color/white"
