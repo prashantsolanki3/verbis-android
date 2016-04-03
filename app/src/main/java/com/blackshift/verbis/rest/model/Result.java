@@ -23,7 +23,7 @@ public class Result {
     @SerializedName("url")
     private String url;
     @SerializedName("pronunciations")
-    private List<Pronunciation> pronunciations = new ArrayList<Pronunciation>();
+    private List<Pronunciation> pronunciations = new ArrayList<>();
 
     /**
      * No args constructor for use in serialization

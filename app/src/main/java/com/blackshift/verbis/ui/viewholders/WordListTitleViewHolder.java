@@ -7,8 +7,6 @@ import android.widget.TextView;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.AbstractSnapSelectableAdapter;
 import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapSelectableViewHolder;
 
@@ -22,25 +20,19 @@ import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapSelecta
  */
 public class WordListTitleViewHolder extends SnapSelectableViewHolder<WordList> {
 
-    @Bind(R.id.wordlist_title)
-    TextView title;
-    /*@Bind(R.id.wordlist_item_count)
-    TextView count;*/
-
-/*    public WordListTitleViewHolder(View itemView, Context context) {
-        super(itemView, context);
-        ButterKnife.bind(this,itemView);
-    }*/
+    final TextView title;
+    final TextView count;
 
     public WordListTitleViewHolder(View itemView, Context context, AbstractSnapSelectableAdapter adapter) {
         super(itemView, context, adapter);
-        ButterKnife.bind(this, itemView);
+        title = (TextView) itemView.findViewById(R.id.wordlist_title);
+        count = (TextView) itemView.findViewById(R.id.wordlist_item_count);
     }
 
     @Override
     public void populateViewHolder(WordList wordList, int i) {
         title.setText(wordList.getTitle());
-       // count.setText(wordList.getId());
+        count.setText(wordList.getId());
     }
 
     //TODO: Complete this

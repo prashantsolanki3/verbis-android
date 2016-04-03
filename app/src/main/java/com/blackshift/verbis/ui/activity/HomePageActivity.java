@@ -282,6 +282,8 @@ public class HomePageActivity extends VerbisActivity
             else
                 this.finish();
 
+        }else if(id == R.id.nav_wordy_activity){
+            startActivity(new Intent(this,WordyActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
