@@ -1,6 +1,7 @@
 package com.blackshift.verbis.ui.activity;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +32,7 @@ import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
+import com.blackshift.verbis.ui.fragments.BottomSheetFragment;
 import com.bumptech.glide.Glide;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
@@ -46,8 +49,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.prashantsolanki3.utiloid.Utiloid;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import jp.wasabeef.glide.transformations.CropTransformation;
 
 import static com.blackshift.verbis.App.getApp;
+import static com.blackshift.verbis.App.getContext;
 
 public class HomePageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,6 +73,8 @@ public class HomePageActivity extends AppCompatActivity
     NavigationView navigationView;
     View header;
     ImageView imgview;
+    TextView nameTextView;
+    TextView emailTextView;
 
 
 
@@ -88,11 +96,12 @@ public class HomePageActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 drawer.closeDrawer(GravityCompat.START);
-                mBottomSheetBehavior.setPeekHeight((int) Utiloid.CONVERSION_UTILS.dpiToPixels(300.0f));
-                if((mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_COLLAPSED)||mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_EXPANDED)
+                new BottomSheetFragment().show(getSupportFragmentManager(),HomePageActivity.class.getSimpleName());
+                /*mBottomSheetBehavior.setPeekHeight((int) Utiloid.CONVERSION_UTILS.dpiToPixels(300.0f));
+                if ((mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
                     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                else if (mBottomSheetBehavior.getState()==BottomSheetBehavior.STATE_HIDDEN)
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN)
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);*/
             }
         });
         mangeBaseViewPager();
@@ -131,10 +140,24 @@ public class HomePageActivity extends AppCompatActivity
             public void onAuthStateChanged(AuthData authData) {
                 if (authData != null) {
                     String imgurl = (String) authData.getProviderData().get("profileImageURL");
-                    Glide.with(getApplicationContext()).load(imgurl).into(imgview);
+                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
+                    String provider = authData.getProvider();
+                    if(provider.equals("google"))  {
+                        String name = (String) authData.getProviderData().get("displayName");
+                        Log.d("Name:",name);
+                        nameTextView.setText(name);
+                        String email = (String) authData.getProviderData().get("email");
+                        emailTextView.setText(email);
+                    }
+                    else if(authData.getProvider() == "password"){
+
+                    }
+                    //set textview values after updating firebase rules
                 }
             }
         });
+
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -236,6 +259,8 @@ public class HomePageActivity extends AppCompatActivity
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetView);
         header = navigationView.getHeaderView(0);
         imgview = (ImageView) header.findViewById(R.id.imageView);
+        nameTextView = (TextView) header.findViewById(R.id.nameTextView);
+        emailTextView = (TextView) header.findViewById(R.id.emailTextView);
         //Set the pager with an adapter
         pager = (ViewPager)findViewById(R.id.words_of_week_pager);
 
