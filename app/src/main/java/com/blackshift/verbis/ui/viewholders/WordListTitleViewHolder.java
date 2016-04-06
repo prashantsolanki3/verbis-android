@@ -23,6 +23,12 @@ public class WordListTitleViewHolder extends SnapSelectableViewHolder<WordList> 
     final TextView title;
     final TextView count;
 
+    public WordListTitleViewHolder(View itemView, Context context) {
+        super(itemView, context);
+        title = (TextView) itemView.findViewById(R.id.wordlist_title);
+        count = (TextView) itemView.findViewById(R.id.wordlist_item_count);
+    }
+
     public WordListTitleViewHolder(View itemView, Context context, AbstractSnapSelectableAdapter adapter) {
         super(itemView, context, adapter);
         title = (TextView) itemView.findViewById(R.id.wordlist_title);
