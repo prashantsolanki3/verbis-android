@@ -9,65 +9,90 @@
     tools:context="com.blackshift.verbis.ui.activity.WordyActivity"
     tools:showIn="@layout/activity_wordy">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_margin="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end|right"
-        android:src="@drawable/ic_eye"/>
 
-    <com.bowyer.app.fabtoolbar.FabToolbar
+    <com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout
         android:id="@+id/fabtoolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:tb_container_gravity="center"
-        app:tb_anim_duration="400"
-        app:tb_fab_type="normal">
+        android:layout_height="match_parent"
+        app:fabId="@+id/fabtoolbar_fab"
+        app:containerId="@+id/fabtoolbar_container"
+        app:fabToolbarId="@+id/fabtoolbar_toolbar">
 
         <!--TODO: Reveal Effect-->
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/fabtoolbar_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabtoolbar_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_eye"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/fabtoolbar_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingTop="4dp"
+            android:layout_alignParentBottom="true"
             android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_centerHorizontal="true"
-                    android:scaleType="center"
-                    android:padding="16dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_check_white_36dp"/>
+            <ImageView
+                android:id="@+id/fabtoolbar_toolbar_ic_source"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="center"
+                android:padding="16dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_check_white_36dp"/>
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_centerHorizontal="true"
-                    android:scaleType="center"
-                    android:padding="16dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_check_white_36dp"/>
+            <ImageView
+                 android:id="@+id/fabtoolbar_toolbar_ic_background"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
+                 android:layout_centerHorizontal="true"
+                 android:scaleType="center"
+                 android:padding="16dp"
+                 android:layout_weight="1"
+                 android:src="@drawable/ic_check_white_36dp"/>
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_centerHorizontal="true"
-                    android:scaleType="center"
-                    android:padding="16dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_check_white_36dp"/>
+           <ImageView
+                android:id="@+id/fabtoolbar_toolbar_ic_word"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="center"
+                android:padding="16dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_check_white_36dp"/>
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_centerHorizontal="true"
-                    android:scaleType="center"
-                    android:padding="16dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_check_white_36dp"/>
+            <ImageView
+                android:id="@+id/fabtoolbar_toolbar_ic_meaning"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="center"
+                android:padding="16dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_check_white_36dp"/>
+
+             <ImageView
+                 android:id="@+id/fabtoolbar_toolbar_ic_part_of_speech"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
+                 android:layout_centerHorizontal="true"
+                 android:scaleType="center"
+                 android:padding="16dp"
+                 android:layout_weight="1"
+                 android:src="@drawable/ic_check_white_36dp"/>
+
             </LinearLayout>
-    </com.bowyer.app.fabtoolbar.FabToolbar>
 
+</com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout>
 </android.support.design.widget.CoordinatorLayout>

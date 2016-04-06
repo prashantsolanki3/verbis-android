@@ -3,7 +3,6 @@ package com.blackshift.verbis.ui.fragments;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -22,13 +21,13 @@ import android.widget.TextView;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.utils.PreferenceKeys;
-import com.bowyer.app.fabtoolbar.FabToolbar;
+import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.prashantsolanki.secureprefmanager.SecurePrefManager;
 
-import awe.devikamehra.shademelange.Enum.SelectionModeEnum;
-import awe.devikamehra.shademelange.Enum.ShadeTypeEnum;
-import awe.devikamehra.shademelange.Interface.OnDialogButtonClickListener;
-import awe.devikamehra.shademelange.ShadeMelangeDialog;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -60,12 +59,20 @@ public class WallpaperFragment extends Fragment {
     RelativeLayout textOverlay;
     @Bind(R.id.wallpaper_image_layout)
     FrameLayout wallpaper;
-
-    FabToolbar bottomBar;
-    View view;
-    View wallpaperLayout;
+    @Bind(R.id.fabtoolbar)
+    FABToolbarLayout bottomBar;
+    @Bind(R.id.fabtoolbar_fab)
     FloatingActionButton fab;
 
+    View view;
+    View wallpaperLayout;
+    @Bind({R.id.fabtoolbar_toolbar_ic_source,
+            R.id.fabtoolbar_toolbar_ic_background,
+            R.id.fabtoolbar_toolbar_ic_word,
+            R.id.fabtoolbar_toolbar_ic_meaning,
+            R.id.fabtoolbar_toolbar_ic_part_of_speech})
+    List<ImageView> bottomIcons;
+    final int SOURCE=0,BACKGROUND=1,WORD=2,MEANING=3,PART_OF_SPEECH=4;
     private OnFragmentInteractionListener mListener;
 
     public WallpaperFragment() {
@@ -94,22 +101,30 @@ public class WallpaperFragment extends Fragment {
         view = inflater.inflate(R.layout.content_wordy,container,false);
         wallpaperLayout = inflater.inflate(layoutId,(ViewGroup)view, true);
         ButterKnife.bind(this, wallpaperLayout);
-        bottomBar = (FabToolbar) wallpaperLayout.findViewById(R.id.fabtoolbar);
+        wallpaperLayout.findViewById(R.id.fabtoolbar_container).bringToFront();
+        wallpaperLayout.findViewById(R.id.fabtoolbar_toolbar).bringToFront();
         bottomBar.bringToFront();
-        wallpaperLayout.findViewById(R.id.fab).bringToFront();
-
-        fab = (FloatingActionButton) wallpaperLayout.findViewById(R.id.fab);
-        bottomBar.setFab(fab);
-
+        fab.bringToFront();
         setTextOverlayTopMargin(SecurePrefManager.with(getActivity())
                 .get(PreferenceKeys.WALLPAPER_TEXT_OVERLAY_TOP_MARGIN + layoutId)
                 .defaultValue(16)
                 .go());
-
+        setIcons();
         setWallpaperHeight();
         setupDrag();
         setListeners();
         return view;
+    }
+
+    void setIcons(){
+        fab.setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_mode_edit)
+                .colorRes(android.R.color.white).actionBarSize());
+        bottomIcons.get(BACKGROUND).setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_wallpaper)
+                .colorRes(android.R.color.white).actionBarSize());
+        bottomIcons.get(WORD).setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_flip_to_back)
+                .colorRes(android.R.color.white).actionBarSize());
+        bottomIcons.get(MEANING).setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_flip_to_back)
+                .colorRes(android.R.color.white).actionBarSize());
     }
 
     void setTextOverlayTopMargin(int topMargin){
@@ -186,17 +201,17 @@ public class WallpaperFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bottomBar.isFabExpanded())
-                    bottomBar.contractFab();
+                if (bottomBar.isShown())
+                    bottomBar.hide();
                 else
-                    bottomBar.expandFab();
+                    bottomBar.show();
             }
         });
     }
 
     @OnClick(R.id.wallpaper_background)
     void setBackground(final View background){
-        new ShadeMelangeDialog(getContext()).setMelangeCancelable(true)
+        /*new ShadeMelangeDialog(getContext()).setMelangeCancelable(true)
                 .setShadeType(ShadeTypeEnum.MATERIAL_SHADES)
                 .setSelectionMode(SelectionModeEnum.SINGLE_SELECTION_MODE)
                 .setPositiveButton("Select", new OnDialogButtonClickListener() {
@@ -205,7 +220,8 @@ public class WallpaperFragment extends Fragment {
                         background.setBackgroundColor(shadeMelangeDialog.getSelectedShade().getShadeCode());
                         ((ImageView)background).setImageDrawable(new ColorDrawable(shadeMelangeDialog.getSelectedShade().getShadeCode()));
                     }
-                }).showMelange();
+                }).showMelange();*/
+        bottomBar.show();
     }
 
     @Override
