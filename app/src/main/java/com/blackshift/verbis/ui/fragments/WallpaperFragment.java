@@ -3,10 +3,10 @@ package com.blackshift.verbis.ui.fragments;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.DragEvent;
@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blackshift.verbis.R;
+import com.blackshift.verbis.rest.model.WallpaperConfig;
 import com.blackshift.verbis.utils.PreferenceKeys;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.joanzapata.iconify.IconDrawable;
@@ -28,6 +29,10 @@ import com.prashantsolanki.secureprefmanager.SecurePrefManager;
 
 import java.util.List;
 
+import awe.devikamehra.shademelange.Enum.SelectionModeEnum;
+import awe.devikamehra.shademelange.Enum.ShadeTypeEnum;
+import awe.devikamehra.shademelange.Interface.OnDialogButtonClickListener;
+import awe.devikamehra.shademelange.ShadeMelangeDialog;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -64,6 +69,8 @@ public class WallpaperFragment extends Fragment {
     @Bind(R.id.fabtoolbar_fab)
     FloatingActionButton fab;
 
+    WallpaperConfig config;
+
     View view;
     View wallpaperLayout;
     @Bind({R.id.fabtoolbar_toolbar_ic_source,
@@ -93,6 +100,7 @@ public class WallpaperFragment extends Fragment {
         if (getArguments() != null) {
             layoutId = getArguments().getInt(LAYOUT_ID);
         }
+        config = new WallpaperConfig();
     }
 
     @Override
@@ -107,23 +115,28 @@ public class WallpaperFragment extends Fragment {
         fab.bringToFront();
         setTextOverlayTopMargin(SecurePrefManager.with(getActivity())
                 .get(PreferenceKeys.WALLPAPER_TEXT_OVERLAY_TOP_MARGIN + layoutId)
-                .defaultValue(16)
+                .defaultValue(56)
                 .go());
+
         setIcons();
-        setWallpaperHeight();
         setupDrag();
         setListeners();
+
         return view;
     }
 
     void setIcons(){
-        fab.setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_mode_edit)
+        fab.setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_mode_edit)
                 .colorRes(android.R.color.white).actionBarSize());
-        bottomIcons.get(BACKGROUND).setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_wallpaper)
+        bottomIcons.get(BACKGROUND).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_wallpaper)
                 .colorRes(android.R.color.white).actionBarSize());
-        bottomIcons.get(WORD).setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_flip_to_back)
+        bottomIcons.get(WORD).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_subtitles)
                 .colorRes(android.R.color.white).actionBarSize());
-        bottomIcons.get(MEANING).setImageDrawable(new IconDrawable(getContext(),MaterialIcons.md_flip_to_back)
+        bottomIcons.get(MEANING).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_flip_to_back)
+                .colorRes(android.R.color.white).actionBarSize());
+        bottomIcons.get(SOURCE).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_input)
+                .colorRes(android.R.color.white).actionBarSize());
+        bottomIcons.get(PART_OF_SPEECH).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_flip_to_back)
                 .colorRes(android.R.color.white).actionBarSize());
     }
 
@@ -136,12 +149,6 @@ public class WallpaperFragment extends Fragment {
     int getTextOverlayTopMargin(){
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) textOverlay.getLayoutParams();
         return params.topMargin;
-    }
-
-    void setWallpaperHeight(){
-        //Since we only provide portrait wallpapers.
-        ViewGroup.LayoutParams layoutParams =new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        wallpaper.setLayoutParams(layoutParams);
     }
 
     void setupDrag() {
@@ -201,27 +208,57 @@ public class WallpaperFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bottomBar.isShown())
-                    bottomBar.hide();
-                else
+                if (bottomBar.isFab())
                     bottomBar.show();
+                else
+                    bottomBar.hide();
             }
         });
     }
 
     @OnClick(R.id.wallpaper_background)
-    void setBackground(final View background){
-        /*new ShadeMelangeDialog(getContext()).setMelangeCancelable(true)
-                .setShadeType(ShadeTypeEnum.MATERIAL_SHADES)
-                .setSelectionMode(SelectionModeEnum.SINGLE_SELECTION_MODE)
-                .setPositiveButton("Select", new OnDialogButtonClickListener() {
-                    @Override
-                    public void onButtonClicked(ShadeMelangeDialog shadeMelangeDialog) {
-                        background.setBackgroundColor(shadeMelangeDialog.getSelectedShade().getShadeCode());
-                        ((ImageView)background).setImageDrawable(new ColorDrawable(shadeMelangeDialog.getSelectedShade().getShadeCode()));
-                    }
-                }).showMelange();*/
-        bottomBar.show();
+    void onClickBackground(){
+        if(bottomBar.isFab())
+            bottomBar.show();
+        else
+            bottomBar.hide();
+    }
+
+
+    @OnClick({R.id.fabtoolbar_toolbar_ic_background,
+            R.id.fabtoolbar_toolbar_ic_word,
+            R.id.fabtoolbar_toolbar_ic_part_of_speech,
+            R.id.fabtoolbar_toolbar_ic_source,
+            R.id.fabtoolbar_toolbar_ic_meaning})
+    void onClickBottomBar(View view){
+        int id = view.getId();
+        bottomBar.hide();
+        switch (id){
+            case R.id.fabtoolbar_toolbar_ic_background:
+                new ShadeMelangeDialog(getContext()).setMelangeCancelable(true)
+                        .setShadeType(ShadeTypeEnum.MATERIAL_SHADES)
+                        .setSelectionMode(SelectionModeEnum.SINGLE_SELECTION_MODE)
+                        .setPositiveButton("Select", new OnDialogButtonClickListener() {
+                            @Override
+                            public void onButtonClicked(ShadeMelangeDialog shadeMelangeDialog) {
+                                setBackgroundColor(shadeMelangeDialog.getSelectedShade().getShadeCode());
+                            }
+                        }).showMelange();
+                break;
+            case R.id.fabtoolbar_toolbar_ic_word:
+                break;
+            case R.id.fabtoolbar_toolbar_ic_part_of_speech:
+                break;
+            case R.id.fabtoolbar_toolbar_ic_source:
+                break;
+            case R.id.fabtoolbar_toolbar_ic_meaning:
+                break;
+        }
+    }
+
+    public void setBackgroundColor(int color){
+        background.setBackgroundColor(color);
+        background.setImageDrawable(new ColorDrawable(color));
     }
 
     @Override
