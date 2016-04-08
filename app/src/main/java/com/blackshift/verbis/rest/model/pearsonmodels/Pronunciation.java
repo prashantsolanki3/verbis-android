@@ -1,17 +1,33 @@
 
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.pearsonmodels;
+
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.parceler.Parcel;
 
+import java.util.ArrayList;
+
+@Parcel
 public class Pronunciation {
 
     @SerializedName("audio")
-    private List<Audio> audio = new ArrayList<Audio>();
+    ArrayList<Audio> audio = new ArrayList<Audio>();
     @SerializedName("ipa")
-    private String ipa;
+    String ipa;
+    @Nullable
+    @SerializedName("lang")
+    String lang;
+
+    @Nullable
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(@Nullable String lang) {
+        this.lang = lang;
+    }
 
     /**
      * No args constructor for use in serialization
@@ -21,13 +37,19 @@ public class Pronunciation {
     }
 
     /**
-     * 
-     * @param ipa
+     *
      * @param audio
+     * @param ipa
      */
-    public Pronunciation(List<Audio> audio, String ipa) {
+    public Pronunciation(ArrayList<Audio> audio, String ipa) {
         this.audio = audio;
         this.ipa = ipa;
+    }
+
+    public Pronunciation(ArrayList<Audio> audio, String ipa, String lang) {
+        this.audio = audio;
+        this.ipa = ipa;
+        this.lang = lang;
     }
 
     /**
@@ -35,16 +57,16 @@ public class Pronunciation {
      * @return
      *     The audio
      */
-    public List<Audio> getAudio() {
+    public ArrayList<Audio> getAudio() {
         return audio;
     }
 
     /**
-     * 
+     *
      * @param audio
      *     The audio
      */
-    public void setAudio(List<Audio> audio) {
+    public void setAudio(ArrayList<Audio> audio) {
         this.audio = audio;
     }
 

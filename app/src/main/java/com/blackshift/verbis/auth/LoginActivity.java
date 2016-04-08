@@ -1,23 +1,15 @@
 package com.blackshift.verbis.auth;
 
-import android.accounts.Account;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import static com.blackshift.verbis.App.*;
-
-import android.provider.SyncStateContract;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -31,24 +23,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blackshift.verbis.App;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,7 +45,8 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.github.prashantsolanki3.utiloid.Utiloid;
+
+import static com.blackshift.verbis.App.getApp;
 
 public class LoginActivity extends AppCompatActivity implements OnConnectionFailedListener {
 
@@ -284,6 +274,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
             if (result.isSuccess()) {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String emailAddress = acct.getEmail();
+                Log.d("Login", emailAddress);
                 getGoogleOAuthToken(emailAddress);
             }
         }
@@ -343,7 +334,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                Snackbar.make(findViewById(R.id.signingrp), "Some Error occured", Snackbar.LENGTH_LONG)
+                Snackbar.make(findViewById(R.id.signingrp), "Some Error Occurred", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();   // there was an error
             }
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="grey">#C2BFBF</color>
+
+    <style name="ExampleText" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">#aca5a5</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+</resources>

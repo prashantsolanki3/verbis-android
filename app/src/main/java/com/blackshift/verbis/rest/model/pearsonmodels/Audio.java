@@ -1,8 +1,11 @@
 
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
+@Parcel
 public class Audio {
 
     @SerializedName("lang")

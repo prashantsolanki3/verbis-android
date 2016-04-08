@@ -106,5 +106,4 @@ public class WordListActivityFragment extends Fragment {
             }
         });
     }
-
 }

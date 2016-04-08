@@ -38,7 +38,7 @@ public class App extends Application {
 
     final static public String FIREBASE_BASE_URL="https://verbis.firebaseio.com";
     final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries/";
-
+    final static public String WORDS_API_ENDPOINT = "https://wordsapiv1.p.mashape.com/words/";
 
     static DictionaryService dictionaryService = null;
     static App app;
@@ -75,7 +75,7 @@ public class App extends Application {
         }
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(DICTIONARY_API_ENDPOINT)
+                .baseUrl(WORDS_API_ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(new OkHttpClient())
                 .build();

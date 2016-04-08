@@ -1,17 +1,20 @@
 
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
+
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Parcel
 public class Sense {
 
     @SerializedName("definition")
-    private List<String> definition = new ArrayList<String>();
+    ArrayList<String> definition = new ArrayList<String>();
     @SerializedName("variants")
-    private List<Variant> variants = new ArrayList<Variant>();
+    ArrayList<Variant> variants = new ArrayList<Variant>();
 
     /**
      * No args constructor for use in serialization
@@ -21,11 +24,9 @@ public class Sense {
     }
 
     /**
-     * 
-     * @param definition
-     * @param variants
-     */
-    public Sense(List<String> definition, List<Variant> variants) {
+     *  @param definition
+     * @param variants*/
+    public Sense(ArrayList<String> definition, ArrayList<Variant> variants) {
         this.definition = definition;
         this.variants = variants;
     }
@@ -40,11 +41,11 @@ public class Sense {
     }
 
     /**
-     * 
+     *
      * @param definition
      *     The definition
      */
-    public void setDefinition(List<String> definition) {
+    public void setDefinition(ArrayList<String> definition) {
         this.definition = definition;
     }
 
@@ -53,16 +54,16 @@ public class Sense {
      * @return
      *     The variants
      */
-    public List<Variant> getVariants() {
+    public ArrayList<Variant> getVariants() {
         return variants;
     }
 
     /**
-     * 
+     *
      * @param variants
      *     The variants
      */
-    public void setVariants(List<Variant> variants) {
+    public void setVariants(ArrayList<Variant> variants) {
         this.variants = variants;
     }
 

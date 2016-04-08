@@ -6,10 +6,20 @@ import android.support.annotation.Nullable;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.RecentWord;
+import com.blackshift.verbis.utils.DateUtils;
 import com.blackshift.verbis.utils.FirebaseKeys;
+import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.listeners.RecentWordListener;
+import com.blackshift.verbis.utils.listeners.WordListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Devika on 20-03-2016.
@@ -31,7 +41,9 @@ public class RecentWordsManager {
         //Go to RecentWords then push to create a new word
         Firebase firebase = getBaseFirebaseRef().push();
 
-        final RecentWord recentWord = new RecentWord(firebase.getKey(), word);
+        final RecentWord recentWord = new RecentWord(firebase.getKey(), word,
+                new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime(),
+                new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime());
 
         firebase.setValue(recentWord, new Firebase.CompletionListener() {
             @Override
@@ -40,6 +52,55 @@ public class RecentWordsManager {
             }
         });
 
+    }
+
+    public void getRecentWords(final RecentWordListListener listener){
+        Firebase firebase = getBaseFirebaseRef();
+        Query base = firebase.orderByChild("modifiedAt");
+
+        base.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<RecentWord> recentWords = new ArrayList<>();
+                try {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        RecentWord recentWord = snapshot.getValue(RecentWord.class);
+                        recentWords.add(recentWord);
+                    }
+                    listener.onSuccess(recentWords);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    listener.onFailure(FirebaseError.fromException(e));
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                listener.onFailure(firebaseError);
+            }
+        });
+    }
+
+    public void deleteAllWords(final WordListener listener){
+        Firebase firebase = getBaseFirebaseRef();
+        firebase.removeValue(new Firebase.CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                handleDeleteListener(firebaseError, firebase.getPath().toString(), listener);
+            }
+        });
+    }
+
+    private void handleDeleteListener(FirebaseError firebaseError, String string, WordListener listener) {
+        if(firebaseError!=null){
+            //Some Error has occurred.
+            if (listener!=null)
+                listener.onFailure(firebaseError);
+        }else{
+            //List saved successfully.
+            if(listener!=null)
+                listener.onSuccess(string);
+        }
     }
 
     private void handleListener(FirebaseError firebaseError,@Nullable RecentWord word, RecentWordListener listener){

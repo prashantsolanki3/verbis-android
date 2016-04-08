@@ -4,7 +4,8 @@
     tools:context="com.blackshift.verbis.auth.LoginActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_menu_share"
+        app:showAsAction="always" />
 </menu>

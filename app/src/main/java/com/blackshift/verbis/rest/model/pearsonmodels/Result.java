@@ -1,29 +1,31 @@
 
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.parceler.Parcel;
 
+import java.util.ArrayList;
+
+@Parcel
 public class Result {
 
     @SerializedName("datasets")
-    private List<String> datasets = new ArrayList<String>();
+    ArrayList<String> datasets = new ArrayList<String>();
     @SerializedName("headword")
-    private String headword;
+    String headword;
     @SerializedName("homnum")
-    private long homnum;
+    long homnum;
     @SerializedName("id")
-    private String id;
+    String id;
     @SerializedName("part_of_speech")
-    private String partOfSpeech;
+    String partOfSpeech;
     @SerializedName("senses")
-    private List<Sense> senses = new ArrayList<Sense>();
+    ArrayList<Sense> senses = new ArrayList<Sense>();
     @SerializedName("url")
-    private String url;
+    String url;
     @SerializedName("pronunciations")
-    private List<Pronunciation> pronunciations = new ArrayList<Pronunciation>();
+    ArrayList<Pronunciation> pronunciations = new ArrayList<Pronunciation>();
 
     /**
      * No args constructor for use in serialization
@@ -43,7 +45,7 @@ public class Result {
      * @param partOfSpeech
      * @param homnum
      */
-    public Result(List<String> datasets, String headword, long homnum, String id, String partOfSpeech, List<Sense> senses, String url, List<Pronunciation> pronunciations) {
+    public Result(ArrayList<String> datasets, String headword, long homnum, String id, String partOfSpeech, ArrayList<Sense> senses, String url, ArrayList<Pronunciation> pronunciations) {
         this.datasets = datasets;
         this.headword = headword;
         this.homnum = homnum;
@@ -59,7 +61,7 @@ public class Result {
      * @return
      *     The datasets
      */
-    public List<String> getDatasets() {
+    public ArrayList<String> getDatasets() {
         return datasets;
     }
 
@@ -68,7 +70,7 @@ public class Result {
      * @param datasets
      *     The datasets
      */
-    public void setDatasets(List<String> datasets) {
+    public void setDatasets(ArrayList<String> datasets) {
         this.datasets = datasets;
     }
 
@@ -149,7 +151,7 @@ public class Result {
      * @return
      *     The senses
      */
-    public List<Sense> getSenses() {
+    public ArrayList<Sense> getSenses() {
         return senses;
     }
 
@@ -158,7 +160,7 @@ public class Result {
      * @param senses
      *     The senses
      */
-    public void setSenses(List<Sense> senses) {
+    public void setSenses(ArrayList<Sense> senses) {
         this.senses = senses;
     }
 
@@ -185,7 +187,7 @@ public class Result {
      * @return
      *     The pronunciations
      */
-    public List<Pronunciation> getPronunciations() {
+    public ArrayList<Pronunciation> getPronunciations() {
         return pronunciations;
     }
 
@@ -194,7 +196,7 @@ public class Result {
      * @param pronunciations
      *     The pronunciations
      */
-    public void setPronunciations(List<Pronunciation> pronunciations) {
+    public void setPronunciations(ArrayList<Pronunciation> pronunciations) {
         this.pronunciations = pronunciations;
     }
 

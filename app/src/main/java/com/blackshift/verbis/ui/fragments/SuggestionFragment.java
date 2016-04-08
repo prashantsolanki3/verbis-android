@@ -3,11 +3,21 @@ package com.blackshift.verbis.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.blackshift.verbis.R;
+import com.blackshift.verbis.ui.viewholders.SuggestedWordsViewHolder;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter;
+import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapViewHolder;
+import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
+import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapOnItemClickListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,6 +25,11 @@ import com.blackshift.verbis.R;
  * create an instance of this fragment.
  */
 public class SuggestionFragment extends Fragment {
+
+    @Bind(R.id.wordlist_title_recycler)
+    RecyclerView recyclerView;
+    SnapAdapter<String> wordAdapter;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -60,7 +75,31 @@ public class SuggestionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_suggestion, container, false);
+        View view = inflater.inflate(R.layout.fragment_word_list, container, false);
+        ButterKnife.bind(this, view);
+        populateRecycler(view);
+        return view;
+    }
+    void populateRecycler(View view){
+        recyclerView.setHasFixedSize(true);
+        final SnapLayoutWrapper snapLayoutWrapper = new SnapLayoutWrapper(String.class, SuggestedWordsViewHolder.class, R.layout.suggested_words, 1);
+        wordAdapter = new SnapAdapter<>(getContext(),snapLayoutWrapper, recyclerView, (ViewGroup) view.findViewById(R.id.recyclerView_alternate));
+
+        wordAdapter.setOnItemClickListener(new SnapOnItemClickListener() {
+            @Override
+            public void onItemClick(SnapViewHolder snapViewHolder, View view, int i) {
+
+            }
+
+            @Override
+            public void onItemLongPress(SnapViewHolder snapViewHolder, View view, int i) {
+
+            }
+        });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(wordAdapter);
+
     }
 
 }

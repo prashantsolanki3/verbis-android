@@ -1,10 +1,11 @@
 package com.blackshift.verbis.rest.service;
 
-import com.blackshift.verbis.rest.model.DictionaryResults;
+import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult;
 
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
+import retrofit.http.Path;
 
 /**
  * Package com.blackshift.verbis.rest.service
@@ -15,8 +16,12 @@ import retrofit.http.Header;
  * Github: @prashantsolanki3
  */
 public interface DictionaryService {
-
+    /*
     @GET("ldoce5/entries")
-    Call<DictionaryResults> getWordDetail(@Header("headword") String string);
+    Call<PearsonResults> getWordDetail(@Header("headword") String string);
+    */
+
+    @GET("{word}")
+    Call<WordsApiResult> getWordDetail(@Header("X-Mashape-Key")String key, @Path("word") String string);
 
 }

@@ -1,46 +1,46 @@
 
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.parceler.Parcel;
 
-public class DictionaryResults {
+import java.util.ArrayList;
+@Parcel
+public class PearsonResults {
 
     @SerializedName("status")
-    private long status;
+    long status;
     @SerializedName("offset")
-    private long offset;
+    long offset;
     @SerializedName("limit")
-    private long limit;
+    long limit;
     @SerializedName("count")
-    private long count;
+    long count;
     @SerializedName("total")
-    private long total;
+    long total;
     @SerializedName("url")
-    private String url;
+    String url;
     @SerializedName("results")
-    private List<Result> results = new ArrayList<Result>();
+    ArrayList<Result> results = new ArrayList<Result>();
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public DictionaryResults() {
+    public PearsonResults() {
     }
 
     /**
-     * 
-     * @param total
-     * @param limit
-     * @param results
-     * @param count
-     * @param status
+     *  @param status
      * @param offset
+     * @param limit
+     * @param count
+     * @param total
      * @param url
+     * @param results
      */
-    public DictionaryResults(long status, long offset, long limit, long count, long total, String url, List<Result> results) {
+    public PearsonResults(long status, long offset, long limit, long count, long total, String url, ArrayList<Result> results) {
         this.status = status;
         this.offset = offset;
         this.limit = limit;
@@ -163,16 +163,16 @@ public class DictionaryResults {
      * @return
      *     The results
      */
-    public List<Result> getResults() {
+    public ArrayList<Result> getResults() {
         return results;
     }
 
     /**
-     * 
+     *
      * @param results
      *     The results
      */
-    public void setResults(List<Result> results) {
+    public void setResults(ArrayList<Result> results) {
         this.results = results;
     }
 

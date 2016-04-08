@@ -57,7 +57,7 @@ public class WordListManager {
         //Go to Wordlist then go to user and then push to create a new object
         Firebase firebase = getListFirebaseRef().push();
 
-        final WordList wordList = new WordList(firebase.getKey(),title);
+        final WordList wordList = new WordList(firebase.getKey(), title);
         long timeCreated = new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime();
         wordList.setCreatedAt(timeCreated);
         wordList.setModifiedAt(timeCreated);

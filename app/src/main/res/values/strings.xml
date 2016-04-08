@@ -21,4 +21,11 @@
     <string name="title_activity_dictionary">Dictionary</string>
     <string name="title_activity_word_list_view_pager">Your WordLists</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- Words Api key -->
+    <string name="words_api_key" translatable="false">78Pf7h8ETzmshnDZfYE8TKguXcggp15HC36jsnvctF2ifJzN0V</string>
+    <string name="title_activity_hello">HelloActivity</string>
+    <string name="error_type_0">Oops!! \n Internet not found. \n Please check your internet connection or try again.</string>
+    <string name="error_message_1">Sorry \n Failed to find the word you were searching for.</string>
+
 </resources>

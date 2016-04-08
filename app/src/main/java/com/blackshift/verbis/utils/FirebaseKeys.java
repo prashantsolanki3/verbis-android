@@ -15,5 +15,6 @@ public interface FirebaseKeys {
     String WORD_LIST_CONTENT = "content";
     String WORD_LIST_LIKES = "likes";
     String RECENT_WORDS = "recentwords";
+    String DICTIONARY = "dictionary";
 
 }

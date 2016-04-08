@@ -7,7 +7,6 @@ import android.speech.RecognizerIntent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -30,7 +29,9 @@ import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
+import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.listeners.RecentWordListener;
+import com.blackshift.verbis.utils.listeners.WordListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.bumptech.glide.Glide;
 import com.firebase.client.AuthData;
@@ -69,6 +70,8 @@ public class HomePageActivity extends AppCompatActivity
     View header;
     ImageView imgview;
     NavigationView navigationView;
+    RecentWordsManager recentWordsManager;
+    ArrayList<RecentWord> recentWords = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +80,38 @@ public class HomePageActivity extends AppCompatActivity
 
         init();
         manageToolbar();
-        manageSearchView();
         manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
         ButterKnife.bind(this);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View header =navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
         imgview = (ImageView) header.findViewById(R.id.imageView);
         mangeBaseViewPager();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        populateRecentWords();
+    }
+
+    private void populateRecentWords() {
+
+        recentWordsManager = new RecentWordsManager(App.getContext());
+        recentWordsManager.getRecentWords(new RecentWordListListener() {
+            @Override
+            public void onSuccess(List<RecentWord> words) {
+                recentWords.addAll(words);
+                manageSearchView();
+            }
+
+            @Override
+            public void onFailure(FirebaseError firebaseError) {
+                Log.d("error", firebaseError.toString());
+            }
+        });
 
     }
 
@@ -131,8 +157,19 @@ public class HomePageActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                recentWordsManager.deleteAllWords(new WordListener() {
+                    @Override
+                    public void onSuccess(String firebaseReferenceString) {
+                        Log.d("success", firebaseReferenceString);
+                        mHistoryDatabase.clearDatabase();
+                        recentWords = new ArrayList<>();
+                    }
+
+                    @Override
+                    public void onFailure(FirebaseError firebaseError) {
+                        Log.d("success", firebaseError.toString());
+                    }
+                });
             }
         });
     }
@@ -165,18 +202,7 @@ public class HomePageActivity extends AppCompatActivity
                 mHistoryDatabase.addItem(new SearchItem(query));
                 Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
                 searchView.clearFocus();
-                RecentWordsManager recentWordsManager = new RecentWordsManager(App.getContext());
-                recentWordsManager.addRecentWord(query, new RecentWordListener() {
-                    @Override
-                    public void onSuccess(RecentWord word) {
-                        Log.d("Firebase_Recent_Words", "added");
-                    }
-
-                    @Override
-                    public void onFailure(FirebaseError firebaseError) {
-                        Log.d("Firebase_Recent_Words", "not added \n" + firebaseError.getMessage());
-                    }
-                });
+                saveRecentWord(query);
                 openDictionaryActivity(query);
                 return true;
             }
@@ -221,6 +247,24 @@ public class HomePageActivity extends AppCompatActivity
         searchView.setAdapter(mSearchAdapter);
     }
 
+    private void saveRecentWord(String query) {
+
+        if (!recentWords.contains(query)) {
+
+            recentWordsManager.addRecentWord(query, new RecentWordListener() {
+                @Override
+                public void onSuccess(RecentWord word) {
+                    Log.d("Firebase_Recent_Words", "added");
+                }
+
+                @Override
+                public void onFailure(FirebaseError firebaseError) {
+                    Log.d("Firebase_Recent_Words", "not added \n" + firebaseError.getMessage());
+                }
+            });
+        }
+    }
+
     private void openDictionaryActivity(String text) {
         Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
         intent.setAction(Intent.ACTION_SEARCH);
@@ -230,7 +274,12 @@ public class HomePageActivity extends AppCompatActivity
 
     private void showSearchView() {
         mSuggestionsList.clear();
+        for (RecentWord recentWord : recentWords) {
+            Log.d("word", recentWord.getWord());
+            mHistoryDatabase.addItem(new SearchItem(recentWord.getWord()));
+        }
         mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
+
     }
 
     private void init() {
@@ -333,6 +382,7 @@ public class HomePageActivity extends AppCompatActivity
                 String searchWrd = results.get(0);
                 if (!TextUtils.isEmpty(searchWrd)) {
                     searchView.setQuery(searchWrd);
+                    saveRecentWord(searchWrd);
                 }
             }
         }
