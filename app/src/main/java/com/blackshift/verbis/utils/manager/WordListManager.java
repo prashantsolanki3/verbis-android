@@ -201,11 +201,11 @@ public class WordListManager {
         addWord(word.getHeadword(), word.getUrl(), wordListId, listener);
     }
 
-    public void addWord(String headWord,String url,String wordListId, final WordListener listener){
+    public void addWord(String headWord, String url, String wordListId, final WordListener listener){
         Firebase firebase = getContentFirebaseRef();
         try{
             String id = urlToWordId(url);
-            final Word word = new Word(id,headWord,url);
+            final Word word = new Word(id, headWord, url);
             word.setAddedOn(DateUtils.getTimestampUTC());
 
             firebase.child(wordListId).child(id).setValue(word, new Firebase.CompletionListener() {
@@ -364,7 +364,7 @@ public class WordListManager {
     public String urlToWordId(String url){
         try {
             String wordId = encryptor.encrypt(url);
-            wordId = wordId.replace("/","#_");
+            wordId = wordId.replace("/","__");
             return wordId;
         } catch (Exception e) {
             e.printStackTrace();
@@ -375,7 +375,7 @@ public class WordListManager {
     public String wordIdToUrl(String wordId){
         try {
             String url = encryptor.decrypt(wordId);
-            url = url.replace("#_","/");
+            url = url.replace("__","/");
             return url;
         } catch (Exception e) {
             e.printStackTrace();

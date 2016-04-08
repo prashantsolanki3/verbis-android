@@ -31,7 +31,6 @@ import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.listeners.RecentWordListener;
-import com.blackshift.verbis.utils.listeners.WordListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.bumptech.glide.Glide;
 import com.firebase.client.AuthData;
@@ -157,6 +156,7 @@ public class HomePageActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 recentWordsManager.deleteAllWords(new WordListener() {
                     @Override
                     public void onSuccess(String firebaseReferenceString) {
@@ -170,6 +170,7 @@ public class HomePageActivity extends AppCompatActivity
                         Log.d("success", firebaseError.toString());
                     }
                 });
+                */
             }
         });
     }
