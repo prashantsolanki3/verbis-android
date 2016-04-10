@@ -119,5 +119,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'joda-time:joda-time:2.9.2'
+    compile 'com.github.devikamehra:Shade-Melange:v1.0'
 }
 apply plugin: 'com.google.gms.google-services'
