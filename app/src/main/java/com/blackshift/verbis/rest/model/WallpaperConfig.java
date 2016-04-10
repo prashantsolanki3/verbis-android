@@ -3,6 +3,7 @@ package com.blackshift.verbis.rest.model;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -15,8 +16,7 @@ import java.lang.annotation.RetentionPolicy;
  * Github: @prashantsolanki3
  */
 public class WallpaperConfig {
-    //TODO: Find a way to listen to TextConfig
-    String id;
+    int id;
 
     float marginTopPercent;
     @IntRange(from = -2,to =2)
@@ -25,7 +25,7 @@ public class WallpaperConfig {
     int alignment;
 
     String background;
-    @BackgroudType
+    @BackgroundType
     int backgroundType;
 
     public String getBackground() {
@@ -40,7 +40,7 @@ public class WallpaperConfig {
         return backgroundType;
     }
 
-    public void setBackgroundType(@BackgroudType int backgroundType) {
+    public void setBackgroundType(@BackgroundType int backgroundType) {
         this.backgroundType = backgroundType;
     }
 
@@ -57,8 +57,8 @@ public class WallpaperConfig {
     OnWallpaperConfigChangedListener listener;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({BackgroudType.COLOR})
-    public @interface BackgroudType{
+    @IntDef({BackgroundType.COLOR})
+    public @interface BackgroundType {
         int COLOR = 1;
     }
 
@@ -68,43 +68,46 @@ public class WallpaperConfig {
         int LEFT = 1,CENTER = 2,RIGHT = 3;
     }
 
-    static class TextConfig{
-        String font;
+    public static class TextConfig{
+        File font;
         int size;
         String color;
 
-        public String getFont() {
+        public File getFont() {
             return font;
         }
 
-        public void setFont(String font) {
+        public TextConfig setFont(File font) {
             this.font = font;
+            return this;
         }
 
         public int getSize() {
             return size;
         }
 
-        public void setSize(int size) {
+        public TextConfig setSize(int size) {
             this.size = size;
+            return this;
         }
 
         public String getColor() {
             return color;
         }
 
-        public void setColor(String color) {
+        public TextConfig setColor(String color) {
             this.color = color;
+            return this;
         }
     }
 
     public WallpaperConfig() { }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
         if(listener!=null)
             listener.onChanged(this);
@@ -124,7 +127,7 @@ public class WallpaperConfig {
         return fontRelative;
     }
 
-    public void setFontRelative(int fontRelative) {
+    public void setFontRelative(@IntRange(from = -2,to =2) int fontRelative) {
         this.fontRelative = fontRelative;
         if(listener!=null)
             listener.onChanged(this);
@@ -134,7 +137,7 @@ public class WallpaperConfig {
         return alignment;
     }
 
-    public void setAlignment(int alignment) {
+    public void setAlignment(@Alignment int alignment) {
         this.alignment = alignment;
         if(listener!=null)
             listener.onChanged(this);
