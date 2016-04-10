@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -28,6 +29,7 @@ import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
+import com.blackshift.verbis.ui.fragments.BottomSheetFragment;
 import com.blackshift.verbis.ui.fragments.WordListTitlesRecyclerFragment;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.listeners.RecentWordListener;
@@ -55,8 +57,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.AbstractSnapSelectableAdapter;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapSelectableAdapter;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static com.blackshift.verbis.App.getApp;
+import static com.blackshift.verbis.App.getContext;
 
 public class HomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener,WordListTitlesRecyclerFragment.WordListSelectionListener {
@@ -93,6 +97,11 @@ public class HomePageActivity extends VerbisActivity
     //Manually Init
     View header;
     ImageView imgView;
+    @Bind(R.id.bottomSheetView) View bottomSheetView;
+    BottomSheetBehavior mBottomSheetBehavior;
+    ImageView imgview;
+    TextView nameTextView;
+    TextView emailTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +113,18 @@ public class HomePageActivity extends VerbisActivity
         manageSearchView();
         manageDrawer();
         manageWordOfTheDayViewPager();
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.closeDrawer(GravityCompat.START);
+                new BottomSheetFragment().show(getSupportFragmentManager(),HomePageActivity.class.getSimpleName());
+                /*mBottomSheetBehavior.setPeekHeight((int) Utiloid.CONVERSION_UTILS.dpiToPixels(300.0f));
+                if ((mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN)
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);*/
+            }
+        });
         mangeBaseViewPager();
 
     }
@@ -190,10 +211,25 @@ public class HomePageActivity extends VerbisActivity
             public void onAuthStateChanged(AuthData authData) {
                 if (authData != null) {
                     String imgurl = (String) authData.getProviderData().get("profileImageURL");
-                    Glide.with(getApplicationContext()).load(imgurl).into(imgView);
+//                    Glide.with(getApplicationContext()).load(imgurl).into(imgView);
+                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
+                    String provider = authData.getProvider();
+                    if(provider.equals("google"))  {
+                        String name = (String) authData.getProviderData().get("displayName");
+                        Log.d("Name:",name);
+                        nameTextView.setText(name);
+                        String email = (String) authData.getProviderData().get("email");
+                        emailTextView.setText(email);
+                    }
+                    else if(authData.getProvider() == "password"){
+
+                    }
+                    //set textview values after updating firebase rules
                 }
             }
         });
+
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -298,6 +334,22 @@ public class HomePageActivity extends VerbisActivity
         imgView = (ImageView) header.findViewById(R.id.imageView);
         fab.setImageDrawable(new IconDrawable(this, MaterialIcons.md_delete).colorRes(android.R.color.white));
         fab.hide();
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        searchView = (SearchView) findViewById(R.id.searchView);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //BottomSheet
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetView);
+        header = navigationView.getHeaderView(0);
+        imgview = (ImageView) header.findViewById(R.id.imageView);
+        nameTextView = (TextView) header.findViewById(R.id.nameTextView);
+        emailTextView = (TextView) header.findViewById(R.id.emailTextView);
+        //Set the pager with an adapter
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        baseViewpager = (ViewPager) findViewById(R.id.home_page_base_pager);
+
     }
 
     private void manageToolbar() {

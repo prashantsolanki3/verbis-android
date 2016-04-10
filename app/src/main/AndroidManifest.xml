@@ -72,7 +72,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.blackshift.verbis.ui.activity.HomePageActivity" />
@@ -117,6 +116,17 @@
             android:name=".services.WordyService"
             android:enabled="true"
             android:exported="false"></service>
+
+        <activity
+            android:name=".ui.activity.AlarmActivity"
+            android:label="@string/title_activity_alarm"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

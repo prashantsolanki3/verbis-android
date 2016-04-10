@@ -86,5 +86,8 @@ dependencies {
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.prashantsolanki:FABToolbar:0.9.0'
     compile 'com.github.devikamehra:Shade-Melange:-SNAPSHOT'
+    compile 'com.viewpagerindicator:library:2.4.1'
+    //glide transformations
+    compile 'jp.wasabeef:glide-transformations:2.0.0'
 }
 apply plugin: 'com.google.gms.google-services'

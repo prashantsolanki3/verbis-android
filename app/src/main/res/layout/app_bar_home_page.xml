@@ -58,33 +58,24 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+         <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:layout_gravity="bottom"
+                android:fitsSystemWindows="true"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|exitUntilCollapsed"/>
+
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
-            android:layout_alignParentTop="true"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:layout_gravity="bottom"
-            app:tabGravity="fill" />
-
-        <android.support.v4.view.ViewPager
-            android:layout_below="@+id/tabs"
-            android:id="@+id/home_page_base_pager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-    </RelativeLayout>
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <include layout="@layout/bottomsheet"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_height="wrap_content"
@@ -94,6 +85,8 @@
         android:src="@android:drawable/ic_dialog_email"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"/>
+
+
 
 </android.support.design.widget.CoordinatorLayout>
 
