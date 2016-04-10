@@ -5,20 +5,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import com.blackshift.verbis.R;
-import java.util.ArrayList;
-import io.github.prashantsolanki3.snaplibrary.snap.adapter.AbstractSnapSelectableAdapter;
-import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapSelectableAdapter;
-import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapViewHolder;
-import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
-import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.SelectionListener;
-import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapOnItemClickListener;
 
+import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.Alarm;
 import com.blackshift.verbis.rest.model.AlarmTopCard;
 import com.blackshift.verbis.ui.viewholders.AlarmTopCardViewHolder;
 import com.blackshift.verbis.ui.viewholders.AlarmViewHolder;
+
+import java.util.ArrayList;
+
+import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter;
+import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
+import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapSelectableLayoutWrapper;
 
 public class AlarmActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -39,46 +37,8 @@ public class AlarmActivity extends AppCompatActivity {
         wrappers.add(new SnapSelectableLayoutWrapper(AlarmTopCard.class, AlarmTopCardViewHolder.class, R.layout.alarm_card, 1, false));
         wrappers.add(new SnapSelectableLayoutWrapper(Alarm.class, AlarmViewHolder.class,R.layout.alarm_item,2,true));
 
-
         SnapAdapter adapter =new SnapAdapter<>(this,wrappers,recyclerView);
         recyclerView.setAdapter(adapter);
-
-        adapter.setOnSelectionListener(new SelectionListener() {
-            @Override
-            public void onSelectionModeEnabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
-
-            }
-
-            @Override
-            public void onSelectionModeDisabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
-
-            }
-
-            @Override
-            public void onItemSelected(Object o, int i) {
-
-            }
-
-            @Override
-            public void onItemDeselected(Object o, int i) {
-
-            }
-
-            @Override
-            public void onSelectionLimitReached() {
-
-            }
-
-            @Override
-            public void onSelectionLimitExceeding() {
-
-            }
-
-            @Override
-            public void onNoneSelected() {
-
-            }
-        });
 
         adapter.add(new AlarmTopCard());
 
