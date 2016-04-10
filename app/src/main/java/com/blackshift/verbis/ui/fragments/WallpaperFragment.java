@@ -17,10 +17,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.WallpaperConfig;
+import com.blackshift.verbis.ui.dialogs.WallpaperTextConfigDialog;
+import com.blackshift.verbis.ui.widgets.FontTextView;
 import com.blackshift.verbis.utils.PreferenceKeys;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.joanzapata.iconify.IconDrawable;
@@ -53,11 +54,11 @@ public class WallpaperFragment extends Fragment {
     @LayoutRes
     int layoutId;
     @Bind(R.id.wallpaper_part_of_speech)
-    TextView partOfSpeech;
+    FontTextView partOfSpeech;
     @Bind(R.id.wallpaper_word)
-    TextView word;
+    FontTextView word;
     @Bind(R.id.wallpaper_meaning)
-    TextView meaning;
+    FontTextView meaning;
     @Bind(R.id.wallpaper_background)
     ImageView background;
     @Bind(R.id.wallpaper_text_overlay)
@@ -103,6 +104,26 @@ public class WallpaperFragment extends Fragment {
         config = new WallpaperConfig();
     }
 
+    void defaultWallpaperConfig(){
+        config.setAlignment(WallpaperConfig.Alignment.CENTER);
+        config.setBackgroundType(WallpaperConfig.BackgroundType.COLOR);
+        config.setFontRelative(1);
+        config.setBackground("#00a0afff");
+        config.setId(layoutId);
+        config.setMarginTopPercent(150);
+
+        WallpaperConfig.TextConfig word = new WallpaperConfig
+                .TextConfig()
+                .setColor("#ff3322ff")
+                .setSize(42);
+
+        config.setMeaning(word);
+        config.setWord(word);
+        config.setPartOfSpeech(word);
+
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -113,15 +134,10 @@ public class WallpaperFragment extends Fragment {
         wallpaperLayout.findViewById(R.id.fabtoolbar_toolbar).bringToFront();
         bottomBar.bringToFront();
         fab.bringToFront();
-        setTextOverlayTopMargin(SecurePrefManager.with(getActivity())
-                .get(PreferenceKeys.WALLPAPER_TEXT_OVERLAY_TOP_MARGIN + layoutId)
-                .defaultValue(56)
-                .go());
-
+        defaultWallpaperConfig();
         setIcons();
         setupDrag();
         setListeners();
-
         return view;
     }
 
@@ -233,9 +249,11 @@ public class WallpaperFragment extends Fragment {
     void onClickBottomBar(View view){
         int id = view.getId();
         bottomBar.hide();
+        WallpaperTextConfigDialog dialog = new WallpaperTextConfigDialog().setWallpaperConfig(config);
         switch (id){
             case R.id.fabtoolbar_toolbar_ic_background:
                 new ShadeMelangeDialog(getContext()).setMelangeCancelable(true)
+                        .columns(2)
                         .setShadeType(ShadeTypeEnum.MATERIAL_SHADES)
                         .setSelectionMode(SelectionModeEnum.SINGLE_SELECTION_MODE)
                         .setPositiveButton("Select", new OnDialogButtonClickListener() {
@@ -246,12 +264,48 @@ public class WallpaperFragment extends Fragment {
                         }).showMelange();
                 break;
             case R.id.fabtoolbar_toolbar_ic_word:
+                dialog.setOnWallpaperTextConfigDialogListener(new WallpaperTextConfigDialog.OnWallpaperTextConfigDialogListener() {
+                    @Override
+                    public void onAccept(WallpaperConfig.TextConfig textConfig) {
+                             word.setTextConfig(textConfig);
+                    }
+
+                    @Override
+                    public void onDismissed() {
+
+                    }
+                });
+                dialog.setLayoutComponent(1).show((getActivity()).getSupportFragmentManager(),"word");
                 break;
             case R.id.fabtoolbar_toolbar_ic_part_of_speech:
+                dialog.setOnWallpaperTextConfigDialogListener(new WallpaperTextConfigDialog.OnWallpaperTextConfigDialogListener() {
+                    @Override
+                    public void onAccept(WallpaperConfig.TextConfig textConfig) {
+                        partOfSpeech.setTextConfig(textConfig);
+                    }
+
+                    @Override
+                    public void onDismissed() {
+
+                    }
+                });
+                dialog.setLayoutComponent(3).show((getActivity()).getSupportFragmentManager(),"part_of_speech");
                 break;
             case R.id.fabtoolbar_toolbar_ic_source:
                 break;
             case R.id.fabtoolbar_toolbar_ic_meaning:
+                dialog.setOnWallpaperTextConfigDialogListener(new WallpaperTextConfigDialog.OnWallpaperTextConfigDialogListener() {
+                    @Override
+                    public void onAccept(WallpaperConfig.TextConfig textConfig) {
+                        meaning.setTextConfig(textConfig);
+                    }
+
+                    @Override
+                    public void onDismissed() {
+
+                    }
+                });
+                dialog.setLayoutComponent(2).show((getActivity()).getSupportFragmentManager(),"meaning");
                 break;
         }
     }
