@@ -3,11 +3,8 @@ package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
 
-@Parcel
 public class Result {
 
     @SerializedName("datasets")
@@ -25,7 +22,7 @@ public class Result {
     @SerializedName("url")
     String url;
     @SerializedName("pronunciations")
-    ArrayList<Pronunciation> pronunciations = new ArrayList<Pronunciation>();
+    private ArrayList<Pronunciation> pronunciations = new ArrayList<>();
 
     /**
      * No args constructor for use in serialization

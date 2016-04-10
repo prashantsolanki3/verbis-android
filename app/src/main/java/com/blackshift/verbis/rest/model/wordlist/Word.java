@@ -29,25 +29,24 @@ public class Word{
     }
 
     public void setId(String id) {
-        this.id = id;
-    }
+            this.id = id;
+        }
 
     public String getHeadword() {
-        return headword;
-    }
+            return headword;
+        }
 
     public void setHeadword(String headword) {
-        this.headword = headword;
-    }
+            this.headword = headword;
+        }
 
     public String getUrl() {
-        return url;
-    }
+            return url;
+        }
 
     public void setUrl(String url) {
-        this.url = url;
-    }
-
+            this.url = url;
+        }
     public long getAddedOn() {
         return addedOn;
     }

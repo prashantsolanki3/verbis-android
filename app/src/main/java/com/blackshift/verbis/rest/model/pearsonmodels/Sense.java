@@ -3,12 +3,9 @@ package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Parcel
 public class Sense {
 
     @SerializedName("definition")

@@ -3,6 +3,8 @@
     package="com.blackshift.verbis">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:name=".App"
@@ -93,7 +95,28 @@
         <activity
             android:name=".ui.activity.WordListViewPagerActivity"
             android:label="@string/title_activity_word_list_view_pager"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:parentActivityName=".ui.activity.HomePageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.WordyActivity"
+            android:label="@string/title_activity_wordy"
+            android:parentActivityName=".ui.activity.HomePageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.blackshift.verbis.ui.activity.HomePageActivity" />
+        </activity>
+
+        <service
+            android:name=".services.WordyService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>

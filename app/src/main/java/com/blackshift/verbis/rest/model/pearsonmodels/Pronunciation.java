@@ -5,11 +5,9 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
 
-@Parcel
+
 public class Pronunciation {
 
     @SerializedName("audio")

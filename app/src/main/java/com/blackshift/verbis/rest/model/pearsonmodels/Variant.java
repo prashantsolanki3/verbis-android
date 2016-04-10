@@ -3,9 +3,6 @@ package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
-
-@Parcel
 public class Variant {
 
     @SerializedName("link_word")

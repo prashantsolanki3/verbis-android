@@ -3,10 +3,8 @@ package com.blackshift.verbis.rest.model.pearsonmodels;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
-@Parcel
+
 public class PearsonResults {
 
     @SerializedName("status")

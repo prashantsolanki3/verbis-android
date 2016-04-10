@@ -30,6 +30,34 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+            <io.codetail.widget.RevealFrameLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <FrameLayout
+                    android:id="@+id/add_list_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:src="@android:color/holo_blue_light"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_gravity="bottom"
+                        android:paddingBottom="32dp"
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/new_wordlist_title"
+                            android:hint="New Wordlist"
+                            android:textSize="22sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </android.support.design.widget.TextInputLayout>
+                </FrameLayout>
+            </io.codetail.widget.RevealFrameLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
@@ -76,11 +104,11 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
+        android:tag="add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/appbar"
-        android:src="@android:drawable/ic_menu_share"
         app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>

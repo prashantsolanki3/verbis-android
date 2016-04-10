@@ -8,7 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.blackshift.verbis.App;
 import com.blackshift.verbis.BuildConfig;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 
 /**
@@ -17,6 +22,8 @@ import com.blackshift.verbis.BuildConfig;
 public abstract class VerbisFragment extends Fragment {
 
     private boolean debugMode = BuildConfig.DEBUG;
+
+    private Firebase connection;
 
     public boolean isDebugMode() {
         return debugMode;
@@ -30,6 +37,24 @@ public abstract class VerbisFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        connection = App.getApp().getFirebase().child(".info").child("connected");
+        connection.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    onConnected();
+                } else {
+                    onDisconnected();
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+
+            }
+        });
+
         if(debugMode)
         Log.i(getClass().getSimpleName(), "onCreate");
         setHasOptionsMenu(true);
@@ -127,4 +152,7 @@ public abstract class VerbisFragment extends Fragment {
         if(debugMode)
         Log.i(getClass().getSimpleName(), "onSaveInstanceState");
     }
+
+    public void onConnected(){}
+    public void onDisconnected(){}
 }
