@@ -115,7 +115,7 @@
         <service
             android:name=".services.WordyService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".ui.activity.AlarmActivity"
@@ -127,6 +127,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity.AlarmReceiverActivity"
+            android:label="@string/title_activity_alarm_receiver"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.RepeatingAlarmReciever"
+            android:label="@string/title_activity_repeating_alarm_reciever"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

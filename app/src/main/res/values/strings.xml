@@ -28,4 +28,10 @@
     <string name="error_message_1">Sorry \n Failed to find the word you were searching for.</string>
     <string name="title_activity_wordy">WordyActivity</string>
     <string name="title_activity_alarm">AlarmActivity</string>
+
+    <string name="title_activity_alarm_reciever">AlarmRecieverActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_alarm_receiver">AlarmReceiverActivity</string>
+    <string name="title_activity_repeating_alarm_reciever">RepeatingAlarmReciever</string>
 </resources>

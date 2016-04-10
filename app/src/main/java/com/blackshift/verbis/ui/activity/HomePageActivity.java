@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
@@ -211,17 +213,23 @@ public class HomePageActivity extends VerbisActivity
             public void onAuthStateChanged(AuthData authData) {
                 if (authData != null) {
                     String imgurl = (String) authData.getProviderData().get("profileImageURL");
-//                    Glide.with(getApplicationContext()).load(imgurl).into(imgView);
-                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
                     String provider = authData.getProvider();
+                    String name,email;
                     if(provider.equals("google"))  {
-                        String name = (String) authData.getProviderData().get("displayName");
+                        Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
+                        name = (String) authData.getProviderData().get("displayName");
                         Log.d("Name:",name);
                         nameTextView.setText(name);
-                        String email = (String) authData.getProviderData().get("email");
+                        email = (String) authData.getProviderData().get("email");
                         emailTextView.setText(email);
                     }
-                    else if(authData.getProvider() == "password"){
+                    else if(provider.equals("password")){
+                        ColorGenerator generator = ColorGenerator.MATERIAL;
+                        email = (String) authData.getProviderData().get("email");
+                        emailTextView.setText(email);
+                        String letter = String.valueOf(email.charAt(0));
+                        TextDrawable drawable = TextDrawable.builder().beginConfig().toUpperCase().endConfig().buildRound(letter,generator.getRandomColor());
+                        imgview.setImageDrawable(drawable);
 
                     }
                     //set textview values after updating firebase rules
@@ -329,16 +337,12 @@ public class HomePageActivity extends VerbisActivity
     }
 
     private void init() {
-        //Cannot be Init by ButterKnife.
-        header =navigationView.getHeaderView(0);
-        imgView = (ImageView) header.findViewById(R.id.imageView);
-        fab.setImageDrawable(new IconDrawable(this, MaterialIcons.md_delete).colorRes(android.R.color.white));
-        fab.hide();
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_home);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_home);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         searchView = (SearchView) findViewById(R.id.searchView);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         //BottomSheet
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetView);
