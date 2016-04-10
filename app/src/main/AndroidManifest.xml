@@ -15,7 +15,11 @@
             android:name=".ui.activity.HomePageActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.activity.WordListRecyclerViewActivity"
             android:label="@string/title_activity_word_list" />
@@ -83,6 +87,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity.AlarmReceiverActivity"
+            android:label="@string/title_activity_alarm_receiver"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.RepeatingAlarmReciever"
+            android:label="@string/title_activity_repeating_alarm_reciever"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
