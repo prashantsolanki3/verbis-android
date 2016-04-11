@@ -6,7 +6,7 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import com.blackshift.verbis.rest.model.WallpaperConfig;
+import com.blackshift.verbis.rest.model.wordy.TextConfig;
 
 /**
  * Package com.blackshift.verbis.ui.widgets
@@ -30,7 +30,7 @@ public class FontTextView extends TextView {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setTextConfig(WallpaperConfig.TextConfig config){
+    public void setTextConfig(TextConfig config){
         if(config!=null){
             if(config.getColor()!=null)
                 setTextColor(Color.parseColor(config.getColor()));

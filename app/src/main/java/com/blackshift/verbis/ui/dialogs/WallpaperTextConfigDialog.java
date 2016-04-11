@@ -11,7 +11,8 @@ import android.widget.Spinner;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.ToolbarSpinnerAdapter;
-import com.blackshift.verbis.rest.model.WallpaperConfig;
+import com.blackshift.verbis.rest.model.wordy.TextConfig;
+import com.blackshift.verbis.rest.model.wordy.WallpaperConfig;
 import com.blackshift.verbis.ui.widgets.FontTextView;
 import com.blackshift.verbis.utils.StorageManager;
 
@@ -47,7 +48,7 @@ public class WallpaperTextConfigDialog extends DialogFragment {
     List<File> allFonts;
     @Bind(R.id.text_color_picker)
     Button colorPicker;
-    WallpaperConfig.TextConfig textConfig;
+    TextConfig textConfig;
     WallpaperConfig wallpaperConfig;
     OnWallpaperTextConfigDialogListener listener = null;
     int layoutComponent;
@@ -66,7 +67,7 @@ public class WallpaperTextConfigDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.dialog_wallpaper_text_config, container, false);
         ButterKnife.bind(this, view);
-        List<WallpaperConfig.TextConfig> configs = new ArrayList<>();
+        List<TextConfig> configs = new ArrayList<>();
         StorageManager storageManager = new StorageManager();
         allFonts = storageManager.getFonts();
         if (layoutComponent == 1) {
@@ -80,7 +81,7 @@ public class WallpaperTextConfigDialog extends DialogFragment {
             preview.setText("(n.)");
         }
         for(File file:allFonts){
-            configs.add(new WallpaperConfig.TextConfig().setColor("#ff332200").setSize(42).setFont(file));
+            configs.add(new TextConfig().setColor("#ff332200").setSize(42).setFont(file));
         }
         preview.setBackgroundColor(Color.parseColor(wallpaperConfig.getBackground()));
 
@@ -142,7 +143,7 @@ public class WallpaperTextConfigDialog extends DialogFragment {
     }
 
     public interface OnWallpaperTextConfigDialogListener{
-        void onAccept(WallpaperConfig.TextConfig textConfig);
+        void onAccept(TextConfig textConfig);
         void onDismissed();
     }
 

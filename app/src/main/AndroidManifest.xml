@@ -86,7 +86,7 @@
         </activity>
 
         <service
-            android:name=".services.WordyService"
+            android:name="com.blackshift.verbis.services.WordyService"
             android:enabled="true"
             android:exported="false"/>
     </application>
