@@ -58,6 +58,8 @@ public class WordListManager {
 
         //Go to Wordlist then go to user and then push to create a new object
         Firebase firebase = getListFirebaseRef().push();
+        if(title.isEmpty())
+            throw new RuntimeException("Wordlist Title Cannot be Empty.");
 
         final WordList wordList = new WordList(firebase.getKey(), title);
         long timeCreated = new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime();

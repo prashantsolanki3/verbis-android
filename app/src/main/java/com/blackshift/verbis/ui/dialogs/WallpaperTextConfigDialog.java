@@ -13,7 +13,7 @@ import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.ToolbarSpinnerAdapter;
 import com.blackshift.verbis.rest.model.WallpaperConfig;
 import com.blackshift.verbis.ui.widgets.FontTextView;
-import com.blackshift.verbis.utils.StorageManager;
+import com.blackshift.verbis.utils.manager.StorageManager;
 
 import java.io.File;
 import java.util.ArrayList;
