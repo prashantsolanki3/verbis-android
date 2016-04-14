@@ -3,7 +3,7 @@ package com.blackshift.verbis.adapters;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.ui.fragments.WordListFragment;
@@ -15,7 +15,7 @@ import java.util.List;
      * A  that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class WordListViewPagerAdapter extends FragmentPagerAdapter {
+    public class WordListViewPagerAdapter extends FragmentStatePagerAdapter {
 
         List<WordList> wordLists;
         Context context;
