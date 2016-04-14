@@ -3,13 +3,13 @@ package com.blackshift.verbis.ui.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -29,12 +29,15 @@ import com.blackshift.verbis.rest.providers.RecentSuggestionsProvider;
 import com.blackshift.verbis.ui.fragments.WordListOptionBottomSheet;
 import com.blackshift.verbis.ui.viewholders.MeaningExampleViewHolder;
 import com.blackshift.verbis.ui.viewholders.PartOfSpeechViewHolder;
+import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.Utils;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.listeners.RecentWordListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.firebase.client.FirebaseError;
+import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
@@ -62,8 +65,9 @@ public class DictionaryActivity extends VerbisActivity {
     FloatingActionButton pronounceFAB;
     SnapAdapter snapMultiAdapter;
     SearchView searchView;
-    List<RecentWord> recentWords = new ArrayList<>();
+    ArrayList<String> recentWords = new ArrayList<>();
     RecentWordsManager recentWordsManager;
+    RecentWordsManager wordNotFoundManager;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -77,8 +81,12 @@ public class DictionaryActivity extends VerbisActivity {
         setContentView(R.layout.activity_dictionary);
         initView();
         manageToolbar();
-        recentWordsManager = new RecentWordsManager(App.getContext());
-        getAllRecentWords();
+        recentWordsManager = new RecentWordsManager(App.getContext(), FirebaseKeys.RECENT_WORDS);
+        wordNotFoundManager = new RecentWordsManager(App.getContext(), FirebaseKeys.WORDS_NOT_FOUND);
+        Log.d("Dictionary", getIntent().getStringExtra(HomePageActivity.DATA_TRANSFER_TEXT));
+        Log.d("Dictionary", getIntent().getStringArrayListExtra(HomePageActivity.DATA_TRANSFER_TEXT_1).size() + "");
+        recentWords = getIntent().getStringArrayListExtra(HomePageActivity.DATA_TRANSFER_TEXT_1);
+        //getAllRecentWords();
         handleIntent(getIntent());
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -113,13 +121,15 @@ public class DictionaryActivity extends VerbisActivity {
 
         query = getIntent().getStringExtra(HomePageActivity.DATA_TRANSFER_TEXT);
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())){
 
             if (query == null) {
                 query = intent.getStringExtra(SearchManager.QUERY);
             }
-            Snackbar.make(coordinatorLayout, query, Snackbar.LENGTH_LONG)
-                    .show();
+            if (Intent.ACTION_VIEW.equals(intent.getAction())){
+                query = intent.getData().getPath().substring(intent.getData().getPath().lastIndexOf("=") + 1);
+            }
+            Log.d("word in dictionary", query);
             SearchRecentSuggestions suggestions =
                     new SearchRecentSuggestions(this, RecentSuggestionsProvider.AUTHORITY, RecentSuggestionsProvider.MODE);
             suggestions.saveRecentQuery(query, null);
@@ -140,9 +150,20 @@ public class DictionaryActivity extends VerbisActivity {
                                 // TODO : Add pronunciation
                                 pronounceFAB.setVisibility(View.VISIBLE);
                                 manageAddWordFab(retrofit.baseUrl(), query);
-                                collapsingToolbarLayout.setTitle(response.body().getWord() + "(" +
-                                        response.body().getPronunciation().getAll() + ")");
+                                if (response.body().getPronunciation() != null) {
+                                    collapsingToolbarLayout.setTitle(response.body().getWord() + "(" +
+                                            response.body().getPronunciation().getAll() + ")");
+                                }else{
+                                    collapsingToolbarLayout.setTitle(response.body().getWord());
+                                }
+                                saveRecentWord(recentWordsManager, query);
                                 setupRecyclerView(response.body());
+                                recentWords.add(query);
+                                Log.d("HandleIntent", "word saved" + recentWords.size());
+
+                            }else{
+                                collapsingToolbarLayout.setTitle("Not Found.");
+                                saveRecentWord(wordNotFoundManager, query);
                             }
 
                         }
@@ -193,11 +214,12 @@ public class DictionaryActivity extends VerbisActivity {
 
     }
 
-    private void saveRecentWord(String query) {
+    private void saveRecentWord(RecentWordsManager manager, String query) {
 
+        Log.d("test", !recentWords.contains(query) + "");
         if (!recentWords.contains(query)) {
 
-            recentWordsManager.addRecentWord(query, new RecentWordListener() {
+            manager.addRecentWord(query, new RecentWordListener() {
                 @Override
                 public void onSuccess(RecentWord word) {
                     Log.d("Firebase_Recent_Words", "added");
@@ -243,7 +265,6 @@ public class DictionaryActivity extends VerbisActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.onActionViewCollapsed();
-                saveRecentWord(query);
                 return false;
             }
 
@@ -262,7 +283,7 @@ public class DictionaryActivity extends VerbisActivity {
         recentWordsManager.getRecentWords(new RecentWordListListener() {
             @Override
             public void onSuccess(List<RecentWord> words) {
-                recentWords = words;
+                //recentWords = words;
             }
 
             @Override
@@ -277,8 +298,48 @@ public class DictionaryActivity extends VerbisActivity {
         super.onStart();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-    /*
         client.connect();
+        Thing object = new Thing.Builder()
+                .setName("Verbis Dictionary")
+                .setDescription("description")
+                .setUrl(Uri.parse("https://www.verbis.io"))
+                .build();
+
+        Action viewAction = new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+        /*
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Dictionary Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                null,
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.blackshift.verbis.ui.activity/http/blackshift.verbis.io/")
+        );
+        */
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Thing object = new Thing.Builder()
+                .setName("Verbis Dictionary")
+                .setDescription("description")
+                .setUrl(Uri.parse("https://www.verbis.io"))
+                .build();
+
+        Action viewAction = new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+       /*
         Action viewAction = Action.newAction(
                 Action.TYPE_VIEW, // TODO: choose an action type.
                 "Dictionary Page", // TODO: Define a title for the content shown.
@@ -290,29 +351,8 @@ public class DictionaryActivity extends VerbisActivity {
                 Uri.parse("android-app://com.blackshift.verbis.ui.activity/http/blackshift.verbis.io/")
         );
         AppIndex.AppIndexApi.start(client, viewAction);
-*/
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-/*
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Dictionary Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                null,
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.blackshift.verbis.ui.activity/http/blackshift.verbis.io/")
-        );
+        */
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
- */
-    }
-
 }

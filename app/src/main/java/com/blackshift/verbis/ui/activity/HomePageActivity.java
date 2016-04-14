@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -33,8 +32,8 @@ import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.ui.fragments.BottomSheetFragment;
 import com.blackshift.verbis.ui.fragments.WordListTitlesRecyclerFragment;
+import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
-import com.blackshift.verbis.utils.listeners.RecentWordListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.blackshift.verbis.utils.manager.WordListManager;
@@ -66,6 +65,7 @@ public class HomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener,WordListTitlesRecyclerFragment.WordListSelectionListener {
 
     public static final String DATA_TRANSFER_TEXT = "data_transfer";
+    public static final String DATA_TRANSFER_TEXT_1 = "data_transfer_1";
     private SearchHistoryTable mHistoryDatabase;
     private List<SearchItem> mSuggestionsList;
     private int mVersion = SearchCodes.VERSION_TOOLBAR;
@@ -108,14 +108,13 @@ public class HomePageActivity extends VerbisActivity
         ButterKnife.bind(this);
         init();
         manageToolbar();
-        manageSearchView();
         manageDrawer();
         manageWordOfTheDayViewPager();
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawer.closeDrawer(GravityCompat.START);
-                new BottomSheetFragment().show(getSupportFragmentManager(),HomePageActivity.class.getSimpleName());
+                new BottomSheetFragment().show(getSupportFragmentManager(), HomePageActivity.class.getSimpleName());
                 /*mBottomSheetBehavior.setPeekHeight((int) Utiloid.CONVERSION_UTILS.dpiToPixels(300.0f));
                 if ((mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
                     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -135,7 +134,7 @@ public class HomePageActivity extends VerbisActivity
 
     private void populateRecentWords() {
 
-        recentWordsManager = new RecentWordsManager(App.getContext());
+        recentWordsManager = new RecentWordsManager(App.getContext(), FirebaseKeys.RECENT_WORDS);
         recentWordsManager.getRecentWords(new RecentWordListListener() {
             @Override
             public void onSuccess(List<RecentWord> words) {
@@ -191,7 +190,7 @@ public class HomePageActivity extends VerbisActivity
             @Override
             public void onDrawerClosed(View drawerView) {
                 if(wordListSnapAdapter!=null&&wordListSnapAdapter.isSelectionEnabled())
-                wordListSnapAdapter.setSelectionEnabled(false);
+                    wordListSnapAdapter.setSelectionEnabled(false);
             }
 
             @Override
@@ -263,9 +262,8 @@ public class HomePageActivity extends VerbisActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mHistoryDatabase.addItem(new SearchItem(query));
-                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
+                Log.d("word in home", query);
                 searchView.clearFocus();
-                saveRecentWord(query);
                 openDictionaryActivity(query);
                 return true;
             }
@@ -284,7 +282,7 @@ public class HomePageActivity extends VerbisActivity
                 TextView textView = (TextView) view.findViewById(R.id.textView_item_text);
                 CharSequence text = textView.getText();
                 mHistoryDatabase.addItem(new SearchItem(text));
-                Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
+                Log.d("word in home", text + " " + position);
                 searchView.clearFocus();
                 openDictionaryActivity(text.toString());
             }
@@ -292,28 +290,16 @@ public class HomePageActivity extends VerbisActivity
         searchView.setAdapter(mSearchAdapter);
     }
 
-    private void saveRecentWord(String query) {
-
-        if (!recentWords.contains(query)) {
-
-            recentWordsManager.addRecentWord(query, new RecentWordListener() {
-                @Override
-                public void onSuccess(RecentWord word) {
-                    Log.d("Firebase_Recent_Words", "added");
-                }
-
-                @Override
-                public void onFailure(FirebaseError firebaseError) {
-                    Log.d("Firebase_Recent_Words", "not added \n" + firebaseError.getMessage());
-                }
-            });
-        }
-    }
-
     private void openDictionaryActivity(String text) {
         Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
         intent.setAction(Intent.ACTION_SEARCH);
+        ArrayList<String> strings = new ArrayList<>();
         intent.putExtra(DATA_TRANSFER_TEXT, text);
+        Log.d("Home", recentWords.size() + "");
+        for (RecentWord recentWord : recentWords){
+            strings.add(recentWord.getWord());
+        }
+        intent.putStringArrayListExtra(DATA_TRANSFER_TEXT_1, strings);
         startActivity(intent);
     }
 
@@ -411,7 +397,6 @@ public class HomePageActivity extends VerbisActivity
                 String searchWrd = results.get(0);
                 if (!TextUtils.isEmpty(searchWrd)) {
                     searchView.setQuery(searchWrd);
-                    saveRecentWord(searchWrd);
                 }
             }
         }

@@ -16,6 +16,9 @@ public class WordsApiResult {
     @SerializedName("syllables")
     Syllables syllables;
 
+    @SerializedName("rhymes")
+    Rhymes rhymes;
+
     @SerializedName("pronunciation")
     Pronunciation pronunciation;
 
@@ -74,6 +77,24 @@ public class WordsApiResult {
      */
     public void setSyllables(Syllables syllables) {
         this.syllables = syllables;
+    }
+
+    /**
+     *
+     * @return
+     *     The rhymes
+     */
+    public Rhymes getRhymes() {
+        return rhymes;
+    }
+
+    /**
+     *
+     * @param rhymes
+     *     The rhymes
+     */
+    public void setRhymes(Rhymes rhymes) {
+        this.rhymes = rhymes;
     }
 
     /**

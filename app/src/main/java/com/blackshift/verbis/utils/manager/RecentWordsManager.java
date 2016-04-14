@@ -27,9 +27,11 @@ import java.util.List;
 public class RecentWordsManager {
 
     Context context;
+    String string;
 
-    public RecentWordsManager(Context context) {
+    public RecentWordsManager(Context context, String string) {
         this.context = context;
+        this.string = string;
     }
 
     /**
@@ -117,7 +119,10 @@ public class RecentWordsManager {
 
     private Firebase getBaseFirebaseRef(){
         Firebase firebase = App.getApp().getFirebase();
-        return firebase.child(FirebaseKeys.RECENT_WORDS).child(firebase.getAuth().getUid());
+        if (string.equals(FirebaseKeys.RECENT_WORDS)){
+            return firebase.child(FirebaseKeys.RECENT_WORDS).child(firebase.getAuth().getUid());
+        }else{
+            return firebase.child(FirebaseKeys.WORDS_NOT_FOUND);
+        }
     }
-
 }
