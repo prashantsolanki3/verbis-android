@@ -16,8 +16,8 @@
             android:title="Wordlist" />
         <item
             android:id="@+id/nav_wordy_activity"
-            android:icon="@drawable/ic_eye"
             android:title="Wordy" />
+        <!-- android:icon="@drawable/ic_eye" -->
     </group>
 
     <item android:title="Communicate">

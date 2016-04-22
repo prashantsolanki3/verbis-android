@@ -28,6 +28,7 @@
     <string name="error_message_1">Sorry \n Failed to find the word you were searching for.</string>
     <string name="title_activity_wordy">WordyActivity</string>
     <string name="title_activity_alarm">AlarmActivity</string>
+    <string name="facebook_app_id">1741118362770209</string>
 
     <string name="title_activity_alarm_reciever">AlarmRecieverActivity</string>
     <string name="dummy_button">Dummy Button</string>

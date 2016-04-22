@@ -31,8 +31,8 @@
                 android:id="@+id/fabtoolbar_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:backgroundTint="@color/red"
-                android:src="@drawable/ic_eye"/>
+                app:backgroundTint="@color/red"/>
+                <!-- android:src="@drawable/ic_eye"/ -->
         </RelativeLayout>
 
         <LinearLayout

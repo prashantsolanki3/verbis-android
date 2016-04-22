@@ -1,6 +1,7 @@
 package com.blackshift.verbis.auth;
 
-import android.app.ProgressDialog;
+import android.support.v7.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,22 +10,30 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
+import com.blackshift.verbis.utils.FirebaseErrorHandler;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SignUpEvent;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -38,32 +47,39 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
+import retrofit.Response;
+import retrofit.Retrofit;
 import static com.blackshift.verbis.App.getApp;
 
 public class LoginActivity extends AppCompatActivity implements OnConnectionFailedListener {
 
     private static final int RC_GOOGLE_LOGIN = 1;
+    private static final int RC_TWITTER_LOGIN = 2;
     @Bind(R.id.app_bar)
     AppBarLayout abl;
     @Bind(R.id.signingrp)
     LinearLayout signingrp;
-    @Bind(R.id.signupgrp)
-    LinearLayout signupgrp;
-    @Bind(R.id.link_signin)
-    TextView link_signin;
-    @Bind(R.id.link_signup)
-    TextView link_signup;
+    private TwitterLoginButton loginButton;
+    TwitterSession session;
+    private LoginButton fbLoginButton;
+    CallbackManager callbackManager;
+    private String errorMessage;
+
     CollapsingToolbarLayout collapsingToolbarLayout;
-    @Bind(R.id.name)
-    EditText name;
+
     @Bind(R.id.toolbar) Toolbar toolbar;
 
     private GoogleApiClient mGoogleApiClient;
@@ -76,23 +92,12 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
     }
 
-    @Bind(R.id.email)
-    EditText email;
-    @Bind(R.id.password)
-    EditText password;
-    @Bind(R.id.signemail)
-    EditText signemail;
-    @Bind(R.id.signpassword)
-    EditText signpassword;
-    @Bind(R.id.tilemail)
-    TextInputLayout tilemail;
-    @Bind(R.id.tilemail2) TextInputLayout tilemail2;
-    @Bind(R.id.forgotpassgrp) LinearLayout forgotpassgrp;
-    @Bind(R.id.forgotemailfield) EditText forgotemailfiled;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -101,7 +106,118 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         abl.setLayoutParams(cl);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         collapsingToolbarLayout.setTitle("Verbis");
+
+
+
         Firebase firebase = getApp().getFirebase();
+        fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
+
+
+        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        //Twitter login starts
+        assert loginButton != null;
+        loginButton.setCallback(new Callback<TwitterSession>() {
+
+            @Override
+            public void onResponse(Response<TwitterSession> response, Retrofit retrofit) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // The TwitterSession is also available through:
+                // Twitter.getInstance().core.getSessionManager().getActiveSession()
+                session = result.data;
+                // TODO: Remove toast and use the TwitterSession's userID
+                // with your app's user model
+                String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
+
+                Answers.getInstance().logSignUp(new SignUpEvent().putMethod("twitter").putSuccess(true));
+                Firebase ref = getApp().getFirebase();
+                Map<String, String> options = new HashMap<String, String>();
+                options.put("oauth_token", "719886346496643072-8AyUdNPxbQkIvMuuMfZpfnRaHcWdj1D");
+                options.put("oauth_token_secret","bdKD4aIYh7MNRgRP5gTlne7iBr38aYQ2DKGy0mv0hj6bm");
+                options.put("user_id",String.valueOf(session.getUserId()));
+                ref.authWithOAuthToken("twitter",options, new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+
+                        checkSession();
+                    }
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+
+                        FirebaseErrorHandler firebaseErrorHandler = new FirebaseErrorHandler(firebaseError);
+                        errorMessage = firebaseErrorHandler.checkErrorCode();
+                        Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.d("TwitterKit", "Login with Twitter failure", exception);
+            }
+        });
+        //Twitter Login ends
+
+        //Facebook Login Starts
+        callbackManager= CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+              AccessToken accessToken = loginResult.getAccessToken();
+                Firebase ref = getApp().getFirebase();
+                        if (accessToken != null) {
+                            ref.authWithOAuthToken("facebook", accessToken.getToken(), new Firebase.AuthResultHandler() {
+                                @Override
+                                public void onAuthenticated(AuthData authData) {
+                                    /*String msg = "Provider:" + authData.getProvider() + "Name" + authData.getProviderData().get("displayName");
+                                    Log.e("Facebook:", msg);*/
+                                    checkSession();
+                                }
+
+                                @Override
+                                public void onAuthenticationError(FirebaseError firebaseError) {
+                                    FirebaseErrorHandler firebaseErrorHandler = new FirebaseErrorHandler(firebaseError);
+                                    errorMessage = firebaseErrorHandler.checkErrorCode();
+                                    Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+
+                                }
+                            });
+
+                    }
+
+
+        }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
+
+        //Facebook Login ends
+
+
+
+
+
+
+
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
@@ -114,55 +230,6 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 }
             }
         });
-
-        email.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (isValidEmail(s) == false) {
-                    tilemail.setErrorEnabled(true);
-                    tilemail.setError("Enter a valid email");
-                }
-                else if(isValidEmail(s)==true){
-                        tilemail2.setErrorEnabled(false);
-                    }
-                }
-
-
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-
-            }
-        });
-            signemail.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if(isValidEmail(s)==false) {
-                        tilemail2.setErrorEnabled(true);
-                        tilemail2.setError("Enter a valid email");
-                    }
-                        else if(isValidEmail(s)==true){
-                            tilemail2.setErrorEnabled(false);
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
-
 
 
         ///Google LOGIN
@@ -177,86 +244,15 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        })
-        ;
     }
 
-    @OnClick(R.id.link_signin)
-    void signuptosignin() {
-        signingrp.setVisibility(View.VISIBLE);
-        signupgrp.setVisibility(View.GONE);
-        forgotpassgrp.setVisibility(View.GONE);
-    }
 
-    @OnClick(R.id.link_signup)
-    void signintosignup() {
-        signingrp.setVisibility(View.GONE);
-        signupgrp.setVisibility(View.VISIBLE);
-        forgotpassgrp.setVisibility(View.GONE);
-    }
 
-    @OnClick(R.id.link_forgotpass)
-    void forgotpass(){
-        signingrp.setVisibility(View.GONE);
-        signupgrp.setVisibility(View.GONE);
-        forgotpassgrp.setVisibility(View.VISIBLE);
-
-    }
     public final static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
-    @OnClick(R.id.signupbtn)
-    void signup() {
-        final ProgressDialog progressDialog=new ProgressDialog(LoginActivity.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Creating your Account...");
-        progressDialog.show();
-
-        Firebase ref = getApp().getFirebase();
-        String fireemail = email.getText().toString();
-        String firepassword = password.getText().toString();
-        ref.createUser(fireemail, firepassword, new Firebase.ValueResultHandler<Map<String, Object>>() {
 
 
-            @Override
-            public void onSuccess(Map<String, Object> result) {
-                Toast.makeText(getApplicationContext(), "Successfully created user account", Toast.LENGTH_SHORT);
-                signuptosignin();
-            }
-
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                Toast.makeText(getApplicationContext(), "Successfully created user account", Toast.LENGTH_SHORT);
-
-            }
-        });
-
-    }
-
-    @OnClick(R.id.resetpass)
-    void reset(){
-        Firebase ref=getApp().getFirebase();
-        String reset = forgotemailfiled.getText().toString();
-        ref.resetPassword(reset, new Firebase.ResultHandler() {
-            @Override
-            public void onSuccess() {
-                signuptosignin();
-                Snackbar.make(signingrp, "Password Has been Reset. Please check your mail.", Snackbar.LENGTH_LONG);
-            }
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                Snackbar.make(forgotpassgrp,"Something went wrong",Snackbar.LENGTH_LONG);
-            }
-        });
-    }
 
 
     //Google stuff start
@@ -278,7 +274,15 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 getGoogleOAuthToken(emailAddress);
             }
         }
+        else if(requestCode== TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE)
+            loginButton.onActivityResult(requestCode, resultCode, data);
+        else
+            callbackManager.onActivityResult(requestCode,resultCode,data);
+
+
+
     }
+
 
     private void getGoogleOAuthToken(final String emailAddress) {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
@@ -306,7 +310,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
             @Override
             protected void onPostExecute(String token) {
-                Log.d("FPK", "OnPostExecute, token:" + token);
+
                 if (token != null) {
                     onGoogleLoginWithToken(token);
                 } else
@@ -325,16 +329,19 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         firebase.authWithOAuthToken("google", oAuthToken, new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                String res = "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider();
-                Log.e("Result:", res);
-                Snackbar.make(findViewById(R.id.signingrp), res, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*String res = "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider();
+                Log.e("Result:", res);*/
+                /*Snackbar.make(findViewById(R.id.signingrp), res, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show()*/;
                 checkSession();
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                Snackbar.make(findViewById(R.id.signingrp), "Some Error Occurred", Snackbar.LENGTH_LONG)
+
+                FirebaseErrorHandler firebaseErrorHandler = new FirebaseErrorHandler(firebaseError);
+                errorMessage = firebaseErrorHandler.checkErrorCode();
+                Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();   // there was an error
             }
 
@@ -343,28 +350,6 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
         //google stuff end
 
-        @OnClick(R.id.signinbtn)
-        void signin() {
-            Firebase ref = getApp().getFirebase();
-            String fireemail = signemail.getText().toString();
-            String firepassword = signpassword.getText().toString();
-            ref.authWithPassword(fireemail, firepassword, new Firebase.AuthResultHandler() {
-                @Override
-                public void onAuthenticated(AuthData authData) {
-                    String res = "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider();
-                    Snackbar.make(findViewById(R.id.signingrp), res, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    checkSession();
-                }
-
-                @Override
-                public void onAuthenticationError(FirebaseError firebaseError) {
-                    Snackbar.make(findViewById(R.id.signingrp), "Some Error occured", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();   // there was an error
-                }
-
-            });
-        }
 
         void startMainActivity() {
             this.finish();
@@ -383,7 +368,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                     } else {
                         Snackbar.make(findViewById(R.id.signingrp), "Looks like something went wrong. Try logging in again", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
-                        signin();
+
                     }
                 }
             });
