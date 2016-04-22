@@ -2,6 +2,7 @@ package com.blackshift.verbis.utils.manager;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.wordlist.Word;
@@ -65,6 +66,7 @@ public class WordListManager {
         long timeCreated = new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime();
         wordList.setCreatedAt(timeCreated);
         wordList.setModifiedAt(timeCreated);
+        wordList.setOwner(App.getApp().getFirebase().getAuth().getUid());
         firebase.setValue(wordList, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
@@ -136,14 +138,18 @@ public class WordListManager {
      * @param privacy if==-1 returns all else returns the requested privacy level wordlist.
      * */
     private void getWordListByPrivacy(int privacy, final WordListArrayListener listener){
-        Firebase firebase = getListFirebaseRef();
+        final Firebase firebase = getListFirebaseRef();
         Query base;
 
         //TODO: Test this.
+        String rawUid = App.getApp().getFirebase().getAuth().getUid();
+        Log.d("UID",rawUid);
+
         if(privacy!=-1)
-            base = firebase.equalTo(privacy, "privacy").orderByChild("modifiedAt");
+            base = firebase.equalTo(privacy, "privacy").equalTo(rawUid,"owner").orderByChild("modifiedAt");
         else
-            base = firebase.orderByChild("modifiedAt");
+            base = firebase.startAt(rawUid,"owner").endAt(rawUid,"owner")/*.orderByChild("modifiedAt")*/;
+
 
         base.addValueEventListener(new ValueEventListener() {
             @Override
@@ -180,6 +186,7 @@ public class WordListManager {
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
+                firebaseError.toException().printStackTrace();
                 listener.onFailure(firebaseError);
             }
         });
@@ -368,7 +375,7 @@ public class WordListManager {
     public Firebase getListFirebaseRef(){
         Firebase firebase = App.getApp().getFirebase();
         return firebase.child(FirebaseKeys.WORD_LIST)
-                .child(firebase.getAuth().getUid())
+                //.child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_LISTS);
     }
 
@@ -378,7 +385,7 @@ public class WordListManager {
     public Firebase getContentFirebaseRef(){
         Firebase firebase = App.getApp().getFirebase();
         return firebase.child(FirebaseKeys.WORD_LIST)
-                .child(firebase.getAuth().getUid())
+                //.child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_CONTENT);
     }
 

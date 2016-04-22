@@ -98,7 +98,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
 
             @Override
             public void onFailure(FirebaseError firebaseError) {
-
+                firebaseError.toException().printStackTrace();
             }
         });
 
