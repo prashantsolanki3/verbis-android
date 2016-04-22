@@ -66,8 +66,6 @@ dependencies {
         compile 'com.android.support:appcompat-v7:23.2.1'
         compile 'com.android.support:design:23.2.1'
         compile 'com.android.support:support-v4:23.2.1'
-        compile 'com.github.lisawray:passwordview:863c58fa25'
-        compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
         compile 'jp.wasabeef:glide-transformations:2.0.0'
         compile 'com.jakewharton:butterknife:7.0.1'
         compile 'com.prashantsolanki:Snap-RecyclerView-Utils:2.0.0-beta-2'
@@ -88,6 +86,10 @@ dependencies {
         compile 'joda-time:joda-time:2.9.2'
         compile 'com.prashantsolanki:FABToolbar:0.9.0'
         compile 'com.github.devikamehra:Shade-Melange:-SNAPSHOT'
+        compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    }
+    compile('com.twitter.sdk.android:twitter:1.13.0@aar') {
+        transitive = true;
     }
 
 

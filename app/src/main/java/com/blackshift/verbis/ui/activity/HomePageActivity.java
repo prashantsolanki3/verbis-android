@@ -29,14 +29,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
+
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.ui.fragments.BottomSheetFragment;
 import com.bumptech.glide.Glide;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.lapism.searchview.adapter.SearchAdapter;
@@ -71,19 +72,19 @@ public class HomePageActivity extends AppCompatActivity
     FloatingActionButton fab;
     ViewPager pager, baseViewpager;
     TabLayout tabLayout;
-    @Bind(R.id.bottomSheetView) View bottomSheetView;
-    BottomSheetBehavior mBottomSheetBehavior;
     NavigationView navigationView;
     View header;
     ImageView imgview;
     TextView nameTextView;
     TextView emailTextView;
+    LoginManager loginManager;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_home_page);
         ButterKnife.bind(this);
 
@@ -93,20 +94,6 @@ public class HomePageActivity extends AppCompatActivity
         manageFab();
         manageDrawer();
         manageWordOfTheDayViewPager();
-
-
-        header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.closeDrawer(GravityCompat.START);
-                new BottomSheetFragment().show(getSupportFragmentManager(),HomePageActivity.class.getSimpleName());
-                /*mBottomSheetBehavior.setPeekHeight((int) Utiloid.CONVERSION_UTILS.dpiToPixels(300.0f));
-                if ((mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN)
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);*/
-            }
-        });
         mangeBaseViewPager();
 
     }
@@ -145,24 +132,13 @@ public class HomePageActivity extends AppCompatActivity
                     String imgurl = (String) authData.getProviderData().get("profileImageURL");
                     String provider = authData.getProvider();
                     String name,email;
-                    if(provider.equals("google"))  {
-                        Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
-                        name = (String) authData.getProviderData().get("displayName");
-                        Log.d("Name:",name);
-                        nameTextView.setText(name);
-                        email = (String) authData.getProviderData().get("email");
-                        emailTextView.setText(email);
-                    }
-                    else if(provider.equals("password")){
-                        ColorGenerator generator = ColorGenerator.MATERIAL;
-                        email = (String) authData.getProviderData().get("email");
-                        emailTextView.setText(email);
-                        String letter = String.valueOf(email.charAt(0));
-                        TextDrawable drawable = TextDrawable.builder().beginConfig().toUpperCase().endConfig().buildRound(letter,generator.getRandomColor());
-                        imgview.setImageDrawable(drawable);
+                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
+                    name = (String) authData.getProviderData().get("displayName");
+                    Log.d("Name:",name);
+                    nameTextView.setText(name);
+                    email = (String) authData.getProviderData().get("email");
+                    emailTextView.setText(email);
 
-                    }
-                    //set textview values after updating firebase rules
                 }
             }
         });
@@ -266,7 +242,6 @@ public class HomePageActivity extends AppCompatActivity
         fab = (FloatingActionButton) findViewById(R.id.fab);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         //BottomSheet
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetView);
         header = navigationView.getHeaderView(0);
         imgview = (ImageView) header.findViewById(R.id.imageView);
         nameTextView = (TextView) header.findViewById(R.id.nameTextView);
@@ -344,6 +319,19 @@ public class HomePageActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_user_log_out) {
             App.getApp().getFirebase().unauth();
+            Firebase ref = getApp().getFirebase();
+            ref.addAuthStateListener(new Firebase.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(AuthData authData) {
+                    if (authData !=null) {
+                        String provider = authData.getProvider();
+                        if(provider.equals("facebook"))
+                            LoginManager.getInstance().logOut();
+
+                    }
+                }
+            });
+
 
             if(Build.VERSION.SDK_INT>=21)
                 this.finishAndRemoveTask();

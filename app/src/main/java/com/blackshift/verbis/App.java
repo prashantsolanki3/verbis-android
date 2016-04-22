@@ -13,7 +13,9 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
 import com.squareup.okhttp.OkHttpClient;
-
+import com.facebook.FacebookSdk;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import io.fabric.sdk.android.Fabric;
 import io.github.prashantsolanki3.shoot.Shoot;
 import io.github.prashantsolanki3.utiloid.Utiloid;
@@ -33,6 +35,11 @@ import static com.prashantsolanki.secureprefmanager.SecurePrefManagerInit.Initia
  */
 public class App extends Application {
 
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "	rPxTRBmwxi3OOOjXOPoEDRf1p ";
+    private static final String TWITTER_SECRET = "lD1UoXrxJIXsTULZ53SIszf7ftmfazCNKWAhV0ZEiTgX3gxeR4 ";
+
+
     final static public String FIREBASE_BASE_URL="https://verbis.firebaseio.com";
     final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries/";
 
@@ -46,7 +53,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         app =this;
-        Fabric.with(this, new Crashlytics(),new Answers());
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Crashlytics(), new Answers(), new Twitter(authConfig));
+
         Firebase.setAndroidContext(this);
         firebase = new Firebase(FIREBASE_BASE_URL);
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
@@ -81,6 +90,7 @@ public class App extends Application {
             dictionaryService = retrofit.create(DictionaryService.class);
 
     }
+    public static String getTwitterSecret(){return TWITTER_SECRET;}
 
     public synchronized static App getApp(){
         return app;
