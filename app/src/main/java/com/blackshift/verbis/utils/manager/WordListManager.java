@@ -2,7 +2,6 @@ package com.blackshift.verbis.utils.manager;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.wordlist.Word;
@@ -67,7 +66,7 @@ public class WordListManager {
         wordList.setCreatedAt(timeCreated);
         wordList.setModifiedAt(timeCreated);
         wordList.setOwner(App.getApp().getFirebase().getAuth().getUid());
-        firebase.setValue(wordList, new Firebase.CompletionListener() {
+        firebase.setValue(wordList,App.getApp().getFirebase().getAuth().getUid() ,new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 handleListener(firebaseError, firebase.getPath().toString(), listener);
@@ -84,6 +83,7 @@ public class WordListManager {
      * */
     public void renameWordList(@NonNull String title,@NonNull final WordList list, final WordListListener listener){
         renameWordList(title, list.getId(), listener);
+
     }
 
     /**
@@ -138,18 +138,15 @@ public class WordListManager {
      * @param privacy if==-1 returns all else returns the requested privacy level wordlist.
      * */
     private void getWordListByPrivacy(int privacy, final WordListArrayListener listener){
+        
         final Firebase firebase = getListFirebaseRef();
         Query base;
-
-        //TODO: Test this.
         String rawUid = App.getApp().getFirebase().getAuth().getUid();
-        Log.d("UID",rawUid);
 
         if(privacy!=-1)
-            base = firebase.equalTo(privacy, "privacy").equalTo(rawUid,"owner").orderByChild("modifiedAt");
+            base = firebase.orderByChild("owner").equalTo(rawUid);
         else
-            base = firebase.startAt(rawUid,"owner").endAt(rawUid,"owner")/*.orderByChild("modifiedAt")*/;
-
+            base = firebase.orderByChild("modifiedAt").endAt(DateUtils.getTimestampUTC());
 
         base.addValueEventListener(new ValueEventListener() {
             @Override
@@ -165,9 +162,10 @@ public class WordListManager {
                     Collections.sort(wordLists, new Comparator<WordList>() {
                         @Override
                         public int compare(WordList lhs, WordList rhs) {
+                            //-1 -> move to starting
                             if (lhs.isStarred())
                                 return -1;
-
+                            // move towards end
                             if(rhs.isStarred())
                                 return 1;
 
