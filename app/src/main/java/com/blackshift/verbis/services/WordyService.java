@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.blackshift.verbis.rest.model.wordy.WallpaperConfig;
 import com.blackshift.verbis.ui.widgets.WallpaperSynthesizer;
-import com.blackshift.verbis.utils.StorageManager;
+import com.blackshift.verbis.utils.manager.StorageManager;
 import com.google.gson.Gson;
 import com.prashantsolanki.synthesize.lib.Synthesize;
 
