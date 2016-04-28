@@ -54,6 +54,7 @@ public class MeaningExampleViewHolder extends SnapSelectableViewHolder<MeaningAn
 
     @Override
     public void populateViewHolder(MeaningAndExample meaningAndExample, int i) {
+        //TODO: This is nor the right way didi
         meaning.setText(null);
         meaning.setText(meaningAndExample.getMeaning());
         meaning.setPadding(100, 2, 2, 2);
