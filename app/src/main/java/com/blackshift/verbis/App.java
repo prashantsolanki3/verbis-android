@@ -2,6 +2,8 @@ package com.blackshift.verbis;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.multidex.MultiDex;
+
 import com.blackshift.verbis.auth.LoginActivity;
 import com.blackshift.verbis.rest.service.DictionaryService;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
@@ -44,6 +46,7 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        MultiDex.install(this);
         super.onCreate();
         app =this;
         Fabric.with(this, new Crashlytics(), new Answers());

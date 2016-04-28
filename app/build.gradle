@@ -40,6 +40,8 @@ android {
         //Api keys should come here.
         buildConfigField("String", "PEARSON_CONSUMER_KEY", PEARSON_CONSUMER_KEY)
         buildConfigField("String", "PEARSON_CONSUMER_SECRET", PEARSON_CONSUMER_SECRET)
+        // Enabling multidex support.
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -107,6 +109,7 @@ dependencies {
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.1'
     compile 'io.saeid:fab-loading:0.6.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'com.android.support:multidex:1.0.1'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'
