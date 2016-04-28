@@ -4,21 +4,25 @@ import android.app.Service;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.os.IBinder;
-import android.support.annotation.LayoutRes;
+import android.util.Log;
 
-import com.blackshift.verbis.R;
+import com.blackshift.verbis.rest.model.wordy.WallpaperConfig;
 import com.blackshift.verbis.ui.widgets.WallpaperSynthesizer;
-import com.blackshift.verbis.utils.PreferenceKeys;
-import com.prashantsolanki.secureprefmanager.SecurePrefManager;
+import com.blackshift.verbis.utils.StorageManager;
+import com.google.gson.Gson;
 import com.prashantsolanki.synthesize.lib.Synthesize;
+
+import org.parceler.Parcels;
 
 import java.io.File;
 
 import io.github.prashantsolanki3.utiloid.Utiloid;
 
 public class WordyService extends Service {
+
+    WallpaperConfig config = null;
+
     public WordyService() {
     }
 
@@ -29,18 +33,15 @@ public class WordyService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        @LayoutRes
-        int layoutId = intent.getIntExtra("layoutId",R.layout.wallpaper_layout_1);
+    public int onStartCommand(Intent intent, int flags, final int startId) {
+
+        config = Parcels.unwrap(intent.getParcelableExtra("wallpaper_config"));
 
         WallpaperSynthesizer synthesizer = new WallpaperSynthesizer(getApplicationContext());
-        synthesizer.setLayout(layoutId);
-
-        synthesizer.setParams((int) Utiloid.DISPLAY_UTILS.getScreenWidthPixels(),(int)Utiloid.DISPLAY_UTILS.getScreenHeightPixels());
-        synthesizer.setMeaningFont(Typeface.MONOSPACE);
-        synthesizer.setPartOfSpeechFont(Typeface.SERIF);
-        synthesizer.setWordFont(Typeface.SANS_SERIF);
-        synthesizer.setTextOverlayTopMargin(SecurePrefManager.with(getApplicationContext()).get(PreferenceKeys.WALLPAPER_TEXT_OVERLAY_TOP_MARGIN+layoutId).defaultValue(16).go());
+        synthesizer.setWallpaperConfig(config);
+        synthesizer.setParams((int)Utiloid.DISPLAY_UTILS.getScreenWidthPixels(),(int)Utiloid.DISPLAY_UTILS.getScreenHeightPixels());
+        Log.e("Config",new Gson().toJson(config));
+        synthesizer.setOutputPath(new File(StorageManager.ROOT_VERBIS));
         synthesizer.saveImage(new Synthesize.OnSaveListener() {
             @Override
             public void onSuccess(Bitmap bitmap, File file) {
@@ -52,12 +53,13 @@ public class WordyService extends Service {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                stopSelfResult(startId);
             }
 
             @Override
             public void onError(Exception e) {
-
+                e.printStackTrace();
+                stopSelfResult(startId);
             }
         });
         return super.onStartCommand(intent, flags, startId);

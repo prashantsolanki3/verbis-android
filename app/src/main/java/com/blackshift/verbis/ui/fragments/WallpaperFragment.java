@@ -2,6 +2,7 @@ package com.blackshift.verbis.ui.fragments;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -19,7 +20,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.WallpaperConfig;
+import com.blackshift.verbis.rest.model.wordy.TextConfig;
+import com.blackshift.verbis.rest.model.wordy.WallpaperConfig;
+import com.blackshift.verbis.services.WordyService;
 import com.blackshift.verbis.ui.dialogs.WallpaperTextConfigDialog;
 import com.blackshift.verbis.ui.widgets.FontTextView;
 import com.blackshift.verbis.utils.PreferenceKeys;
@@ -27,6 +30,8 @@ import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.prashantsolanki.secureprefmanager.SecurePrefManager;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -112,8 +117,7 @@ public class WallpaperFragment extends Fragment {
         config.setId(layoutId);
         config.setMarginTopPercent(150);
 
-        WallpaperConfig.TextConfig word = new WallpaperConfig
-                .TextConfig()
+        TextConfig word = new TextConfig()
                 .setColor("#ff3322ff")
                 .setSize(42);
 
@@ -266,7 +270,7 @@ public class WallpaperFragment extends Fragment {
             case R.id.fabtoolbar_toolbar_ic_word:
                 dialog.setOnWallpaperTextConfigDialogListener(new WallpaperTextConfigDialog.OnWallpaperTextConfigDialogListener() {
                     @Override
-                    public void onAccept(WallpaperConfig.TextConfig textConfig) {
+                    public void onAccept(TextConfig textConfig) {
                              word.setTextConfig(textConfig);
                     }
 
@@ -280,7 +284,7 @@ public class WallpaperFragment extends Fragment {
             case R.id.fabtoolbar_toolbar_ic_part_of_speech:
                 dialog.setOnWallpaperTextConfigDialogListener(new WallpaperTextConfigDialog.OnWallpaperTextConfigDialogListener() {
                     @Override
-                    public void onAccept(WallpaperConfig.TextConfig textConfig) {
+                    public void onAccept(TextConfig textConfig) {
                         partOfSpeech.setTextConfig(textConfig);
                     }
 
@@ -292,11 +296,14 @@ public class WallpaperFragment extends Fragment {
                 dialog.setLayoutComponent(3).show((getActivity()).getSupportFragmentManager(),"part_of_speech");
                 break;
             case R.id.fabtoolbar_toolbar_ic_source:
+                Intent intent = new Intent(getActivity(), WordyService.class);
+                intent.putExtra("wallpaper_config", Parcels.wrap(config));
+                getActivity().startService(intent);
                 break;
             case R.id.fabtoolbar_toolbar_ic_meaning:
                 dialog.setOnWallpaperTextConfigDialogListener(new WallpaperTextConfigDialog.OnWallpaperTextConfigDialogListener() {
                     @Override
-                    public void onAccept(WallpaperConfig.TextConfig textConfig) {
+                    public void onAccept(TextConfig textConfig) {
                         meaning.setTextConfig(textConfig);
                     }
 
@@ -313,6 +320,8 @@ public class WallpaperFragment extends Fragment {
     public void setBackgroundColor(int color){
         background.setBackgroundColor(color);
         background.setImageDrawable(new ColorDrawable(color));
+        config.setBackgroundType(WallpaperConfig.BackgroundType.COLOR);
+        config.setBackground(String.valueOf(color));
     }
 
     @Override

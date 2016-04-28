@@ -1,9 +1,11 @@
-package com.blackshift.verbis.rest.model;
+package com.blackshift.verbis.rest.model.wordy;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 
-import java.io.File;
+import org.parceler.Parcel;
+import org.parceler.Transient;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -15,6 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * Email: solankisrp2@gmail.com
  * Github: @prashantsolanki3
  */
+@Parcel
 public class WallpaperConfig {
     int id;
 
@@ -54,6 +57,7 @@ public class WallpaperConfig {
 
     TextConfig word,meaning,partOfSpeech;
 
+    @Transient
     OnWallpaperConfigChangedListener listener;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -66,39 +70,6 @@ public class WallpaperConfig {
     @IntDef({Alignment.LEFT,Alignment.RIGHT,Alignment.CENTER})
     public  @interface Alignment{
         int LEFT = 1,CENTER = 2,RIGHT = 3;
-    }
-
-    public static class TextConfig{
-        File font;
-        int size;
-        String color;
-
-        public File getFont() {
-            return font;
-        }
-
-        public TextConfig setFont(File font) {
-            this.font = font;
-            return this;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public TextConfig setSize(int size) {
-            this.size = size;
-            return this;
-        }
-
-        public String getColor() {
-            return color;
-        }
-
-        public TextConfig setColor(String color) {
-            this.color = color;
-            return this;
-        }
     }
 
     public WallpaperConfig() { }

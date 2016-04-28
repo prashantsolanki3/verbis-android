@@ -9,19 +9,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.WallpaperConfig;
+import com.blackshift.verbis.rest.model.wordy.TextConfig;
 import com.blackshift.verbis.ui.widgets.FontTextView;
 
 import java.util.List;
 
-public class ToolbarSpinnerAdapter extends ArrayAdapter<WallpaperConfig.TextConfig> {
+public class ToolbarSpinnerAdapter extends ArrayAdapter<TextConfig> {
 
     public Resources res;
     LayoutInflater inflater;
     private Context context;
-    private List<WallpaperConfig.TextConfig> data;
+    private List<TextConfig> data;
 
-    public ToolbarSpinnerAdapter(Context context, List<WallpaperConfig.TextConfig> objects) {
+    public ToolbarSpinnerAdapter(Context context, List<TextConfig> objects) {
         super(context, R.layout.spinner_item, objects);
         this.context = context;
         data = objects;

@@ -2,16 +2,17 @@ package com.blackshift.verbis.ui.widgets;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.blackshift.verbis.R;
+import com.blackshift.verbis.rest.model.wordy.WallpaperConfig;
 import com.prashantsolanki.synthesize.lib.Synthesize;
 
 /**
@@ -27,15 +28,28 @@ public class WallpaperSynthesizer extends Synthesize{
     View view;
     ImageView background;
     RelativeLayout textOverlay;
-    TextView partOfSpeech;
-    TextView word;
-    TextView meaning;
+    FontTextView partOfSpeech;
+    FontTextView word;
+    FontTextView meaning;
 
 
     public WallpaperSynthesizer(Context context) {
         super(context);
     }
 
+    public void setWallpaperConfig(WallpaperConfig config){
+        setLayout(config.getId());
+
+        if(config.getBackgroundType()==WallpaperConfig.BackgroundType.COLOR)
+        setWallpaperBackground(new ColorDrawable(Color.parseColor(config.getBackground())));
+
+        setTextOverlayTopMargin((int)config.getMarginTopPercent());
+        getMeaning().setTextConfig(config.getMeaning());
+        getPartOfSpeech().setTextConfig(config.getPartOfSpeech());
+        getWord().setTextConfig(config.getWord());
+    }
+
+    @Deprecated
     @Override
     public void setLayout(int layoutRes) {
         super.setLayout(layoutRes);
@@ -43,9 +57,9 @@ public class WallpaperSynthesizer extends Synthesize{
 
         background = (ImageView) view.findViewById(R.id.wallpaper_background);
         textOverlay = (RelativeLayout) view.findViewById(R.id.wallpaper_text_overlay);
-        partOfSpeech = (TextView) view.findViewById(R.id.wallpaper_part_of_speech);
-        word = (TextView) view.findViewById(R.id.wallpaper_word);
-        meaning =(TextView) view.findViewById(R.id.wallpaper_meaning);
+        partOfSpeech = (FontTextView) view.findViewById(R.id.wallpaper_part_of_speech);
+        word = (FontTextView) view.findViewById(R.id.wallpaper_word);
+        meaning =(FontTextView) view.findViewById(R.id.wallpaper_meaning);
     }
 
     public void setWallpaperBackground(Drawable drawable){
@@ -68,7 +82,7 @@ public class WallpaperSynthesizer extends Synthesize{
         return textOverlay;
     }
 
-    public TextView getPartOfSpeech() {
+    public FontTextView getPartOfSpeech() {
         return partOfSpeech;
     }
 
@@ -76,7 +90,7 @@ public class WallpaperSynthesizer extends Synthesize{
         this.partOfSpeech.setText(partOfSpeech);
     }
 
-    public TextView getWord() {
+    public FontTextView getWord() {
         return word;
     }
 
@@ -84,7 +98,7 @@ public class WallpaperSynthesizer extends Synthesize{
         this.word.setText(word);
     }
 
-    public TextView getMeaning() {
+    public FontTextView getMeaning() {
         return meaning;
     }
 
@@ -98,15 +112,4 @@ public class WallpaperSynthesizer extends Synthesize{
         textOverlay.setLayoutParams(layoutParams);
     }
 
-    public void setWordFont(Typeface font){
-        getWord().setTypeface(font);
-    }
-
-    public void setPartOfSpeechFont(Typeface font){
-        getPartOfSpeech().setTypeface(font);
-    }
-
-    public void setMeaningFont(Typeface meaning) {
-        getMeaning().setTypeface(meaning);
-    }
 }
