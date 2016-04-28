@@ -58,12 +58,15 @@ public class WordListManager {
 
         //Go to Wordlist then go to user and then push to create a new object
         Firebase firebase = getListFirebaseRef().push();
+        if(title.isEmpty())
+            throw new RuntimeException("Wordlist Title Cannot be Empty.");
 
         final WordList wordList = new WordList(firebase.getKey(), title);
         long timeCreated = new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime();
         wordList.setCreatedAt(timeCreated);
         wordList.setModifiedAt(timeCreated);
-        firebase.setValue(wordList, new Firebase.CompletionListener() {
+        wordList.setOwner(App.getApp().getFirebase().getAuth().getUid());
+        firebase.setValue(wordList,App.getApp().getFirebase().getAuth().getUid() ,new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 handleListener(firebaseError, firebase.getPath().toString(), listener);
@@ -80,6 +83,7 @@ public class WordListManager {
      * */
     public void renameWordList(@NonNull String title,@NonNull final WordList list, final WordListListener listener){
         renameWordList(title, list.getId(), listener);
+
     }
 
     /**
@@ -134,14 +138,15 @@ public class WordListManager {
      * @param privacy if==-1 returns all else returns the requested privacy level wordlist.
      * */
     private void getWordListByPrivacy(int privacy, final WordListArrayListener listener){
-        Firebase firebase = getListFirebaseRef();
+        
+        final Firebase firebase = getListFirebaseRef();
         Query base;
+        String rawUid = App.getApp().getFirebase().getAuth().getUid();
 
-        //TODO: Test this.
         if(privacy!=-1)
-            base = firebase.equalTo(privacy, "privacy").orderByChild("modifiedAt");
+            base = firebase.orderByChild("owner").equalTo(rawUid);
         else
-            base = firebase.orderByChild("modifiedAt");
+            base = firebase.orderByChild("modifiedAt").endAt(DateUtils.getTimestampUTC());
 
         base.addValueEventListener(new ValueEventListener() {
             @Override
@@ -157,9 +162,10 @@ public class WordListManager {
                     Collections.sort(wordLists, new Comparator<WordList>() {
                         @Override
                         public int compare(WordList lhs, WordList rhs) {
+                            //-1 -> move to starting
                             if (lhs.isStarred())
                                 return -1;
-
+                            // move towards end
                             if(rhs.isStarred())
                                 return 1;
 
@@ -178,6 +184,7 @@ public class WordListManager {
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
+                firebaseError.toException().printStackTrace();
                 listener.onFailure(firebaseError);
             }
         });
@@ -366,7 +373,7 @@ public class WordListManager {
     public Firebase getListFirebaseRef(){
         Firebase firebase = App.getApp().getFirebase();
         return firebase.child(FirebaseKeys.WORD_LIST)
-                .child(firebase.getAuth().getUid())
+                //.child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_LISTS);
     }
 
@@ -376,7 +383,7 @@ public class WordListManager {
     public Firebase getContentFirebaseRef(){
         Firebase firebase = App.getApp().getFirebase();
         return firebase.child(FirebaseKeys.WORD_LIST)
-                .child(firebase.getAuth().getUid())
+                //.child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_CONTENT);
     }
 

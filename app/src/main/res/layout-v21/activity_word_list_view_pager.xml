@@ -38,7 +38,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:src="@android:color/holo_blue_light"
+                        android:src="@android:color/holo_blue_dark"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
@@ -50,7 +50,8 @@
                         <EditText
                             android:id="@+id/new_wordlist_title"
                             android:hint="New Wordlist"
-                            android:textSize="22sp"
+                            android:textSize="32sp"
+                            android:singleLine="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
                     </android.support.design.widget.TextInputLayout>
@@ -87,7 +88,7 @@
             android:layout_gravity="left|start"
             />
 
-        <android.support.v4.view.ViewPager
+        <com.blackshift.verbis.ui.widgets.WordListViewPager
             android:layout_marginTop="24dp"
             android:id="@+id/container"
             android:paddingLeft="32dp"
@@ -107,7 +108,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/appbar"
-        android:src="@android:drawable/ic_menu_share"
         app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>

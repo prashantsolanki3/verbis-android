@@ -17,6 +17,7 @@ public class WordList {
     private String title;
     private Long createdAt;
     private Long modifiedAt;
+    private String owner;
 
     @PrivacyLevel
     private Integer privacy;
@@ -97,5 +98,14 @@ public class WordList {
 
     public void setStarred(boolean starred) {
         this.starred = starred;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public WordList setOwner(String owner) {
+        this.owner = owner;
+        return this;
     }
 }

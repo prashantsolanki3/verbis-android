@@ -12,15 +12,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.wordlist.Word;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.ui.viewholders.WordViewHolder;
 import com.blackshift.verbis.utils.DateUtils;
-import com.blackshift.verbis.utils.manager.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
+import com.blackshift.verbis.utils.manager.WordListManager;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -33,8 +34,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.AbstractSnapSelectableAdapter;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapSelectableAdapter;
+import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapSelectableViewHolder;
 import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapSelectableLayoutWrapper;
 import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.SelectionListener;
+import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectableOnItemClickListener;
 
 /**
      * A placeholder fragment containing a simple view.
@@ -97,6 +100,17 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.Selection
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            adapter.setOnItemClickListener(new SnapSelectableOnItemClickListener(adapter) {
+                @Override
+                public void onItemClick(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
+                    Toast.makeText(getContext(),"short",Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onItemLongPress(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
+                    Toast.makeText(getContext(),"long",Toast.LENGTH_SHORT).show();
+                }
+            });
 
             adapter.setOnSelectionListener(new SelectionListener<Word>() {
                 @Override
@@ -210,13 +224,12 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.Selection
                                     manager.starWordlist(wordlistId, null);
                             return true;
                         case R.id.action_share_word_list:
-/*                            ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);*/
+                            //TODO: Share link
                             Intent sendIntent = new Intent();
                             sendIntent.setAction(Intent.ACTION_SEND);
                             sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey Check out My Wordlist: " +
                                     wordList.getTitle() + ", on Verbis.\n" + wordList.getId());
                             sendIntent.setType("text/plain");
- /*                           mShareActionProvider.setShareIntent(sendIntent);*/
                             startActivity(Intent.createChooser(sendIntent, "Share via"));
                             return true;
                         case R.id.action_delete_word:
@@ -241,7 +254,7 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.Selection
             });
         }
 
-        void handleToolbarMode(boolean normal){
+        void handleToolbarMode(boolean normal) {
 
             Menu menu = wordlistToolbar.getMenu();
 
@@ -251,24 +264,5 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.Selection
 
             menu.findItem(R.id.action_delete_word).setVisible(!normal);
         }
-
-    /*public interface WordListSelectionListener extends SelectionListener<WordList> {
-        void setSnapAdapter(SnapSelectableAdapter<WordList> adapter);
-    }
-
-    WordListSelectionListener mCallback;
-
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(context);
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mCallback = (WordListSelectionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-    }*/
 
     }

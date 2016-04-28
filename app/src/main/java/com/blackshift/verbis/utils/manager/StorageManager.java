@@ -1,4 +1,4 @@
-package com.blackshift.verbis.utils;
+package com.blackshift.verbis.utils.manager;
 
 import android.os.Environment;
 import android.util.Log;

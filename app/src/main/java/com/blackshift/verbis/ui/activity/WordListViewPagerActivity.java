@@ -3,6 +3,7 @@ package com.blackshift.verbis.ui.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -17,8 +18,9 @@ import android.widget.EditText;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.WordListViewPagerAdapter;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
-import com.blackshift.verbis.utils.manager.WordListManager;
+import com.blackshift.verbis.ui.widgets.WordListViewPager;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
+import com.blackshift.verbis.utils.manager.WordListManager;
 import com.firebase.client.FirebaseError;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -49,7 +51,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    static ViewPager mViewPager = null;
+    static WordListViewPager mViewPager = null;
     private WordListManager wordListManager;
     @Bind(R.id.viewpager_indicator)
     CirclePageIndicator pageIndicator;
@@ -60,6 +62,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
     FloatingActionButton fab;
     @Bind(R.id.new_wordlist_title)
     EditText newWordlistTitle;
+    @Bind(R.id.appbar)
+    AppBarLayout appBarLayout;
 
     SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
 
@@ -70,12 +74,12 @@ public class WordListViewPagerActivity extends VerbisActivity {
         wordListManager = new WordListManager(this);
         ButterKnife.bind(this);
         handleFabStatus(FabStatus.ADD);
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (WordListViewPager) findViewById(R.id.container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        pageIndicator.setVisibility(View.INVISIBLE);
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mWordListViewPagerAdapter = new WordListViewPagerAdapter(getSupportFragmentManager(),this);
@@ -83,17 +87,24 @@ public class WordListViewPagerActivity extends VerbisActivity {
         wordListManager.getAllWordLists(new WordListArrayListener() {
             @Override
             public void onSuccess(@Nullable List<WordList> wordList) {
-                mWordListViewPagerAdapter.set(wordList);
+                if(wordList!=null) {
+                    mWordListViewPagerAdapter.set(wordList);
+                    if (wordList.size() < 1)
+                        pageIndicator.setVisibility(View.INVISIBLE);
+                    else
+                        pageIndicator.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onFailure(FirebaseError firebaseError) {
-
+                firebaseError.toException().printStackTrace();
             }
         });
 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mWordListViewPagerAdapter);
+
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
         pageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -113,7 +124,6 @@ public class WordListViewPagerActivity extends VerbisActivity {
             }
         });
         mViewPager.setPageMargin(56);
-
         newWordlistTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -137,31 +147,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
         });
     }
 
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_word_list_view_pager, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
     @OnClick(R.id.fab)
-    void fabclick(){
+    void onFabClick(){
         WordListManager wordListManager = new WordListManager(this);
         switch ((String)fab.getTag()){
             case FabStatus.ADD:
@@ -177,8 +164,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
                 handleFabStatus(FabStatus.ADD);
                 showAddWordlistLayout(false);
                 fab.setEnabled(true);
-                newWordlistTitle.setText(null);
                 wordListManager.createWordList(newWordlistTitle.getText().toString(),null);
+                newWordlistTitle.setText(null);
                 break;
             //Currently not in use.
             case FabStatus.CANCEL:
@@ -257,7 +244,6 @@ public class WordListViewPagerActivity extends VerbisActivity {
             });
             overLayoutToolbarAnimator.start();
         }else {
-            //TODO: Reverse Circular Reveal
             reverseOverlayToolbarAnimator.start();
             reverseOverlayToolbarAnimator.addListener(new SupportAnimator.AnimatorListener() {
                 @Override

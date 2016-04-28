@@ -41,6 +41,14 @@ import java.util.List;
             this.notifyDataSetChanged();
         }
 
+        public WordList get(int pos){
+            return this.wordLists.get(pos);
+        }
+
+        public List<WordList> getAll(){
+            return this.wordLists;
+        }
+
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
@@ -50,10 +58,11 @@ import java.util.List;
 
         @Override
         public int getCount() {
+            int size = 0;
             if(wordLists!=null)
-                return wordLists.size();
+               size = wordLists.size();
 
-            return 0;
+            return size;
         }
 
         @Override
