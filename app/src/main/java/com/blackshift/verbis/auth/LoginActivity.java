@@ -1,5 +1,7 @@
 package com.blackshift.verbis.auth;
 
+import android.app.ProgressDialog;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.blackshift.verbis.R;
@@ -37,6 +40,7 @@ import com.facebook.login.widget.LoginButton;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Transaction;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -63,6 +67,7 @@ import butterknife.OnClick;
 import retrofit.Response;
 import retrofit.Retrofit;
 import static com.blackshift.verbis.App.getApp;
+import static com.blackshift.verbis.App.getContext;
 
 public class LoginActivity extends AppCompatActivity implements OnConnectionFailedListener {
 
@@ -77,8 +82,8 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
     private LoginButton fbLoginButton;
     CallbackManager callbackManager;
     private String errorMessage;
-
     CollapsingToolbarLayout collapsingToolbarLayout;
+    private ProgressDialog progressDialog;
 
     @Bind(R.id.toolbar) Toolbar toolbar;
 
@@ -105,13 +110,13 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         CoordinatorLayout.LayoutParams cl = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         abl.setLayoutParams(cl);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        collapsingToolbarLayout.setTitle("Verbis");
-
+        if (collapsingToolbarLayout != null) {
+            collapsingToolbarLayout.setTitle("Verbis");
+        }
 
 
         Firebase firebase = getApp().getFirebase();
         fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
-
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         //Twitter login starts
@@ -132,6 +137,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
             public void success(Result<TwitterSession> result) {
                 // The TwitterSession is also available through:
                 // Twitter.getInstance().core.getSessionManager().getActiveSession()
+                progressDialog = ProgressDialog.show(LoginActivity.this,"","  Logging you in.....");
                 session = result.data;
                 // TODO: Remove toast and use the TwitterSession's userID
                 // with your app's user model
@@ -146,7 +152,6 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 ref.authWithOAuthToken("twitter",options, new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {
-
                         checkSession();
                     }
                     @Override
@@ -224,8 +229,14 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 if (authData != null) {
                     startMainActivity();
                 } else {
+                     final Handler handler =  new Handler();
+                     handler.postDelayed(new Runnable() {
+                         @Override
+                         public void run() {
+                             abl.setExpanded(false, true);
+                         }
+                     },1500);
 
-                    abl.setExpanded(false, true);
 
                 }
             }
@@ -268,6 +279,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         if (requestCode == RC_GOOGLE_LOGIN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
+                progressDialog = ProgressDialog.show(LoginActivity.this,"","  Logging you in.....");
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String emailAddress = acct.getEmail();
                 Log.d("Login", emailAddress);
@@ -295,7 +307,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                     String scope = "oauth2:profile email";
                     token = GoogleAuthUtil.getToken(LoginActivity.this, emailAddress, scope);
                 } catch (IOException transientEx) {
-                    //Ntwork or server error
+                    //Network or server error
                     errorMessage = "Network Error:" + transientEx.getMessage();
                 } catch (UserRecoverableAuthException e) {
                     //We probably need to ask for permissions, so start the intent if there is none pending
@@ -364,8 +376,10 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 @Override
                 public void onAuthStateChanged(AuthData authData) {
                     if (authData != null) {
+                        progressDialog.dismiss();
                         startMainActivity();
                     } else {
+                        progressDialog.dismiss();
                         Snackbar.make(findViewById(R.id.signingrp), "Looks like something went wrong. Try logging in again", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
 
