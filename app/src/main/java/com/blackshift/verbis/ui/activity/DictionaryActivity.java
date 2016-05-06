@@ -19,15 +19,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.RecentWord;
+import com.blackshift.verbis.rest.model.recyclerviewmodels.Example;
+import com.blackshift.verbis.rest.model.recyclerviewmodels.Meaning;
 import com.blackshift.verbis.rest.model.recyclerviewmodels.MeaningAndExample;
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult;
 import com.blackshift.verbis.rest.providers.RecentSuggestionsProvider;
 import com.blackshift.verbis.ui.fragments.WordListOptionBottomSheet;
-import com.blackshift.verbis.ui.viewholders.MeaningExampleViewHolder;
+import com.blackshift.verbis.ui.viewholders.ExampleViewHolder;
+import com.blackshift.verbis.ui.viewholders.MeaningViewHolder;
 import com.blackshift.verbis.ui.viewholders.PartOfSpeechViewHolder;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.Utils;
@@ -39,6 +44,10 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.joanzapata.iconify.Icon;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,9 +155,24 @@ public class DictionaryActivity extends VerbisActivity {
 
                                 Log.d(DictionaryActivity.class.getName(), response.body() + "  " + response.isSuccess() + " " + response.message());
 
-                                shareFAB.setVisibility(View.VISIBLE);
+                                manageShare(response.body().getWord());
                                 // TODO : Add pronunciation
-                                pronounceFAB.setVisibility(View.VISIBLE);
+                                //pronounceFAB.setVisibility(View.VISIBLE);
+/*
+                                if (((TextView)findViewById(R.id.word)) != null) {
+                                    ((TextView)findViewById(R.id.word)).setText(response.body().getWord());
+                                }
+
+                                if (((TextView)findViewById(R.id.cv_part_of_speech)) != null) {
+                                    ((TextView)findViewById(R.id.cv_part_of_speech)).setText(response.body().getResults()
+                                                                                    .get(0).getPartOfSpeech());
+                                }
+
+                                if (((TextView)findViewById(R.id.cv_meaning)) != null) {
+                                    ((TextView)findViewById(R.id.cv_meaning)).setText(response.body().getResults()
+                                            .get(0).getDefinition());
+                                }
+*/
                                 manageAddWordFab(retrofit.baseUrl(), query);
                                 if (response.body().getPronunciation() != null) {
                                     collapsingToolbarLayout.setTitle(response.body().getWord() + "(" +
@@ -172,7 +196,26 @@ public class DictionaryActivity extends VerbisActivity {
                             t.printStackTrace();
                         }
                     });
+
         }
+
+    }
+
+    private void manageShare(final String word) {
+        shareFAB.setVisibility(View.VISIBLE);
+        shareFAB.setBackgroundDrawable(new IconDrawable(this, MaterialIcons.md_add));
+        shareFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_message_part_1)
+                                    + word + getResources().getString(R.string.share_message_part_2));
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_app_sub));
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.share_title)));
+            }
+        });
     }
 
     private void setupRecyclerView(WordsApiResult wordsApiResult) {
@@ -180,33 +223,27 @@ public class DictionaryActivity extends VerbisActivity {
 
         ArrayList<SnapLayoutWrapper> layoutWrappers = new ArrayList<>();
         layoutWrappers.add(new SnapLayoutWrapper(String.class, PartOfSpeechViewHolder.class, R.layout.part_of_speech_item, 1));
-        layoutWrappers.add(new SnapLayoutWrapper(MeaningAndExample.class, MeaningExampleViewHolder.class, R.layout.meaning_example_item, 2));
+        layoutWrappers.add(new SnapLayoutWrapper(Meaning.class, MeaningViewHolder.class, R.layout.meaning_item, 2));
+        layoutWrappers.add(new SnapLayoutWrapper(Example.class, ExampleViewHolder.class, R.layout.example, 3));
 
-        snapMultiAdapter = new SnapAdapter(this, layoutWrappers, recyclerView, (ViewGroup)findViewById(R.id.recyclerView_alternate));
+        snapMultiAdapter = new SnapAdapter(this, layoutWrappers, recyclerView
+                //, (ViewGroup)findViewById(R.id.recyclerView_alternate)
+        );
 
         Set<String> partOfSpeech = Utils.getAllPartOfSpeech(wordsApiResult.getResults());
         ArrayList<ArrayList<MeaningAndExample>> meaningAndExampleList =
                 Utils.getResultSortedByPartOfSpeech(wordsApiResult.getResults(), partOfSpeech);
 
-        Log.d("size", meaningAndExampleList.size() + "");
-        for (ArrayList<MeaningAndExample> meaningAndExamples : meaningAndExampleList){
-            for (MeaningAndExample meaningAndExample : meaningAndExamples){
-                Log.d("Meaning", meaningAndExample.getMeaning());
-                for (String s : meaningAndExample.getExample()){
-                    Log.d("Example", s);
-                }
-            }
-        }
-
         int i = 0;
         for (String string : partOfSpeech){
             snapMultiAdapter.add(string);
             for (MeaningAndExample meaningAndExample : meaningAndExampleList.get(i)){
+                snapMultiAdapter.add(new Meaning(meaningAndExample.getMeaning()));
                 Log.d("meaning", meaningAndExample.getMeaning());
                 for (String st: meaningAndExample.getExample()){
                     Log.d("example", st);
+                    snapMultiAdapter.add(new Example(st));
                 }
-                snapMultiAdapter.add(meaningAndExample);
             }
             i++;
         }
@@ -241,12 +278,22 @@ public class DictionaryActivity extends VerbisActivity {
         addToListFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                collapsingToolbarLayout.setMinimumHeight(500);
+                /*
+                assert ((LinearLayout)findViewById(R.id.collapsed_view)) != null;
+                ((LinearLayout)findViewById(R.id.collapsed_view)).setVisibility(View.GONE);
+*/
+                recyclerView.setVisibility(View.VISIBLE);
+
+
                 BottomSheetDialogFragment bottomSheetDialogFragment = new WordListOptionBottomSheet();
                 Bundle bundle = new Bundle();
                 bundle.putString("url", baseUrl.url() + word);
                 bundle.putString(WORD_TRANSFER_TEXT, word);
                 bottomSheetDialogFragment.setArguments(bundle);
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
             }
         });
     }
