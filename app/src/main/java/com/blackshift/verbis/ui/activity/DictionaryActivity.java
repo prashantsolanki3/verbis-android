@@ -181,7 +181,6 @@ public class DictionaryActivity extends VerbisActivity {
         ArrayList<SnapLayoutWrapper> layoutWrappers = new ArrayList<>();
         layoutWrappers.add(new SnapLayoutWrapper(String.class, PartOfSpeechViewHolder.class, R.layout.part_of_speech_item, 1));
         layoutWrappers.add(new SnapLayoutWrapper(MeaningAndExample.class, MeaningExampleViewHolder.class, R.layout.meaning_example_item, 2));
-
         snapMultiAdapter = new SnapAdapter(this, layoutWrappers, recyclerView, (ViewGroup)findViewById(R.id.recyclerView_alternate));
 
         Set<String> partOfSpeech = Utils.getAllPartOfSpeech(wordsApiResult.getResults());
