@@ -7,14 +7,14 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:paddingLeft="2dp"
-        android:paddingStart="2dp"
+        android:paddingLeft="100dp"
+        android:paddingStart="100dp"
         android:paddingRight="2dp"
         android:paddingEnd="2dp"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:id="@+id/part_of_speech"
-        android:textSize="25sp"
+        android:id="@+id/meaning_of_word"
+        android:textSize="15sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

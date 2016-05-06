@@ -14,9 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.blackshift.verbis.R;
+import com.blackshift.verbis.rest.model.recyclerviewmodels.Meaning;
 import com.blackshift.verbis.rest.model.recyclerviewmodels.MeaningAndExample;
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult;
-import com.blackshift.verbis.ui.viewholders.MeaningExampleViewHolder;
+import com.blackshift.verbis.ui.viewholders.MeaningViewHolder;
 import com.blackshift.verbis.ui.viewholders.PartOfSpeechViewHolder;
 import com.blackshift.verbis.utils.Utils;
 
@@ -108,7 +109,7 @@ public class WordDisplayFragment extends Fragment implements View.OnClickListene
 
         ArrayList<SnapLayoutWrapper> layoutWrappers = new ArrayList<>();
         layoutWrappers.add(new SnapLayoutWrapper(String.class, PartOfSpeechViewHolder.class, R.layout.part_of_speech_item, 1));
-        layoutWrappers.add(new SnapLayoutWrapper(MeaningAndExample.class, MeaningExampleViewHolder.class, R.layout.meaning_example_item, 2));
+        layoutWrappers.add(new SnapLayoutWrapper(Meaning.class, MeaningViewHolder.class, R.layout.meaning_item, 2));
 
         snapMultiAdapter = new SnapAdapter(getContext(), layoutWrappers, recyclerView);
 

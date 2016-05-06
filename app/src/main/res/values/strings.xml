@@ -35,4 +35,8 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_alarm_receiver">AlarmReceiverActivity</string>
     <string name="title_activity_repeating_alarm_reciever">RepeatingAlarmReciever</string>
+    <string name="share_app_sub">Checkout Verbis for Android</string>
+    <string name="share_message_part_1">I found another new word -</string>
+    <string name="share_message_part_2">. Use Verbis for android to know more</string>
+    <string name="share_title">Share the Zeal</string>
 </resources>
