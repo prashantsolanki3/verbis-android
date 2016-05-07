@@ -11,6 +11,7 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -314,6 +315,12 @@ public class DictionaryActivity extends VerbisActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.onActionViewCollapsed();
+                try {
+                    if (findViewById(R.id.dictionary_scroll_view) != null)
+                        ((NestedScrollView) findViewById(R.id.dictionary_scroll_view)).smoothScrollTo(0, 0);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 return false;
             }
 
