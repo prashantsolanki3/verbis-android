@@ -1,16 +1,13 @@
 package com.blackshift.verbis.auth;
 
 import android.app.ProgressDialog;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,10 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
@@ -33,14 +27,12 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.Transaction;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -57,6 +49,7 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +59,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit.Response;
 import retrofit.Retrofit;
+
 import static com.blackshift.verbis.App.getApp;
-import static com.blackshift.verbis.App.getContext;
 
 public class LoginActivity extends AppCompatActivity implements OnConnectionFailedListener {
 
@@ -119,6 +112,8 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        if(loginButton!=null)
+        loginButton.setVisibility(View.GONE);
         //Twitter login starts
         assert loginButton != null;
         loginButton.setCallback(new Callback<TwitterSession>() {

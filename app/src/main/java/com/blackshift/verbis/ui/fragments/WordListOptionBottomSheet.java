@@ -84,7 +84,7 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
         recyclerView.setNestedScrollingEnabled(false);
 
         if (getArguments() != null) {
-            Log.d("word", getArguments().getString(DictionaryActivity.WORD_TRANSFER_TEXT));
+            Log.d("word", getArguments().getString(DictionaryActivity.ARG_BOTTOMSHEET_WORD));
         }
 
         wordListManager = new WordListManager(getContext());
@@ -116,7 +116,7 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
                             @Override
                             public void onItemClick(View view, int position) {
                                 checkIfWordExist(wordLists.get(position),
-                                        getArguments().getString(DictionaryActivity.WORD_TRANSFER_TEXT));
+                                        getArguments().getString(DictionaryActivity.ARG_BOTTOMSHEET_WORD));
                             }
 
                         })
@@ -129,12 +129,14 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
             public void onSuccess(@Nullable List<Word> words) {
                 boolean alreadyExist = false;
                 if (words != null) {
-                    outer : for (Word word : words){
+                    for (Word word : words){
                         if (word.getHeadword().equalsIgnoreCase(string)){
                             alreadyExist = true;
-                            break outer;
+                            break;
                         }
                     }
+
+                    //TODO: Fix this
                     if (alreadyExist){
                         Toast.makeText(WordListOptionBottomSheet.this.getContext(),
                                 "Word already exists.", Toast.LENGTH_SHORT).show();

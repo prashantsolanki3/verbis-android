@@ -1,5 +1,7 @@
 package com.blackshift.verbis.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
@@ -51,8 +53,11 @@ public class WordListViewPagerActivity extends VerbisActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    static WordListViewPager mViewPager = null;
-    private WordListManager wordListManager;
+    @Bind(R.id.container)
+    WordListViewPager mViewPager = null;
+
+    WordListManager wordListManager;
+
     @Bind(R.id.viewpager_indicator)
     CirclePageIndicator pageIndicator;
 
@@ -64,8 +69,23 @@ public class WordListViewPagerActivity extends VerbisActivity {
     EditText newWordlistTitle;
     @Bind(R.id.appbar)
     AppBarLayout appBarLayout;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
 
     SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
+
+    boolean moveToPos =true;
+
+    public static Intent createIntent(Context context, int pos){
+        Intent intent = createIntent(context);
+        intent.putExtra("pos",pos);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context){
+        Intent intent =new Intent(context,WordListViewPagerActivity.class);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +94,11 @@ public class WordListViewPagerActivity extends VerbisActivity {
         wordListManager = new WordListManager(this);
         ButterKnife.bind(this);
         handleFabStatus(FabStatus.ADD);
-        mViewPager = (WordListViewPager) findViewById(R.id.container);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         pageIndicator.setVisibility(View.INVISIBLE);
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mWordListViewPagerAdapter = new WordListViewPagerAdapter(getSupportFragmentManager(),this);
         overlayToolbar.setVisibility(View.INVISIBLE);
         wordListManager.getAllWordLists(new WordListArrayListener() {
@@ -91,8 +108,15 @@ public class WordListViewPagerActivity extends VerbisActivity {
                     mWordListViewPagerAdapter.set(wordList);
                     if (wordList.size() < 1)
                         pageIndicator.setVisibility(View.INVISIBLE);
-                    else
+                    else {
                         pageIndicator.setVisibility(View.VISIBLE);
+
+                        //Move to the position of the wordlist only once
+                        if(wordList.size()>getIntent().getIntExtra("pos",0)&&moveToPos){
+                            mViewPager.setCurrentItem(getIntent().getIntExtra("pos",0));
+                            moveToPos=false;
+                        }
+                    }
                 }
             }
 

@@ -24,6 +24,7 @@ import com.blackshift.verbis.utils.Utils;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import butterknife.Bind;
@@ -114,11 +115,11 @@ public class WordDisplayFragment extends Fragment implements View.OnClickListene
         snapMultiAdapter = new SnapAdapter(getContext(), layoutWrappers, recyclerView);
 
         Set<String> partOfSpeech = Utils.getAllPartOfSpeech(mParam1.getResults());
-        ArrayList<ArrayList<MeaningAndExample>> meaningAndExampleList =
+        List<List<MeaningAndExample>> meaningAndExampleList =
                 Utils.getResultSortedByPartOfSpeech(mParam1.getResults(), partOfSpeech);
 
         Log.d("size", meaningAndExampleList.size() + "");
-        for (ArrayList<MeaningAndExample> meaningAndExamples : meaningAndExampleList){
+        for (List<MeaningAndExample> meaningAndExamples : meaningAndExampleList){
             for (MeaningAndExample meaningAndExample : meaningAndExamples){
                 Log.d("Meaning", meaningAndExample.getMeaning());
                 for (String s : meaningAndExample.getExample()){

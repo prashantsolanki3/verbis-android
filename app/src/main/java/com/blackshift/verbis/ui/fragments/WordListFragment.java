@@ -108,7 +108,7 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
 
                 @Override
                 public void onItemLongPress(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
-                    Toast.makeText(getContext(),"long",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(),"long",Toast.LENGTH_SHORT).show();
                 }
             });
 

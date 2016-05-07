@@ -12,7 +12,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\nHello blank fragment\n</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login">@string/app_name</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
     </string>

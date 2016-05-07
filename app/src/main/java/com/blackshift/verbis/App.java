@@ -1,4 +1,5 @@
 package com.blackshift.verbis;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +16,8 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
 import com.squareup.okhttp.OkHttpClient;
-import com.facebook.FacebookSdk;
-import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+
 import io.fabric.sdk.android.Fabric;
 import io.github.prashantsolanki3.shoot.Shoot;
 import io.github.prashantsolanki3.utiloid.Utiloid;
@@ -57,7 +57,7 @@ public class App extends Application {
         super.onCreate();
         app =this;
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Crashlytics(), new Answers(), new Twitter(authConfig));
+        Fabric.with(this, /*new Twitter(authConfig),*/ new Crashlytics(), new Answers());
         Firebase.setAndroidContext(this);
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
         firebase = new Firebase(FIREBASE_BASE_URL);

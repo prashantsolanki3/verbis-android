@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -18,13 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.rest.model.recyclerviewmodels.Example;
 import com.blackshift.verbis.rest.model.recyclerviewmodels.Meaning;
 import com.blackshift.verbis.rest.model.recyclerviewmodels.MeaningAndExample;
@@ -36,17 +32,14 @@ import com.blackshift.verbis.ui.viewholders.MeaningViewHolder;
 import com.blackshift.verbis.ui.viewholders.PartOfSpeechViewHolder;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.Utils;
-import com.blackshift.verbis.utils.listeners.RecentWordListListener;
-import com.blackshift.verbis.utils.listeners.RecentWordListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
-import com.firebase.client.FirebaseError;
+import com.dpizarro.autolabel.library.AutoLabelUI;
+import com.dpizarro.autolabel.library.Label;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.joanzapata.iconify.Icon;
 import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import java.util.ArrayList;
@@ -54,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter;
+import io.github.prashantsolanki3.snaplibrary.snap.layout.managers.SnapNestedLinearLayoutManger;
 import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
 import retrofit.BaseUrl;
 import retrofit.Callback;
@@ -62,7 +56,8 @@ import retrofit.Retrofit;
 
 public class DictionaryActivity extends VerbisActivity {
 
-    public static final String WORD_TRANSFER_TEXT = "word_transfer_text";
+    public static final String ARG_BOTTOMSHEET_WORD = "word_transfer_text";
+    public static final String ARG_WORD_URL = "word_url";
 
     CoordinatorLayout coordinatorLayout;
     Toolbar toolbar;
@@ -84,6 +79,14 @@ public class DictionaryActivity extends VerbisActivity {
      */
     private GoogleApiClient client;
 
+    public static Intent createIntent(Context content,String text){
+        Intent intent = new Intent(content, DictionaryActivity.class);
+        intent.setAction(Intent.ACTION_SEARCH);
+        intent.putExtra(SearchManager.QUERY, text);
+        return intent;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,13 +95,8 @@ public class DictionaryActivity extends VerbisActivity {
         manageToolbar();
         recentWordsManager = new RecentWordsManager(App.getContext(), FirebaseKeys.RECENT_WORDS);
         wordNotFoundManager = new RecentWordsManager(App.getContext(), FirebaseKeys.WORDS_NOT_FOUND);
-        Log.d("Dictionary", getIntent().getStringExtra(HomePageActivity.DATA_TRANSFER_TEXT));
-        Log.d("Dictionary", getIntent().getStringArrayListExtra(HomePageActivity.DATA_TRANSFER_TEXT_1).size() + "");
-        recentWords = getIntent().getStringArrayListExtra(HomePageActivity.DATA_TRANSFER_TEXT_1);
-        //getAllRecentWords();
         handleIntent(getIntent());
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
@@ -107,8 +105,10 @@ public class DictionaryActivity extends VerbisActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        collapsingToolbarLayout.setTitle("Loading...");
+
     }
+
+    AutoLabelUI synonyms,antonyms;
 
     private void initView() {
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_container);
@@ -117,7 +117,17 @@ public class DictionaryActivity extends VerbisActivity {
         recyclerView = (RecyclerView) findViewById(R.id.dictionary_recycler_view);
         shareFAB = (FloatingActionButton) findViewById(R.id.fab_share);
         addToListFAB = (FloatingActionButton) findViewById(R.id.fab_add_to_list);
+        shareFAB.setImageDrawable(new IconDrawable(this, MaterialIcons.md_share)
+                .actionBarSize()
+                .colorRes(android.R.color.white));
+        addToListFAB.setImageDrawable(new IconDrawable(this, MaterialIcons.md_add)
+                .actionBarSize()
+                .colorRes(android.R.color.white));
         pronounceFAB = (FloatingActionButton) findViewById(R.id.fab_pronounce);
+        synonyms = (AutoLabelUI) findViewById(R.id.synonyms);
+        synonyms.clear();
+        antonyms = (AutoLabelUI) findViewById(R.id.antonyms);
+        antonyms.clear();
     }
 
     @Override
@@ -127,18 +137,15 @@ public class DictionaryActivity extends VerbisActivity {
     }
 
     private void handleIntent(Intent intent) {
+        ((AppBarLayout)findViewById(R.id.appbar)).setExpanded(true,true);
 
-        query = getIntent().getStringExtra(HomePageActivity.DATA_TRANSFER_TEXT);
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())){
 
-            if (query == null) {
-                query = intent.getStringExtra(SearchManager.QUERY);
-            }
-            if (Intent.ACTION_VIEW.equals(intent.getAction())){
-                query = intent.getData().getPath().substring(intent.getData().getPath().lastIndexOf("=") + 1);
-            }
-            Log.d("word in dictionary", query);
+            collapsingToolbarLayout.setTitle("Loading...");
+
+            query = intent.getStringExtra(SearchManager.QUERY);
+
             SearchRecentSuggestions suggestions =
                     new SearchRecentSuggestions(this, RecentSuggestionsProvider.AUTHORITY, RecentSuggestionsProvider.MODE);
             suggestions.saveRecentQuery(query, null);
@@ -153,43 +160,23 @@ public class DictionaryActivity extends VerbisActivity {
 
                             if (response.body() != null) {
 
-                                Log.d(DictionaryActivity.class.getName(), response.body() + "  " + response.isSuccess() + " " + response.message());
-
                                 manageShare(response.body().getWord());
                                 // TODO : Add pronunciation
-                                //pronounceFAB.setVisibility(View.VISIBLE);
-/*
-                                if (((TextView)findViewById(R.id.word)) != null) {
-                                    ((TextView)findViewById(R.id.word)).setText(response.body().getWord());
-                                }
-
-                                if (((TextView)findViewById(R.id.cv_part_of_speech)) != null) {
-                                    ((TextView)findViewById(R.id.cv_part_of_speech)).setText(response.body().getResults()
-                                                                                    .get(0).getPartOfSpeech());
-                                }
-
-                                if (((TextView)findViewById(R.id.cv_meaning)) != null) {
-                                    ((TextView)findViewById(R.id.cv_meaning)).setText(response.body().getResults()
-                                            .get(0).getDefinition());
-                                }
-*/
                                 manageAddWordFab(retrofit.baseUrl(), query);
+
                                 if (response.body().getPronunciation() != null) {
                                     collapsingToolbarLayout.setTitle(response.body().getWord() + "(" +
                                             response.body().getPronunciation().getAll() + ")");
                                 }else{
                                     collapsingToolbarLayout.setTitle(response.body().getWord());
                                 }
-                                saveRecentWord(recentWordsManager, query);
+
                                 setupRecyclerView(response.body());
                                 recentWords.add(query);
-                                Log.d("HandleIntent", "word saved" + recentWords.size());
-
                             }else{
+                                //TODO: Not Found
                                 collapsingToolbarLayout.setTitle("Not Found.");
-                                saveRecentWord(wordNotFoundManager, query);
                             }
-
                         }
                         @Override
                         public void onFailure(Throwable t) {
@@ -218,7 +205,7 @@ public class DictionaryActivity extends VerbisActivity {
     }
 
     private void setupRecyclerView(WordsApiResult wordsApiResult) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new SnapNestedLinearLayoutManger(recyclerView,this));
 
         ArrayList<SnapLayoutWrapper> layoutWrappers = new ArrayList<>();
         layoutWrappers.add(new SnapLayoutWrapper(String.class, PartOfSpeechViewHolder.class, R.layout.part_of_speech_item, 1));
@@ -227,12 +214,52 @@ public class DictionaryActivity extends VerbisActivity {
 
         snapMultiAdapter = new SnapAdapter(this, layoutWrappers, recyclerView
                 //, (ViewGroup)findViewById(R.id.recyclerView_alternate)
-        );
+                );
 
         Set<String> partOfSpeech = Utils.getAllPartOfSpeech(wordsApiResult.getResults());
-        ArrayList<ArrayList<MeaningAndExample>> meaningAndExampleList =
-                Utils.getResultSortedByPartOfSpeech(wordsApiResult.getResults(), partOfSpeech);
+        List<List<MeaningAndExample>> meaningAndExampleList = Utils.getResultSortedByPartOfSpeech(wordsApiResult.getResults(), partOfSpeech);
 
+        List<String> synonymsList = Utils.getSynonyms(wordsApiResult.getResults());
+
+        synonyms.clear();
+        antonyms.clear();
+
+        if(!synonymsList.isEmpty()) {
+            findViewById(R.id.synonyms_header).setVisibility(View.VISIBLE);
+            synonyms.setVisibility(View.VISIBLE);
+
+            for (String s : synonymsList)
+                synonyms.addLabel(s);
+            synonyms.setOnLabelClickListener(new AutoLabelUI.OnLabelClickListener() {
+                @Override
+                public void onClickLabel(View v) {
+                    startActivity(createIntent(DictionaryActivity.this,((Label)v).getText()));
+                }
+            });
+        }else {
+            synonyms.setVisibility(View.GONE);
+            findViewById(R.id.synonyms_header).setVisibility(View.GONE);
+        }
+
+        List<String> antonymsList = Utils.getAntonyms(wordsApiResult.getResults());
+        if(!antonymsList.isEmpty()) {
+            findViewById(R.id.antonyms_header).setVisibility(View.VISIBLE);
+            antonyms.setVisibility(View.VISIBLE);
+            for (String s : antonymsList)
+                antonyms.addLabel(s);
+            antonyms.setOnLabelClickListener(new AutoLabelUI.OnLabelClickListener() {
+                @Override
+                public void onClickLabel(View v) {
+                    startActivity(createIntent(DictionaryActivity.this,((Label)v).getText()));
+                }
+            });
+        }else {
+            antonyms.setVisibility(View.GONE);
+            findViewById(R.id.antonyms_header).setVisibility(View.GONE);
+        }
+
+
+        snapMultiAdapter.add("");
         int i = 0;
         for (String string : partOfSpeech){
             snapMultiAdapter.add(string);
@@ -246,50 +273,26 @@ public class DictionaryActivity extends VerbisActivity {
             }
             i++;
         }
+        snapMultiAdapter.add("");
         recyclerView.setAdapter(snapMultiAdapter);
-
-    }
-
-    private void saveRecentWord(RecentWordsManager manager, String query) {
-
-        Log.d("test", !recentWords.contains(query) + "");
-        if (!recentWords.contains(query)) {
-
-            manager.addRecentWord(query, new RecentWordListener() {
-                @Override
-                public void onSuccess(RecentWord word) {
-                    Log.d("Firebase_Recent_Words", "added");
-                }
-
-                @Override
-                public void onFailure(FirebaseError firebaseError) {
-                    Log.d("Firebase_Recent_Words", "not added \n" + firebaseError.getMessage());
-                }
-            });
-        }
 
     }
 
     private void manageAddWordFab(final BaseUrl baseUrl, final String word){
 
         addToListFAB.setVisibility(View.VISIBLE);
-        // TODO : Add Bottom Sheet
+
         addToListFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 collapsingToolbarLayout.setMinimumHeight(500);
-                /*
-                assert ((LinearLayout)findViewById(R.id.collapsed_view)) != null;
-                ((LinearLayout)findViewById(R.id.collapsed_view)).setVisibility(View.GONE);
-*/
                 recyclerView.setVisibility(View.VISIBLE);
-
 
                 BottomSheetDialogFragment bottomSheetDialogFragment = new WordListOptionBottomSheet();
                 Bundle bundle = new Bundle();
-                bundle.putString("url", baseUrl.url() + word);
-                bundle.putString(WORD_TRANSFER_TEXT, word);
+                bundle.putString(ARG_WORD_URL, baseUrl.url() + word);
+                bundle.putString(ARG_BOTTOMSHEET_WORD, word);
                 bottomSheetDialogFragment.setArguments(bundle);
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
@@ -325,28 +328,14 @@ public class DictionaryActivity extends VerbisActivity {
         return true;
     }
 
-    public void getAllRecentWords() {
-        recentWordsManager.getRecentWords(new RecentWordListListener() {
-            @Override
-            public void onSuccess(List<RecentWord> words) {
-                //recentWords = words;
-            }
-
-            @Override
-            public void onFailure(FirebaseError firebaseError) {
-                Log.e("Error", firebaseError.toString());
-            }
-        });
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+
         client.connect();
+
         Thing object = new Thing.Builder()
-                .setName("Verbis Dictionary")
+                .setName(getIntent().getStringExtra(SearchManager.QUERY))
                 .setDescription("description")
                 .setUrl(Uri.parse("https://www.verbis.io"))
                 .build();
@@ -355,28 +344,16 @@ public class DictionaryActivity extends VerbisActivity {
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
-        /*
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Dictionary Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                null,
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.blackshift.verbis.ui.activity/http/blackshift.verbis.io/")
-        );
-        */
+
         AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+
         Thing object = new Thing.Builder()
-                .setName("Verbis Dictionary")
+                .setName(getIntent().getStringExtra(SearchManager.QUERY))
                 .setDescription("description")
                 .setUrl(Uri.parse("https://www.verbis.io"))
                 .build();
@@ -385,19 +362,7 @@ public class DictionaryActivity extends VerbisActivity {
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
-       /*
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Dictionary Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                null,
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.blackshift.verbis.ui.activity/http/blackshift.verbis.io/")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-        */
+
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }

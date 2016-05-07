@@ -24,4 +24,7 @@ public interface DictionaryService {
     @GET("{word}")
     Call<WordsApiResult> getWordDetail(@Header("X-Mashape-Key")String key, @Path("word") String string);
 
+    @GET("{word}/synonyms")
+    Call<WordsApiResult> getWordSynonyms(@Header("X-Mashape-Key")String key, @Path("word") String string);
+
 }

@@ -16,6 +16,9 @@ public class Result {
     @SerializedName("synonyms")
     ArrayList<String> synonyms = new ArrayList<String>();
 
+    @SerializedName("antonyms")
+    ArrayList<String> antonyms = new ArrayList<String>();
+
     @SerializedName("typeOf")
     ArrayList<String> typeOf = new ArrayList<String>();
 
@@ -154,4 +157,11 @@ public class Result {
         this.examples = examples;
     }
 
+    public ArrayList<String> getAntonyms() {
+        return antonyms;
+    }
+
+    public void setAntonyms(ArrayList<String> antonyms) {
+        this.antonyms = antonyms;
+    }
 }

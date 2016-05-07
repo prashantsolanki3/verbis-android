@@ -4,16 +4,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,13 +24,9 @@ import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
-import com.blackshift.verbis.rest.model.wordlist.WordList;
-import com.blackshift.verbis.ui.fragments.WordListTitlesRecyclerFragment;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
-import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
-import com.blackshift.verbis.utils.manager.WordListManager;
 import com.bumptech.glide.Glide;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -52,33 +45,28 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import io.github.prashantsolanki3.snaplibrary.snap.adapter.AbstractSnapSelectableAdapter;
-import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapSelectableAdapter;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static com.blackshift.verbis.App.getApp;
 import static com.blackshift.verbis.App.getContext;
 
 public class HomePageActivity extends VerbisActivity
-        implements NavigationView.OnNavigationItemSelectedListener,WordListTitlesRecyclerFragment.WordListSelectionListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String DATA_TRANSFER_TEXT = "data_transfer";
-    public static final String DATA_TRANSFER_TEXT_1 = "data_transfer_1";
+
     private SearchHistoryTable mHistoryDatabase;
     private List<SearchItem> mSuggestionsList;
     private int mVersion = SearchCodes.VERSION_TOOLBAR;
     private int mStyle = SearchCodes.STYLE_TOOLBAR_CLASSIC;
     private int mTheme = SearchCodes.THEME_LIGHT;
+    @Bind(R.id.toolbar_home)
     Toolbar toolbar;
+    @Bind(R.id.collapsing_toolbar_home)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.drawer_layout)
     DrawerLayout drawer;
-    ActionBarDrawerToggle toggle;
     @Bind(R.id.searchView)
     SearchView searchView;
-    @Bind(R.id.fab)
-    FloatingActionButton fab;
     @Bind(R.id.words_of_day_pager)
     ViewPager viewPagerWordOfTheDay;
     @Bind(R.id.home_page_base_pager)
@@ -87,17 +75,16 @@ public class HomePageActivity extends VerbisActivity
     CirclePageIndicator pageIndicator;
     @Bind(R.id.tabs)
     TabLayout tabLayout;
+    @Bind(R.id.nav_view)
     NavigationView navigationView;
     RecentWordsManager recentWordsManager;
     ArrayList<RecentWord> recentWords = new ArrayList<>();
+
     //Manually Init
     View header;
-    ImageView imgView;
-    BottomSheetBehavior mBottomSheetBehavior;
     ImageView imgview;
     TextView nameTextView;
     TextView emailTextView;
-    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +92,7 @@ public class HomePageActivity extends VerbisActivity
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_home_page);
         ButterKnife.bind(this);
-        init();
+        initHeader();
         manageToolbar();
         manageDrawer();
         manageWordOfTheDayViewPager();
@@ -119,8 +106,15 @@ public class HomePageActivity extends VerbisActivity
         populateRecentWords();
     }
 
-    private void populateRecentWords() {
+    private void initHeader() {
+        //BottomSheet
+        header = navigationView.getHeaderView(0);
+        imgview = (ImageView) header.findViewById(R.id.imageView);
+        nameTextView = (TextView) header.findViewById(R.id.nameTextView);
+        emailTextView = (TextView) header.findViewById(R.id.emailTextView);
+    }
 
+    private void populateRecentWords() {
         recentWordsManager = new RecentWordsManager(App.getContext(), FirebaseKeys.RECENT_WORDS);
         recentWordsManager.getRecentWords(new RecentWordListListener() {
             @Override
@@ -149,46 +143,9 @@ public class HomePageActivity extends VerbisActivity
 
         viewPagerWordOfTheDay.setAdapter(new WordsOfTheWeekAdapter(getSupportFragmentManager()));
         pageIndicator.setViewPager(viewPagerWordOfTheDay);
-        //Bind the title indicator to the adapter
-        //TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.titles);
-        //titleIndicator.setViewPager(viewPagerWordOfTheDay);
-
     }
 
     private void manageDrawer() {
-        /*
-        toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-*/
-        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                if(wordListSnapAdapter!=null&&wordListSnapAdapter.isSelectionEnabled())
-                    wordListSnapAdapter.setSelectionEnabled(false);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                if(wordListSnapAdapter!=null){
-                    if((newState==DrawerLayout.STATE_SETTLING||newState==DrawerLayout.STATE_DRAGGING)
-                            &&wordListSnapAdapter.isSelectionEnabled())
-                        wordListSnapAdapter.setSelectionEnabled(false);
-                }
-            }
-        });
         Firebase ref= getApp().getFirebase();
         ref.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
@@ -207,8 +164,6 @@ public class HomePageActivity extends VerbisActivity
                 }
             }
         });
-
-
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -224,7 +179,6 @@ public class HomePageActivity extends VerbisActivity
         searchView.setTheme(mTheme);
         // -----------------------------------------------------------------------------------------
         searchView.setDivider(false);
-        searchView.setHint("Search");
         searchView.setHint(R.string.search);
         searchView.setHintSize(getResources().getDimension(R.dimen.search_text_medium));
         searchView.setVoice(true);
@@ -267,16 +221,7 @@ public class HomePageActivity extends VerbisActivity
     }
 
     private void openDictionaryActivity(String text) {
-        Intent intent = new Intent(HomePageActivity.this, DictionaryActivity.class);
-        intent.setAction(Intent.ACTION_SEARCH);
-        ArrayList<String> strings = new ArrayList<>();
-        intent.putExtra(DATA_TRANSFER_TEXT, text);
-        Log.d("Home", recentWords.size() + "");
-        for (RecentWord recentWord : recentWords){
-            strings.add(recentWord.getWord());
-        }
-        intent.putStringArrayListExtra(DATA_TRANSFER_TEXT_1, strings);
-        startActivity(intent);
+        startActivity(DictionaryActivity.createIntent(this,text));
     }
 
     private void showSearchView() {
@@ -292,25 +237,6 @@ public class HomePageActivity extends VerbisActivity
                 drawer.openDrawer(GravityCompat.START);
             }
         });
-    }
-
-    private void init() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar_home);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_home);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        searchView = (SearchView) findViewById(R.id.searchView);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //BottomSheet
-        header = navigationView.getHeaderView(0);
-        imgview = (ImageView) header.findViewById(R.id.imageView);
-        nameTextView = (TextView) header.findViewById(R.id.nameTextView);
-        emailTextView = (TextView) header.findViewById(R.id.emailTextView);
-        //Set the pager with an adapter
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        baseViewpager = (ViewPager) findViewById(R.id.home_page_base_pager);
-
     }
 
     private void manageToolbar() {
@@ -367,10 +293,7 @@ public class HomePageActivity extends VerbisActivity
                 this.finishAndRemoveTask();
             else
                 this.finish();
-
-        }/*else if(id == R.id.nav_wordy_activity){
-            startActivity(new Intent(this,WordyActivity.class));
-        }*/
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -389,68 +312,5 @@ public class HomePageActivity extends VerbisActivity
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    SnapSelectableAdapter<WordList> wordListSnapAdapter;
-
-    @OnClick(R.id.fab)
-    void onClickFab(View view){
-        WordListManager wordListManager = new WordListManager(this);
-        List<WordList> selected = wordListSnapAdapter.getSelectedItems();
-        if(selected!=null&&selected.size()>0){
-            for(WordList wordList:selected)
-                wordListManager.deleteWordList(wordList, new WordListListener() {
-                    @Override
-                    public void onSuccess(String firebaseReferenceString) {
-                        if(wordListSnapAdapter.isSelectionEnabled())
-                            wordListSnapAdapter.setSelectionEnabled(false);
-                    }
-
-                    @Override
-                    public void onFailure(FirebaseError firebaseError) {
-
-                    }
-                });
-        }
-    }
-
-    @Override
-    public void setSnapAdapter(SnapSelectableAdapter<WordList> adapter) {
-        this.wordListSnapAdapter = adapter;
-    }
-
-    @Override
-    public void onSelectionModeEnabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
-        fab.show();
-    }
-
-    @Override
-    public void onSelectionModeDisabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
-        fab.hide();
-    }
-
-    @Override
-    public void onItemSelected(WordList wordList, int i) {
-
-    }
-
-    @Override
-    public void onItemDeselected(WordList wordList, int i) {
-
-    }
-
-    @Override
-    public void onSelectionLimitReached() {
-
-    }
-
-    @Override
-    public void onSelectionLimitExceeding() {
-
-    }
-
-    @Override
-    public void onNoneSelected() {
-
     }
 }

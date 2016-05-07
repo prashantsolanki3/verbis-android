@@ -47,7 +47,6 @@ public class WordListManager {
         this.encryptor = new AESEncryptor(context);
     }
 
-
     /**
      * Creates a new wordlist of the logged in user.
      *
@@ -142,11 +141,11 @@ public class WordListManager {
         final Firebase firebase = getListFirebaseRef();
         Query base;
         String rawUid = App.getApp().getFirebase().getAuth().getUid();
-
+        //TODO: Fix Privacy
         if(privacy!=-1)
             base = firebase.orderByChild("owner").equalTo(rawUid);
         else
-            base = firebase.orderByChild("modifiedAt").endAt(DateUtils.getTimestampUTC());
+            base = firebase.orderByChild("owner").equalTo(rawUid);
 
         base.addValueEventListener(new ValueEventListener() {
             @Override
