@@ -112,8 +112,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-        if(loginButton!=null)
-        loginButton.setVisibility(View.GONE);
+
         //Twitter login starts
         assert loginButton != null;
         loginButton.setCallback(new Callback<TwitterSession>() {

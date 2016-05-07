@@ -26,7 +26,7 @@ class WordListBottomSheetViewHolder(itemView: View, context: Context) : SnapView
     }
 
     override fun populateViewHolder(wordList: WordList, i: Int) {
-        imageView.setImageDrawable(IconDrawable(context, MaterialIcons.md_format_list_bulleted).actionBarSize().colorRes(android.R.color.darker_gray))
+        imageView.setImageDrawable(IconDrawable(context, MaterialIcons.md_chrome_reader_mode).colorRes(android.R.color.darker_gray).actionBarSize())
         textView.text = wordList.title
     }
 
