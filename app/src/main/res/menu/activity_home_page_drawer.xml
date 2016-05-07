@@ -4,29 +4,34 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home_activity"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_home_black_24dp"
             android:title="Home" />
         <item
             android:id="@+id/nav_search_activity"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_find_in_page_black_24dp"
             android:title="Search" />
         <item
             android:id="@+id/nav_wordlist_vp_activity"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_chrome_reader_mode_black_24dp"
             android:title="Wordlist" />
-    </group>
 
+    <item
+        android:id="@+id/nav_user_log_out"
+        android:icon="@drawable/ic_input_black_24dp"
+        android:title="Log out" />
+
+   <group android:checkableBehavior="single"
+       android:visible="false">
     <item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_settings_black_24dp"
                 android:title="Settings" />
-            <item
-                android:id="@+id/nav_user_log_out"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Log out" />
+
         </menu>
     </item>
+   </group>
+    </group>
 
 </menu>

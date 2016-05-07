@@ -64,24 +64,31 @@
             android:text="Synonyms"
             android:id="@+id/synonyms_header"
             android:padding="16dp"
+            android:layout_marginLeft="2dp"
+            android:textSize="20dp"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <com.dpizarro.autolabel.library.AutoLabelUI
             android:id="@+id/synonyms"
+            android:layout_marginLeft="12dp"
             autolabel:text_color="@android:color/darker_gray"
             autolabel:label_background_res="@drawable/shadow"
             autolabel:label_clickable="true"
             android:visibility="gone"
             autolabel:show_cross="false"
+            autolabel:label_padding="@dimen/label_padding"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/cardview_default_elevation"/>
 
         <TextView
             android:id="@+id/antonyms_header"
             android:text="Antonyms"
+            android:layout_marginLeft="2dp"
             android:padding="16dp"
+            android:textSize="20dp"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -92,9 +99,12 @@
             autolabel:text_color="@android:color/darker_gray"
             autolabel:label_background_res="@drawable/shadow"
             autolabel:label_clickable="true"
+            autolabel:label_padding="@dimen/label_padding"
             autolabel:show_cross="false"
+            android:layout_marginLeft="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/cardview_default_elevation"/>
 
     </LinearLayout>
 

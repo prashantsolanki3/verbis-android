@@ -16,6 +16,7 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import io.fabric.sdk.android.Fabric;
@@ -57,7 +58,7 @@ public class App extends Application {
         super.onCreate();
         app =this;
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, /*new Twitter(authConfig),*/ new Crashlytics(), new Answers());
+        Fabric.with(this, new Twitter(authConfig), new Crashlytics(), new Answers());
         Firebase.setAndroidContext(this);
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
         firebase = new Firebase(FIREBASE_BASE_URL);
