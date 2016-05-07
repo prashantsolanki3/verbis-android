@@ -75,10 +75,12 @@ public class WordListViewPagerActivity extends VerbisActivity {
     SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
 
     boolean moveToPos =true;
+    static final String ARG_WRODLIST_ID = "wordlist_id";
+    String wordlistId = null;
 
-    public static Intent createIntent(Context context, int pos){
+    public static Intent createIntent(Context context, String wordlistId){
         Intent intent = createIntent(context);
-        intent.putExtra("pos",pos);
+        intent.putExtra(ARG_WRODLIST_ID,wordlistId);
         return intent;
     }
 
@@ -87,6 +89,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
         return intent;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +98,11 @@ public class WordListViewPagerActivity extends VerbisActivity {
         wordListManager = new WordListManager(this);
         ButterKnife.bind(this);
         handleFabStatus(FabStatus.ADD);
+
+        if(getIntent()!=null&&getIntent().getStringExtra(ARG_WRODLIST_ID)!=null&&moveToPos) {
+            wordlistId = getIntent().getStringExtra(ARG_WRODLIST_ID);
+            moveToPos =false;
+        }
         pageIndicator.setVisibility(View.INVISIBLE);
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
@@ -112,10 +121,12 @@ public class WordListViewPagerActivity extends VerbisActivity {
                         pageIndicator.setVisibility(View.VISIBLE);
 
                         //Move to the position of the wordlist only once
-                        if(wordList.size()>getIntent().getIntExtra("pos",0)&&moveToPos){
+                        gotoWordList(wordlistId);
+
+                       /* if(wordList.size()>getIntent().getIntExtra("pos",0)&&moveToPos){
                             mViewPager.setCurrentItem(getIntent().getIntExtra("pos",0));
                             moveToPos=false;
-                        }
+                        }*/
                     }
                 }
             }
@@ -139,7 +150,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
 
             @Override
             public void onPageSelected(int position) {
-
+                //Get Current Selection
+                wordlistId = mWordListViewPagerAdapter.get(position).getId();
             }
 
             @Override
@@ -170,6 +182,19 @@ public class WordListViewPagerActivity extends VerbisActivity {
             }
         });
     }
+
+
+
+    void gotoWordList(String id){
+        for(int i=0;i<mWordListViewPagerAdapter.getCount();++i){
+            WordList w=mWordListViewPagerAdapter.getAll().get(i);
+            if(id!=null){
+                if(id.equals(w.getId()))
+                    mViewPager.setCurrentItem(i,true);
+            }
+        }
+    }
+
 
     @OnClick(R.id.fab)
     void onFabClick(){

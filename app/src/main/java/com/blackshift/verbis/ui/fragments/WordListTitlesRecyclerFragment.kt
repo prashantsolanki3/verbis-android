@@ -57,7 +57,13 @@ class WordListTitlesRecyclerFragment : Fragment() {
             }
 
             override fun onItemClick(p0: SnapViewHolder<*>?, p1: View?, p2: Int) {
-                startActivity(WordListViewPagerActivity.createIntent(context,p2))
+
+                var wl :WordList? = null
+                if(p0!=null && p0.itemData!=null)
+                    wl = p0.itemData as WordList
+
+                startActivity(WordListViewPagerActivity.createIntent(context,wl!!.id))
+
             }
         })
 
