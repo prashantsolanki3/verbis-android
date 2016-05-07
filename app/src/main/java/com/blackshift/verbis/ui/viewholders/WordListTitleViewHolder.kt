@@ -64,14 +64,10 @@ class WordListTitleViewHolder : SnapSelectableViewHolder<WordList> {
     }
 
     fun setStarIcon(isStarred: Boolean = false){
-        val starDrawable: MaterialIcons
         if (isStarred)
-            starDrawable = MaterialIcons.md_star
+            star.setImageDrawable(IconDrawable(context,MaterialIcons.md_star).colorRes(android.R.color.darker_gray).sizeDp(16))
         else
-            starDrawable = MaterialIcons.md_star_border
-
-        star.setImageDrawable(IconDrawable(context,starDrawable).colorRes(android.R.color.darker_gray).sizeDp(16))
-
+            star.visibility = View.GONE
     }
 
     //TODO: Complete this

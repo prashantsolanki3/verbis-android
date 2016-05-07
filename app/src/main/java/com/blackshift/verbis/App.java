@@ -7,7 +7,7 @@ import android.support.multidex.MultiDex;
 
 import com.blackshift.verbis.auth.LoginActivity;
 import com.blackshift.verbis.rest.service.DictionaryService;
-import com.blackshift.verbis.ui.activity.HomePageActivity;
+import com.blackshift.verbis.rest.service.VerbisService;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
@@ -16,8 +16,6 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
 import com.squareup.okhttp.OkHttpClient;
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import io.fabric.sdk.android.Fabric;
 import io.github.prashantsolanki3.shoot.Shoot;
@@ -46,8 +44,10 @@ public class App extends Application {
     final static public String FIREBASE_BASE_URL="https://verbis.firebaseio.com";
     final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries/";
     final static public String WORDS_API_ENDPOINT = "https://wordsapiv1.p.mashape.com/words/";
+    final static public String VERBIS_ENDPOINT = "https://verbis-backend.herokuapp.com/";
 
     static DictionaryService dictionaryService = null;
+    static VerbisService verbisService = null;
     static App app;
     private Firebase firebase;
     private AuthData authData;
@@ -57,8 +57,8 @@ public class App extends Application {
         MultiDex.install(this);
         super.onCreate();
         app =this;
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig), new Crashlytics(), new Answers());
+//        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this/*, new Twitter(authConfig)*/, new Crashlytics(), new Answers());
         Firebase.setAndroidContext(this);
         Firebase.getDefaultConfig().setPersistenceEnabled(true);
         firebase = new Firebase(FIREBASE_BASE_URL);
@@ -91,10 +91,22 @@ public class App extends Application {
                 .client(new OkHttpClient())
                 .build();
 
+        Retrofit retrofitVerbis = new Retrofit.Builder()
+                .baseUrl(VERBIS_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(new OkHttpClient())
+                .build();
+
         if(dictionaryService == null)
             dictionaryService = retrofit.create(DictionaryService.class);
 
+        if(verbisService==null)
+            verbisService = retrofitVerbis.create(VerbisService.class);
+
     }
+
+
+
     public static String getTwitterSecret(){return TWITTER_SECRET;}
 
     public synchronized static App getApp(){
@@ -112,11 +124,11 @@ public class App extends Application {
     public synchronized static DictionaryService getDictionaryService(){
         return dictionaryService;
     }
-    void startMainActivity(){
-        Intent i = new Intent(this, HomePageActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(i);
+
+    public synchronized static VerbisService getVerbisService(){
+        return verbisService;
     }
+
     void startLoginActivity(){
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

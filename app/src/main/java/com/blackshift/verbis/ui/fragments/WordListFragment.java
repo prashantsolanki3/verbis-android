@@ -12,13 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.wordlist.Word;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
+import com.blackshift.verbis.ui.activity.DictionaryActivity;
 import com.blackshift.verbis.ui.viewholders.WordViewHolder;
-import com.blackshift.verbis.utils.DateUtils;
 import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
@@ -103,12 +102,12 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
             adapter.setOnItemClickListener(new SnapSelectableOnItemClickListener(adapter) {
                 @Override
                 public void onItemClick(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
-                    Toast.makeText(getContext(),"short",Toast.LENGTH_SHORT).show();
+                    startActivity(DictionaryActivity.createIntent(WordListFragment.this.context,((Word)snapSelectableViewHolder.getItemData()).getHeadword()));
                 }
 
                 @Override
                 public void onItemLongPress(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
-                    //Toast.makeText(getContext(),"long",Toast.LENGTH_SHORT).show();
+
                 }
             });
 
@@ -228,7 +227,8 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
                             Intent sendIntent = new Intent();
                             sendIntent.setAction(Intent.ACTION_SEND);
                             sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey Check out My Wordlist: " +
-                                    wordList.getTitle() + ", on Verbis.\n" + wordList.getId());
+                                    wordList.getTitle() + ", on Verbis.");
+
                             sendIntent.setType("text/plain");
                             startActivity(Intent.createChooser(sendIntent, "Share via"));
                             return true;
@@ -243,13 +243,6 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
                             return true;
                     }
                     return false;
-                }
-            });
-
-            wordlistToolbar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    manager.addWord(DateUtils.getTimestampUTC() + "Timsestmp", DateUtils.getTimestampUTC() + "id", wordlistId, null);
                 }
             });
         }

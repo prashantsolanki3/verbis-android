@@ -15,11 +15,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
 import com.blackshift.verbis.utils.FirebaseErrorHandler;
+import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.SignUpEvent;
 import com.facebook.AccessToken;
@@ -57,6 +59,7 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.prashantsolanki3.utiloid.Utiloid;
 import retrofit.Response;
 import retrofit.Retrofit;
 
@@ -98,13 +101,34 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        Glide.with(this)
+                .load(R.drawable.icon)
+                .centerCrop()
+                .into((ImageView)findViewById(R.id.icon));
+        Glide.with(this)
+                .load(R.drawable.name)
+                .centerCrop()
+                .into((ImageView)findViewById(R.id.name));
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ViewGroup.LayoutParams toolbarParams = toolbar.getLayoutParams();
+        toolbarParams.height = (int) Utiloid.DISPLAY_UTILS.getScreenWidthPixels()+10;
+        toolbar.setLayoutParams(toolbarParams);
+
         setSupportActionBar(toolbar);
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setTitle("");
+
         CoordinatorLayout.LayoutParams cl = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         abl.setLayoutParams(cl);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         if (collapsingToolbarLayout != null) {
-            collapsingToolbarLayout.setTitle("Verbis");
+            collapsingToolbarLayout.setTitle("");
+            collapsingToolbarLayout.setTitleEnabled(false);
+            collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+            collapsingToolbarLayout.setContentScrimColor(getResources().getColor(android.R.color.transparent));
+            collapsingToolbarLayout.setStatusBarScrimColor(getResources().getColor(android.R.color.transparent));
         }
 
 
@@ -113,6 +137,8 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
 
+        assert loginButton != null;
+        loginButton.setVisibility(View.GONE);
         //Twitter login starts
         assert loginButton != null;
         loginButton.setCallback(new Callback<TwitterSession>() {
@@ -230,8 +256,6 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                              abl.setExpanded(false, true);
                          }
                      },1500);
-
-
                 }
             }
         });
@@ -249,6 +273,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
     }
 
 

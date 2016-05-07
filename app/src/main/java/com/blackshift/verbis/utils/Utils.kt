@@ -43,8 +43,8 @@ class  Utils {
         }
 
         @JvmStatic
-        fun getSynonyms(results: List<Result>):List<String>{
-            var syn= ArrayList<String>()
+        fun getSynonyms(results: List<Result>):HashSet<String>{
+            var syn= HashSet<String>()
 
             for(res in results){
                 for (s in res.synonyms)
@@ -55,8 +55,8 @@ class  Utils {
         }
 
         @JvmStatic
-        fun getAntonyms(results: List<Result>):List<String>{
-            var an= ArrayList<String>()
+        fun getAntonyms(results: List<Result>):HashSet<String>{
+            var an= HashSet<String>()
 
             for(res in results){
                 for (s in res.antonyms)

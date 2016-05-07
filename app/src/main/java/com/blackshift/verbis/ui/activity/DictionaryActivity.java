@@ -44,6 +44,7 @@ import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -220,7 +221,7 @@ public class DictionaryActivity extends VerbisActivity {
         Set<String> partOfSpeech = Utils.getAllPartOfSpeech(wordsApiResult.getResults());
         List<List<MeaningAndExample>> meaningAndExampleList = Utils.getResultSortedByPartOfSpeech(wordsApiResult.getResults(), partOfSpeech);
 
-        List<String> synonymsList = Utils.getSynonyms(wordsApiResult.getResults());
+        HashSet<String> synonymsList = Utils.getSynonyms(wordsApiResult.getResults());
 
         synonyms.clear();
         antonyms.clear();
@@ -242,7 +243,7 @@ public class DictionaryActivity extends VerbisActivity {
             findViewById(R.id.synonyms_header).setVisibility(View.GONE);
         }
 
-        List<String> antonymsList = Utils.getAntonyms(wordsApiResult.getResults());
+        HashSet<String> antonymsList = Utils.getAntonyms(wordsApiResult.getResults());
         if(!antonymsList.isEmpty()) {
             findViewById(R.id.antonyms_header).setVisibility(View.VISIBLE);
             antonyms.setVisibility(View.VISIBLE);
