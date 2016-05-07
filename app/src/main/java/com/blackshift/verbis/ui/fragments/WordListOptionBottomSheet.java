@@ -16,12 +16,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.rest.model.wordlist.Word;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.ui.activity.DictionaryActivity;
 import com.blackshift.verbis.ui.viewholders.WordListBottomSheetViewHolder;
-import com.blackshift.verbis.utils.listeners.WordArrayListener;
+import com.blackshift.verbis.utils.listeners.ExistenceListener;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
@@ -114,64 +114,50 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
                         new RecyclerItemClickListener.OnItemClickListener() {
 
                             @Override
-                            public void onItemClick(View view, int position) {
-                                checkIfWordExist(wordLists.get(position),
-                                        getArguments().getString(DictionaryActivity.ARG_BOTTOMSHEET_WORD));
-                            }
+                            public void onItemClick(View view,final int position) {
+                                wordListManager.containsWord(getArguments().getString(DictionaryActivity.ARG_BOTTOMSHEET_WORD),
+                                        wordLists.get(position).getId(), new ExistenceListener() {
+                                            @Override
+                                            public void onSuccess(boolean exists) {
+                                                if (exists)
+                                                    Toast.makeText(WordListOptionBottomSheet.this.getContext(),
+                                                            "Word already exists.", Toast.LENGTH_SHORT).show();
+                                                else
+                                                    addWordToWordList(wordLists.get(position).getId(),getArguments().getString(DictionaryActivity.ARG_BOTTOMSHEET_WORD));
+                                            }
 
+                                            @Override
+                                            public void onFailure(FirebaseError firebaseError) {
+                                                Toast.makeText(WordListOptionBottomSheet.this.getContext(),
+                                                        "Word could not be added. Check your Internet Connection.",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
                         })
         );
     }
 
-    private void checkIfWordExist(final WordList wordList, final String string) {
-        wordListManager.getWordsFromWordList(wordList, new WordArrayListener() {
-            @Override
-            public void onSuccess(@Nullable List<Word> words) {
-                boolean alreadyExist = false;
-                if (words != null) {
-                    for (Word word : words){
-                        if (word.getHeadword().equalsIgnoreCase(string)){
-                            alreadyExist = true;
-                            break;
-                        }
-                    }
-
-                    //TODO: Fix this
-                    if (alreadyExist){
-                        Toast.makeText(WordListOptionBottomSheet.this.getContext(),
-                                "Word already exists.", Toast.LENGTH_SHORT).show();
-                    }else{
-                        addWordToWordList(wordList.getId(), string);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(FirebaseError firebaseError) {
-                Log.e("Error", firebaseError.toString());
-            }
-        });
-    }
-
-    private void addWordToWordList(String id, String string) {
-        wordListManager.addWord(string, getArguments().getString("url"),
-                id, new WordListener() {
+    private void addWordToWordList(String wordlistId, String headword) {
+        wordListManager.addWord(headword, headword,
+                wordlistId, new WordListener() {
                     @Override
                     public void onSuccess(String firebaseReferenceString) {
-                        Toast.makeText(WordListOptionBottomSheet.this.getContext(),
+                        Toast.makeText(App.getContext(),
                                 "Word has been successfully added",
                                 Toast.LENGTH_SHORT).show();
-                                WordListOptionBottomSheet.this.dismiss();
                     }
 
                     @Override
                     public void onFailure(FirebaseError firebaseError) {
-                        Toast.makeText(WordListOptionBottomSheet.this.getContext(),
+                        Toast.makeText(App.getContext(),
                                 "Word could not be added. Check your Internet Connection.",
                                 Toast.LENGTH_SHORT).show();
                         Log.e("Error", firebaseError.toString());
+
                     }
         });
+        WordListOptionBottomSheet.this.dismiss();
     }
 
     public static class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {

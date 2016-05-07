@@ -165,7 +165,7 @@ public class DictionaryActivity extends VerbisActivity {
                                 manageAddWordFab(retrofit.baseUrl(), query);
 
                                 if (response.body().getPronunciation() != null) {
-                                    collapsingToolbarLayout.setTitle(response.body().getWord() + "(" +
+                                    collapsingToolbarLayout.setTitle(response.body().getWord() + " (" +
                                             response.body().getPronunciation().getAll() + ")");
                                 }else{
                                     collapsingToolbarLayout.setTitle(response.body().getWord());

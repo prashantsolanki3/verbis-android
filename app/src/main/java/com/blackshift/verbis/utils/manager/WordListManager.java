@@ -9,6 +9,7 @@ import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.utils.DateUtils;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.annotations.PrivacyLevel;
+import com.blackshift.verbis.utils.listeners.ExistenceListener;
 import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
@@ -216,6 +217,33 @@ public class WordListManager {
                 listener.onFailure(firebaseError);
             }
         });
+    }
+
+    public void containsWord(final String word, String wordListId, final ExistenceListener listener){
+        final Firebase firebase = getContentFirebaseRef();
+        try{
+            firebase.child(wordListId).orderByChild("headword").equalTo(word).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.hasChildren()) {
+                        Word word1 = dataSnapshot.getChildren().iterator().next().getValue(Word.class);
+                        if (word1 != null && word1.getHeadword() != null)
+                            listener.onSuccess(word1.getHeadword().equalsIgnoreCase(word));
+                    }else
+                        //Does not exist or empty wordlist
+                        listener.onSuccess(false);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    listener.onFailure(firebaseError);
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+            if(listener!=null)
+                listener.onFailure(FirebaseError.fromException(e));
+        }
     }
 
     public void addWord(@NonNull Word word,WordList wordList, WordListener listener){
