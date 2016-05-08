@@ -7,6 +7,7 @@ import android.support.annotation.NonNull
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import com.blackshift.verbis.R
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult
@@ -32,6 +33,7 @@ class WordOfTheDayFragment : VerbisFragment() {
     private var dateStamp:Long = -1
     lateinit var rootview:View
     lateinit var word: FontTextView
+    lateinit var progressBar:ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +71,7 @@ class WordOfTheDayFragment : VerbisFragment() {
         meaning = find(R.id.wotd_meaning)
         partOfSpeech = find(R.id.wotd_part_of_speech)
         date = find(R.id.wotd_date)
+        progressBar = find(R.id.progressBar)
     }
 
     fun <T: View> WordOfTheDayFragment.find(@IdRes id:Int):T{
@@ -86,13 +89,16 @@ class WordOfTheDayFragment : VerbisFragment() {
             override fun onFound(wordsApiResult: WordsApiResult) {
                 meaning.text = wordsApiResult.results[0].definition
                 partOfSpeech.text = wordsApiResult.results[0].partOfSpeech
+                progressBar.visibility = View.GONE
              }
 
             override fun onNotFound() {
+                progressBar.visibility = View.GONE
             }
 
             override fun onFailure(throwable: Throwable?) {
-
+                progressBar.visibility = View.GONE
+                throwable?.printStackTrace()
             }
         })
         }

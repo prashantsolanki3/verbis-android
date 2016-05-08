@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
@@ -75,6 +76,7 @@ public class DictionaryActivity extends VerbisActivity {
     ArrayList<String> recentWords = new ArrayList<>();
     RecentWordsManager recentWordsManager;
     RecentWordsManager wordNotFoundManager;
+    ProgressBar progressBar;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -131,6 +133,7 @@ public class DictionaryActivity extends VerbisActivity {
         synonyms.clear();
         antonyms = (AutoLabelUI) findViewById(R.id.antonyms);
         antonyms.clear();
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
     @Override
@@ -154,6 +157,7 @@ public class DictionaryActivity extends VerbisActivity {
             suggestions.saveRecentQuery(query, null);
             // TODO : Add in settings the facility to clear history
             // TODO : Add accent preference
+            progressBar.setVisibility(View.VISIBLE);
 
             new DictionaryManager(this).searchWord(query, new DictionaryListener() {
                 @Override
@@ -170,16 +174,20 @@ public class DictionaryActivity extends VerbisActivity {
                     }else{
                         collapsingToolbarLayout.setTitle(wordsApiResult.getWord());
                     }
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onNotFound() {
                     collapsingToolbarLayout.setTitle("Not Found.");
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onFailure(@Nullable Throwable throwable) {
-
+                    progressBar.setVisibility(View.GONE);
+                    if(throwable!=null)
+                        throwable.printStackTrace();
                 }
             });
         }

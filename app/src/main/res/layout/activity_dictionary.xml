@@ -38,6 +38,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:id="@+id/dictionary_scroll_view"
@@ -110,6 +112,14 @@
     </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom"
+        layout="@layout/progressbar_horizontal"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_pronounce"
         android:layout_width="wrap_content"
