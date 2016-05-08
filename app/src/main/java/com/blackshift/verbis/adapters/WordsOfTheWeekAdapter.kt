@@ -2,35 +2,37 @@ package com.blackshift.verbis.adapters
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
-import android.util.Log
+import android.support.v4.app.FragmentPagerAdapter
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
-
 import com.blackshift.verbis.ui.fragments.WordOfTheDayFragment
-import io.realm.Realm
-import io.realm.RealmResults
 
 /**
+ *
  * Created by Devika on 11-03-2016.
  */
-class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
-    val realm: Realm
-    val result: RealmResults<WordOfTheDay>
+    var result:List<WordOfTheDay>?
 
     init {
-        realm = Realm.getDefaultInstance()
-        result = realm.where(WordOfTheDay::class.java).findAll()
-        Log.d("word count","${getCount()}")
+        result =null
+    }
 
-        result.addChangeListener { notifyDataSetChanged() }
+    fun setWords(res: List<WordOfTheDay>){
+        result = res
+        notifyDataSetChanged()
     }
 
     override fun getItem(position: Int): Fragment {
-        return WordOfTheDayFragment.newInstance(result[position].word)
+        if(result!=null)
+        return WordOfTheDayFragment.newInstance(result!![position])
+
+        return Fragment()
     }
 
     override fun getCount(): Int {
-        return result.size
+        if(result!=null)
+            return result!!.size
+        return 0
     }
 }

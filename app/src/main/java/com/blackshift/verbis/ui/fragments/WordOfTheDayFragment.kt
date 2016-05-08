@@ -3,15 +3,21 @@ package com.blackshift.verbis.ui.fragments
 
 import android.os.Bundle
 import android.support.annotation.IdRes
+import android.support.annotation.NonNull
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.blackshift.verbis.R
+import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult
+import com.blackshift.verbis.ui.widgets.FontTextView
 import com.blackshift.verbis.utils.listeners.DictionaryListener
 import com.blackshift.verbis.utils.manager.DictionaryManager
+import io.realm.Realm
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 
 /**
@@ -21,23 +27,21 @@ import com.blackshift.verbis.utils.manager.DictionaryManager
  */
 class WordOfTheDayFragment : VerbisFragment() {
 
-    private var mWord: String? = null
+    private var mWord: WordOfTheDay? = null
 
-    var wordOfTheDayText: TextView? = null
-    var date: TextView? = null
-    var word: TextView? = null
-    var meaning: TextView? = null
-    var pronunciation: TextView? = null
-    var speaker: ImageView? = null
+    private var dateStamp:Long = -1
+    lateinit var rootview:View
+    lateinit var word: FontTextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            mWord = arguments.getString(ARG_PARAM1)
+            dateStamp = arguments.getLong(ARG_PARAM1,-1)
+            if(!dateStamp.equals(-1))
+            mWord = Realm.getDefaultInstance().where(WordOfTheDay::class.java).equalTo("date",dateStamp).findFirst()
         }
     }
-
-    lateinit var rootview:View
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -46,19 +50,22 @@ class WordOfTheDayFragment : VerbisFragment() {
         //To initialize the views
         //ButterKnife.bind(this, view)
         init()
+        Log.d("word",mWord!!.word)
 
-        populatingTextView()
+       populatingTextView()
 
-        return view
+        return rootview
     }
 
+    lateinit var meaning:FontTextView
+    lateinit var partOfSpeech:FontTextView
+    lateinit var date:FontTextView
+
     fun init(){
-        wordOfTheDayText = find(R.id.word_of_the_day_text)
-        date = find(R.id.date)
-        word = find(R.id.word)
-        meaning= find(R.id.meaning)
-        pronunciation= find(R.id.pronunciation)
-        speaker = find(R.id.speaker)
+        word = find(R.id.wotd_word)
+        meaning = find(R.id.wotd_meaning)
+        partOfSpeech = find(R.id.wotd_part_of_speech)
+        date = find(R.id.wotd_date)
     }
 
     fun <T: View> WordOfTheDayFragment.find(@IdRes id:Int):T{
@@ -66,15 +73,17 @@ class WordOfTheDayFragment : VerbisFragment() {
     }
 
     private fun populatingTextView() {
+        if(mWord!=null){
+        word.text = mWord?.word
+            var dtf:DateTimeFormatter = DateTimeFormat.forPattern("MMM ddd YYYY")
 
-        //TODO: Didi don't do this. :p Har jaga date format same nai hota. Use the method. isme kabi b error aa skta h.
-        word?.text = mWord
-        date?.text
-        DictionaryManager(activity).searchWord(mWord!!, object : DictionaryListener{
+        date.text = DateTime(mWord?.date?.times(1000)).toString(dtf)
+
+       DictionaryManager(activity).searchWord(mWord!!.word, object : DictionaryListener{
             override fun onFound(wordsApiResult: WordsApiResult) {
-                meaning?.text = wordsApiResult.results[0].definition
-                pronunciation?.text = wordsApiResult.pronunciation.all
-            }
+                meaning.text = wordsApiResult.results[0].definition
+                partOfSpeech.text = wordsApiResult.results[0].partOfSpeech
+             }
 
             override fun onNotFound() {
             }
@@ -83,16 +92,17 @@ class WordOfTheDayFragment : VerbisFragment() {
 
             }
         })
+        }
     }
 
     companion object {
 
         private val ARG_PARAM1 = "word"
 
-        fun newInstance(word: String): WordOfTheDayFragment {
+        fun newInstance(@NonNull word: WordOfTheDay): WordOfTheDayFragment {
             val fragment = WordOfTheDayFragment()
             val args = Bundle()
-            args.putString(ARG_PARAM1, word)
+            args.putLong(ARG_PARAM1, word.date)
             fragment.arguments = args
             return fragment
         }

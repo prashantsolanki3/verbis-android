@@ -1,71 +1,79 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout android:orientation="vertical"
+    android:id="@+id/wotd_image_layout"
     android:layout_width="match_parent"
+    tools:context=".ui.fragments.WordOfTheDayFragment"
     android:layout_height="match_parent"
-    android:background="@drawable/word_of_the_day"
-    tools:context=".ui.fragments.WordOfTheDayFragment">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:paddingTop="35dp"
-        android:paddingLeft="35dp"
-        android:textStyle="italic"
-        android:id="@+id/word_of_the_day_text"
-        android:textSize="15sp"
-        android:text="Word of the Day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/wotd_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <TextView
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:paddingTop="35dp"
-        android:paddingRight="35dp"
-        android:textStyle="italic"
-        android:textSize="15sp"
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:id="@+id/wotd_text_overlay"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_centerInParent="true"
-        android:textStyle="bold|italic"
-        android:textAppearance="@android:style/Widget.Holo.EditText"
-        android:textSize="50dp"
-        android:id="@+id/word"
-        android:text="Word of the Day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+            <com.blackshift.verbis.ui.widgets.FontTextView
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp"
+                android:textColor="@android:color/white"
+                android:textAppearance="@android:style/TextAppearance.Small.Inverse"
+                android:id="@+id/wotd_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
 
+            <com.blackshift.verbis.ui.widgets.FontTextView
+                android:id="@+id/wotd_word"
+                android:textStyle="bold"
+                android:textSize="36sp"
+                android:paddingTop="16dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@android:color/white"
+                android:textAppearance="@android:style/TextAppearance.Large.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-    <TextView
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/word"
-        android:textStyle="bold|italic"
-        android:textSize="30dp"
-        android:id="@+id/meaning"
-        android:text="Word of the Day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+            <com.blackshift.verbis.ui.widgets.FontTextView
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="6dp"
+                android:textColor="@android:color/white"
+                android:textAppearance="@android:style/TextAppearance.Small.Inverse"
+                android:id="@+id/wotd_part_of_speech"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/wotd_word"
+                android:layout_toEndOf="@id/wotd_word"
+                android:layout_toRightOf="@id/wotd_word"/>
+            <View
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/divider"
+                android:layout_below="@id/wotd_word"
+                android:background="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
 
+            <com.blackshift.verbis.ui.widgets.FontTextView
+                android:layout_below="@id/divider"
+                android:textAppearance="@android:style/TextAppearance.Small.Inverse"
+                android:id="@+id/wotd_meaning"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <TextView
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/meaning"
-        android:textStyle="bold|italic"
-        android:textSize="20dp"
-        android:id="@+id/pronunciation"
-        android:text="Word of the Day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    </RelativeLayout>
 
-    <ImageView
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:paddingBottom="25dp"
-        android:paddingRight="25dp"
-        android:id="@+id/speaker"
-        android:layout_width="50dp"
-        android:layout_height="50dp" />
-
-</RelativeLayout>
+</FrameLayout>

@@ -24,6 +24,7 @@ import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
+import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
@@ -45,6 +46,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.prashantsolanki3.utiloid.Utiloid;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static com.blackshift.verbis.App.getApp;
@@ -97,9 +102,12 @@ public class HomePageActivity extends VerbisActivity
         manageDrawer();
         manageWordOfTheDayViewPager();
         mangeBaseViewPager();
-
+        try {
+            findViewById(R.id.appbar).getLayoutParams().height = (int) Utiloid.DISPLAY_UTILS.getScreenWidthPixels();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -138,10 +146,20 @@ public class HomePageActivity extends VerbisActivity
         baseViewpager.addOnPageChangeListener(new TabLayout.
                 TabLayoutOnPageChangeListener(tabLayout));
     }
-
+    WordsOfTheWeekAdapter wordsOfTheWeekAdapter;
     private void manageWordOfTheDayViewPager() {
 
-        viewPagerWordOfTheDay.setAdapter(new WordsOfTheWeekAdapter(getSupportFragmentManager()));
+        wordsOfTheWeekAdapter = new WordsOfTheWeekAdapter(getSupportFragmentManager());
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class).findAll();
+        results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
+            @Override
+            public void onChange(RealmResults<WordOfTheDay> element) {
+                    wordsOfTheWeekAdapter.setWords(element);
+            }
+        });
+        viewPagerWordOfTheDay.setOffscreenPageLimit(4);
+        viewPagerWordOfTheDay.setAdapter(wordsOfTheWeekAdapter);
         pageIndicator.setViewPager(viewPagerWordOfTheDay);
     }
 

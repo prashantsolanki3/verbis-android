@@ -5,8 +5,9 @@ import com.blackshift.verbis.App
 import com.blackshift.verbis.R
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult
 import com.blackshift.verbis.utils.listeners.DictionaryListener
-import retrofit2.Call
-import retrofit2.Callback
+import retrofit.Callback
+import retrofit.Response
+import retrofit.Retrofit
 
 /**
  * Package com.blackshift.verbis.utils.manager
@@ -24,18 +25,19 @@ class DictionaryManager(val content:Context) {
 
         App.getDictionaryService().getWordDetail(content.getString(R.string.words_api_key), query).enqueue(object :Callback<WordsApiResult>{
 
-            override fun onResponse(call: Call<WordsApiResult>?, response: retrofit2.Response<WordsApiResult>?) {
-                if (response!=null&&response.isSuccessful&&response.body() != null) {
+            override fun onResponse(response: Response<WordsApiResult>?, retrofit: Retrofit?) {
+                if (response!=null&&response.body() != null) {
                     //Found
                     listener.onFound(response.body())
                 } else {
                     listener.onNotFound()
                     // Not Found
                 }
+
             }
 
-            override fun onFailure(call: Call<WordsApiResult>?, t: Throwable?) {
-                    listener.onFailure(t)
+            override fun onFailure(t: Throwable?) {
+                listener.onFailure(t)
             }
         })
     }
