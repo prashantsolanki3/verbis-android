@@ -75,7 +75,7 @@ class WordOfTheDayFragment : VerbisFragment() {
     private fun populatingTextView() {
         if(mWord!=null){
         word.text = mWord?.word
-            var dtf:DateTimeFormatter = DateTimeFormat.forPattern("MMM ddd YYYY")
+            var dtf:DateTimeFormatter = DateTimeFormat.forPattern("MMM dd YYYY")
 
         date.text = DateTime(mWord?.date?.times(1000)).toString(dtf)
 
