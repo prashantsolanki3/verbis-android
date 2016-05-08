@@ -2,8 +2,9 @@ package com.blackshift.verbis.rest.service
 
 import com.blackshift.verbis.rest.model.verbismodels.Response
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
-import retrofit2.Call
-import retrofit2.http.GET
+import retrofit.Call
+import retrofit.http.GET
+import retrofit.http.Query
 
 /**
  * Package com.blackshift.verbis.rest.service
@@ -18,6 +19,6 @@ import retrofit2.http.GET
 internal interface VerbisService{
 
     @GET("word-of-the-day/")
-    fun getWordOfTheDay():Call<Response<List<WordOfTheDay>>>
+    fun getWordOfTheDay(@Query("from") from: Long,@Query("to") to:Long):Call<Response<List<WordOfTheDay>>>
 
 }

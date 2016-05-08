@@ -8,6 +8,7 @@ import android.support.multidex.MultiDex;
 import com.blackshift.verbis.auth.LoginActivity;
 import com.blackshift.verbis.rest.service.DictionaryService;
 import com.blackshift.verbis.rest.service.VerbisService;
+import com.blackshift.verbis.utils.manager.WordOfTheDayManager;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
@@ -20,6 +21,8 @@ import com.squareup.okhttp.OkHttpClient;
 import io.fabric.sdk.android.Fabric;
 import io.github.prashantsolanki3.shoot.Shoot;
 import io.github.prashantsolanki3.utiloid.Utiloid;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 
@@ -84,7 +87,11 @@ public class App extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this)
+                .schemaVersion(1)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(realmConfiguration);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(WORDS_API_ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -102,6 +109,9 @@ public class App extends Application {
 
         if(verbisService==null)
             verbisService = retrofitVerbis.create(VerbisService.class);
+
+        //Fetches Word of the day and adds it to Realm
+        new WordOfTheDayManager(this).getWordOfTheDay();
 
     }
 

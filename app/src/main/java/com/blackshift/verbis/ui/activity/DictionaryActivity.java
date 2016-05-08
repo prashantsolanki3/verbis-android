@@ -33,6 +33,8 @@ import com.blackshift.verbis.ui.viewholders.MeaningViewHolder;
 import com.blackshift.verbis.ui.viewholders.PartOfSpeechViewHolder;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.Utils;
+import com.blackshift.verbis.utils.listeners.DictionaryListener;
+import com.blackshift.verbis.utils.manager.DictionaryManager;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.dpizarro.autolabel.library.Label;
@@ -43,6 +45,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -51,10 +56,6 @@ import java.util.Set;
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter;
 import io.github.prashantsolanki3.snaplibrary.snap.layout.managers.SnapNestedLinearLayoutManger;
 import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrapper;
-import retrofit.BaseUrl;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 public class DictionaryActivity extends VerbisActivity {
 
@@ -154,37 +155,33 @@ public class DictionaryActivity extends VerbisActivity {
             // TODO : Add in settings the facility to clear history
             // TODO : Add accent preference
 
-            App.getDictionaryService().getWordDetail(getString(R.string.words_api_key), query)
-                    .enqueue(new Callback<WordsApiResult>() {
+            new DictionaryManager(this).searchWord(query, new DictionaryListener() {
+                @Override
+                public void onFound(@NotNull WordsApiResult wordsApiResult) {
+                    setupRecyclerView(wordsApiResult);
+                    recentWords.add(query);
 
-                        @Override
-                        public void onResponse(Response<WordsApiResult> response, Retrofit retrofit) {
+                    // TODO : Share Url
+                    manageShare(wordsApiResult.getWord());
+                    manageAddWordFab(query, query);
+                    if (wordsApiResult.getPronunciation() != null) {
+                        collapsingToolbarLayout.setTitle(wordsApiResult.getWord() + " (" +
+                                wordsApiResult.getPronunciation().getAll() + ")");
+                    }else{
+                        collapsingToolbarLayout.setTitle(wordsApiResult.getWord());
+                    }
+                }
 
-                            if (response.body() != null) {
+                @Override
+                public void onNotFound() {
+                    collapsingToolbarLayout.setTitle("Not Found.");
+                }
 
-                                manageShare(response.body().getWord());
-                                // TODO : Add pronunciation
-                                manageAddWordFab(retrofit.baseUrl(), query);
+                @Override
+                public void onFailure(@Nullable Throwable throwable) {
 
-                                if (response.body().getPronunciation() != null) {
-                                    collapsingToolbarLayout.setTitle(response.body().getWord() + " (" +
-                                            response.body().getPronunciation().getAll() + ")");
-                                }else{
-                                    collapsingToolbarLayout.setTitle(response.body().getWord());
-                                }
-
-                                setupRecyclerView(response.body());
-                                recentWords.add(query);
-                            }else{
-                                //TODO: Not Found
-                                collapsingToolbarLayout.setTitle("Not Found.");
-                            }
-                        }
-                        @Override
-                        public void onFailure(Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
+                }
+            });
         }
 
     }
@@ -280,7 +277,7 @@ public class DictionaryActivity extends VerbisActivity {
 
     }
 
-    private void manageAddWordFab(final BaseUrl baseUrl, final String word){
+    private void manageAddWordFab(final String baseUrl, final String word){
 
         addToListFAB.setVisibility(View.VISIBLE);
 
@@ -293,7 +290,7 @@ public class DictionaryActivity extends VerbisActivity {
 
                 BottomSheetDialogFragment bottomSheetDialogFragment = new WordListOptionBottomSheet();
                 Bundle bundle = new Bundle();
-                bundle.putString(ARG_WORD_URL, baseUrl.url() + word);
+                bundle.putString(ARG_WORD_URL, baseUrl + word);
                 bundle.putString(ARG_BOTTOMSHEET_WORD, word);
                 bottomSheetDialogFragment.setArguments(bundle);
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
