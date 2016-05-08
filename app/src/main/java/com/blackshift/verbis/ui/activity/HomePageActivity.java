@@ -152,6 +152,8 @@ public class HomePageActivity extends VerbisActivity
         wordsOfTheWeekAdapter = new WordsOfTheWeekAdapter(getSupportFragmentManager());
         Realm realm = Realm.getDefaultInstance();
         RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class).findAll();
+        wordsOfTheWeekAdapter.setWords(results);
+
         results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
             @Override
             public void onChange(RealmResults<WordOfTheDay> element) {

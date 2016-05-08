@@ -4,13 +4,13 @@ package com.blackshift.verbis.ui.fragments
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.NonNull
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blackshift.verbis.R
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult
+import com.blackshift.verbis.ui.activity.DictionaryActivity
 import com.blackshift.verbis.ui.widgets.FontTextView
 import com.blackshift.verbis.utils.listeners.DictionaryListener
 import com.blackshift.verbis.utils.manager.DictionaryManager
@@ -50,9 +50,12 @@ class WordOfTheDayFragment : VerbisFragment() {
         //To initialize the views
         //ButterKnife.bind(this, view)
         init()
-        Log.d("word",mWord!!.word)
 
-       populatingTextView()
+        rootview.setOnClickListener {
+            startActivity(DictionaryActivity.createIntent(activity,mWord!!.word))
+        }
+
+        populatingTextView()
 
         return rootview
     }
