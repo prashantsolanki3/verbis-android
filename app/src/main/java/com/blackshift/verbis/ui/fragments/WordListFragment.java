@@ -102,7 +102,9 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
             adapter.setOnItemClickListener(new SnapSelectableOnItemClickListener(adapter) {
                 @Override
                 public void onItemClick(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
-                    startActivity(DictionaryActivity.createIntent(WordListFragment.this.context,((Word)snapSelectableViewHolder.getItemData()).getHeadword()));
+                    if (!adapter.isSelectionEnabled()) {
+                        startActivity(DictionaryActivity.createIntent(WordListFragment.this.context, ((Word) snapSelectableViewHolder.getItemData()).getHeadword()));
+                    }
                 }
 
                 @Override
