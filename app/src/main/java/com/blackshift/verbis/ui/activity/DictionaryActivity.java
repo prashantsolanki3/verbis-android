@@ -474,7 +474,7 @@ public class DictionaryActivity extends VerbisActivity {
         if(state==FOUND||state==LOADING){
             snapMultiAdapter.hideAlternateLayout();
         }else {
-            Glide.with(this)
+            Glide.with(App.getContext())
                     .load(placeholder)
                     .into(img);
             snapMultiAdapter.showAlternateLayout(v);
