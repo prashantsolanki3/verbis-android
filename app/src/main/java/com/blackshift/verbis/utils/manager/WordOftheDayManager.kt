@@ -23,7 +23,7 @@ open class WordOfTheDayManager(val content: Context){
 
         var today = DateTime.now()
 
-        App.getVerbisService().getWordOfTheDay(today.minusDays(10).withTimeAtStartOfDay().millis.div(1000),today.withTimeAtStartOfDay().millis.div(1000)).enqueue(object :Callback<Response<List<WordOfTheDay>>> {
+        App.getVerbisService().getWordOfTheDay(today.minusDays(7).withTimeAtStartOfDay().millis.div(1000),today.withTimeAtStartOfDay().millis.div(1000)).enqueue(object :Callback<Response<List<WordOfTheDay>>> {
 
             override fun onResponse(response: retrofit.Response<Response<List<WordOfTheDay>>>?, retrofit: Retrofit?) {
                 var realm = Realm.getDefaultInstance()

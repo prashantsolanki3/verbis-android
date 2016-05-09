@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
@@ -42,6 +41,8 @@ import com.blackshift.verbis.utils.listeners.DictionaryListener;
 import com.blackshift.verbis.utils.manager.DictionaryManager;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SearchEvent;
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.dpizarro.autolabel.library.Label;
 import com.google.android.gms.appindexing.Action;
@@ -79,7 +80,7 @@ public class DictionaryActivity extends VerbisActivity {
 
     CoordinatorLayout coordinatorLayout;
     Toolbar toolbar;
-    String query;
+    String query=null;
     CollapsingToolbarLayout collapsingToolbarLayout;
     RecyclerView recyclerView;
     FloatingActionButton shareFAB;
@@ -102,7 +103,11 @@ public class DictionaryActivity extends VerbisActivity {
     public static Intent createIntent(Context content,String text){
         Intent intent = new Intent(content, DictionaryActivity.class);
         intent.setAction(Intent.ACTION_SEARCH);
-        intent.putExtra(SearchManager.QUERY, text);
+        Uri uri = getUriFromQuery(text);
+
+        intent.putExtra(SearchManager.QUERY, uri.getLastPathSegment());
+        intent.setData(uri);
+
         return intent;
     }
 
@@ -169,13 +174,11 @@ public class DictionaryActivity extends VerbisActivity {
     }
 
     private void handleIntent(Intent intent) {
-        //TODO: Handle Intent.Action_View received from Google Search
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())||Intent.ACTION_VIEW.equals(intent.getAction())) {
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = getQueryFromIntent();
 
-            query = intent.getStringExtra(SearchManager.QUERY);
-
-            if (!query.isEmpty()) {
+            if (query!=null&&!query.isEmpty()) {
                 setState(LOADING);
                 // Query must not be empty
 
@@ -218,7 +221,6 @@ public class DictionaryActivity extends VerbisActivity {
                     }
                 });
             }else{
-                //TODO: Handle empty query
                 setState(SEARCH_PROMPT);
             }
         }
@@ -233,14 +235,16 @@ public class DictionaryActivity extends VerbisActivity {
         shareFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"Sorry there was some problem",Toast.LENGTH_SHORT).show();
-                /*Intent sendIntent = new Intent();
+                Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
+
                 sendIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_message_part_1)
-                                    + word + getResources().getString(R.string.share_message_part_2));
+                                    + word + getResources().getString(R.string.share_message_part_2) + "\n"+ getUriFromQuery(word));
+
                 sendIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_app_sub));
+
                 sendIntent.setType("text/plain");
-                startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.share_title)));*/
+                startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.share_title)));
             }
         });
     }
@@ -316,11 +320,10 @@ public class DictionaryActivity extends VerbisActivity {
             @Override
             public void onClick(View view) {
 
-                //collapsingToolbarLayout.setMinimumHeight(500);
-                //TODO: Make URLS
                 BottomSheetDialogFragment bottomSheetDialogFragment = new WordListOptionBottomSheet();
                 Bundle bundle = new Bundle();
-                bundle.putString(ARG_WORD_URL, getResources().getString(R.string.verbis_base_url)+ "/word/" + word);
+
+                bundle.putString(ARG_WORD_URL, getUriFromQuery(word).toString());
                 bundle.putString(ARG_BOTTOMSHEET_WORD, word);
                 bottomSheetDialogFragment.setArguments(bundle);
                 bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
@@ -359,42 +362,78 @@ public class DictionaryActivity extends VerbisActivity {
         return true;
     }
 
+    public String getQueryFromIntent(){
+        Intent intent = getIntent();
+        String query=null;
+
+        if(intent.getAction().equals(Intent.ACTION_VIEW)||intent.getAction().equals(Intent.ACTION_SEARCH)){
+            Uri uri = intent.getData();
+
+            if(uri!=null) {
+                if (!uri.getPathSegments().get(0).equals("word"))
+                    return null;
+
+                if (uri.getPathSegments().size() != 2)
+                    return null;
+
+                query = uri.getLastPathSegment();
+            }
+
+            if(query==null)
+                query = intent.getStringExtra(SearchManager.QUERY);
+        }
+
+        return query;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
 
         client.connect();
+        String query = getQueryFromIntent();
+        if(query!=null) {
+            Thing object = new Thing.Builder()
+                    .setName(query)
+                    .setDescription("Find the meaning of"+query+"on Verbis")
+                    .setUrl(getUriFromQuery(query))
+                    .build();
 
-        Thing object = new Thing.Builder()
-                .setName(getIntent().getStringExtra(SearchManager.QUERY))
-                .setDescription("description")
-                .setUrl(Uri.parse("https://www.verbis.io"))
-                .build();
+            Action viewAction = new Action.Builder(Action.TYPE_VIEW)
+                    .setObject(object)
+                    .setActionStatus(Action.STATUS_TYPE_ACTIVE)
+                    .build();
 
-        Action viewAction = new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
+            Answers.getInstance().logSearch(new SearchEvent().putQuery(query));
 
-        AppIndex.AppIndexApi.start(client, viewAction);
+            AppIndex.AppIndexApi.start(client, viewAction);
+        }
+    }
+
+    public static Uri getUriFromQuery(String q){
+        return Uri.parse(App.getContext().getResources().getString(R.string.verbis_base_url)+"word/"+q);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        Thing object = new Thing.Builder()
-                .setName(getIntent().getStringExtra(SearchManager.QUERY))
-                .setDescription("description")
-                .setUrl(Uri.parse("https://www.verbis.io"))
-                .build();
+        String query = getQueryFromIntent();
+        if(query!=null) {
+            Thing object = new Thing.Builder()
+                    .setName(query)
+                    .setUrl(getUriFromQuery(query))
+                    .setDescription("Find the meaning of" + query + "on Verbis")
+                    .build();
 
-        Action viewAction = new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
+            Action viewAction = new Action.Builder(Action.TYPE_VIEW)
+                    .setObject(object)
+                    .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                    .build();
 
-        AppIndex.AppIndexApi.end(client, viewAction);
+            AppIndex.AppIndexApi.end(client, viewAction);
+        }
+
         client.disconnect();
     }
 

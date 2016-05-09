@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.blackshift.verbis.App
 import com.blackshift.verbis.R
 import com.blackshift.verbis.rest.model.wordlist.WordList
 import com.blackshift.verbis.ui.activity.WordListViewPagerActivity
@@ -88,7 +89,7 @@ class WordListTitlesRecyclerFragment : Fragment() {
                     var v:View? =  wordListSnapAdapter.getViewFromId(R.layout.layout_image)
                     if(v!=null) {
                         val img  = v.findViewById(R.id.imageView) as ImageView
-                        Glide.with(this@WordListTitlesRecyclerFragment)
+                        Glide.with(App.getContext())
                                 .load(R.drawable.nowordlist)
                                 .into(img)
 
@@ -108,7 +109,7 @@ class WordListTitlesRecyclerFragment : Fragment() {
                     else -> image = R.drawable.error
                 }
                 if(v!=null) {
-                    Glide.with(this@WordListTitlesRecyclerFragment)
+                    Glide.with(App.getContext())
                             .load(image)
                             .into(v.findViewById(R.id.imageView) as ImageView)
                     wordListSnapAdapter.showAlternateLayout(v)

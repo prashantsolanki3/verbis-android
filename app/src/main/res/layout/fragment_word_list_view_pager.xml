@@ -15,7 +15,7 @@
         <FrameLayout
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:id="@+id/recyclerView_alternate"
-            android:layout_gravity="top"
+            android:layout_gravity="center"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

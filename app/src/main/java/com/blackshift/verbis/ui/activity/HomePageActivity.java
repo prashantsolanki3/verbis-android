@@ -152,7 +152,13 @@ public class HomePageActivity extends VerbisActivity
         wordsOfTheWeekAdapter = new WordsOfTheWeekAdapter(getSupportFragmentManager());
         Realm realm = Realm.getDefaultInstance();
         RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class).findAll();
-        wordsOfTheWeekAdapter.setWords(results);
+        List<WordOfTheDay> wordOfTheDays = new ArrayList<>();
+        int size = results.size()>7?7:results.size();
+        for (int i = 0; i < size ; i++) {
+            wordOfTheDays.add(results.get(i));
+        }
+
+        wordsOfTheWeekAdapter.setWords(wordOfTheDays);
 
         results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
             @Override
@@ -180,7 +186,6 @@ public class HomePageActivity extends VerbisActivity
                     nameTextView.setText(name);
                     email = (String) authData.getProviderData().get("email");
                     emailTextView.setText(email);
-
                 }
             }
         });

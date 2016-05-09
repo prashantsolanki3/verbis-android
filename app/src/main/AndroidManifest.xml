@@ -74,7 +74,10 @@
                 <data android:scheme="https" />
                 <data android:host="verbis.in" />
                 <data android:host="www.verbis.in" />
+                <data android:pathPrefix="/word/"/>
+
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 
