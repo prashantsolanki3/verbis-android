@@ -72,7 +72,8 @@
 
                 <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="www.verbis.io" />
+                <data android:host="verbis.in" />
+                <data android:host="www.verbis.in" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -89,6 +90,8 @@
         </activity>
 
         <provider
+            android:enabled="true"
+            android:multiprocess="true"
             android:name=".rest.providers.RecentSuggestionsProvider"
             android:authorities="com.blackshift.verbis.rest.providers.RecentSuggestionsProvider" />
         <!--

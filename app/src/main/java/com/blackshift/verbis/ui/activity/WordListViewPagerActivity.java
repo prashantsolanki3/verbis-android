@@ -3,6 +3,8 @@ package com.blackshift.verbis.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.AppBarLayout;
@@ -13,16 +15,21 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.ImageView;
 
+import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.adapters.WordListViewPagerAdapter;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
 import com.blackshift.verbis.ui.widgets.WordListViewPager;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
+import com.bumptech.glide.Glide;
 import com.firebase.client.FirebaseError;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -37,6 +44,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
+
+import static com.blackshift.verbis.ui.activity.WordListViewPagerActivity.WordListViewPagerState.CONNECTION_ERROR;
+import static com.blackshift.verbis.ui.activity.WordListViewPagerActivity.WordListViewPagerState.ERROR;
+import static com.blackshift.verbis.ui.activity.WordListViewPagerActivity.WordListViewPagerState.FOUND_WORD_LIST;
+import static com.blackshift.verbis.ui.activity.WordListViewPagerActivity.WordListViewPagerState.LOADING;
+import static com.blackshift.verbis.ui.activity.WordListViewPagerActivity.WordListViewPagerState.NO_WORD_LIST;
 
 public class WordListViewPagerActivity extends VerbisActivity {
 
@@ -71,16 +84,18 @@ public class WordListViewPagerActivity extends VerbisActivity {
     AppBarLayout appBarLayout;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.recyclerView_alternate)
+    ViewGroup alternateLayout;
 
     SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
 
     boolean moveToPos =true;
-    static final String ARG_WRODLIST_ID = "wordlist_id";
+    static final String ARG_WORDLIST_ID = "wordlist_id";
     String wordlistId = null;
 
     public static Intent createIntent(Context context, String wordlistId){
         Intent intent = createIntent(context);
-        intent.putExtra(ARG_WRODLIST_ID,wordlistId);
+        intent.putExtra(ARG_WORDLIST_ID,wordlistId);
         return intent;
     }
 
@@ -99,11 +114,11 @@ public class WordListViewPagerActivity extends VerbisActivity {
         ButterKnife.bind(this);
         handleFabStatus(FabStatus.ADD);
 
-        if(getIntent()!=null&&getIntent().getStringExtra(ARG_WRODLIST_ID)!=null&&moveToPos) {
-            wordlistId = getIntent().getStringExtra(ARG_WRODLIST_ID);
+        if(getIntent()!=null&&getIntent().getStringExtra(ARG_WORDLIST_ID)!=null&&moveToPos) {
+            wordlistId = getIntent().getStringExtra(ARG_WORDLIST_ID);
             moveToPos =false;
         }
-        pageIndicator.setVisibility(View.INVISIBLE);
+
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -115,18 +130,12 @@ public class WordListViewPagerActivity extends VerbisActivity {
             public void onSuccess(@Nullable List<WordList> wordList) {
                 if(wordList!=null) {
                     mWordListViewPagerAdapter.set(wordList);
-                    if (wordList.size() < 1)
-                        pageIndicator.setVisibility(View.INVISIBLE);
-                    else {
-                        pageIndicator.setVisibility(View.VISIBLE);
-
+                    if (wordList.size() < 1) {
+                        setState(NO_WORD_LIST);
+                    }else {
+                        setState(FOUND_WORD_LIST);
                         //Move to the position of the wordlist only once
                         gotoWordList(wordlistId);
-
-                       /* if(wordList.size()>getIntent().getIntExtra("pos",0)&&moveToPos){
-                            mViewPager.setCurrentItem(getIntent().getIntExtra("pos",0));
-                            moveToPos=false;
-                        }*/
                     }
                 }
             }
@@ -134,6 +143,13 @@ public class WordListViewPagerActivity extends VerbisActivity {
             @Override
             public void onFailure(FirebaseError firebaseError) {
                 firebaseError.toException().printStackTrace();
+                switch (firebaseError.getCode()){
+                    case FirebaseError.NETWORK_ERROR:
+                        setState(CONNECTION_ERROR);
+                        break;
+                    default:
+                        setState(ERROR);
+                }
             }
         });
 
@@ -198,33 +214,35 @@ public class WordListViewPagerActivity extends VerbisActivity {
 
     @OnClick(R.id.fab)
     void onFabClick(){
-        WordListManager wordListManager = new WordListManager(this);
-        switch ((String)fab.getTag()){
-            case FabStatus.ADD:
-                //Because Next state should be Cancel
-                handleFabStatus(FabStatus.CANCEL);
+        if(fab.isClickable()&&fab.isEnabled()) {
+            WordListManager wordListManager = new WordListManager(this);
+            switch ((String) fab.getTag()) {
+                case FabStatus.ADD:
+                    //Because Next state should be Cancel
+                    handleFabStatus(FabStatus.CANCEL);
 
-                //Show Edit Text
-                newWordlistTitle.requestFocus();
-                showAddWordlistLayout(true);
-                break;
-            case FabStatus.ACCEPT:
-                newWordlistTitle.setEnabled(false);
-                handleFabStatus(FabStatus.ADD);
-                showAddWordlistLayout(false);
-                fab.setEnabled(true);
-                wordListManager.createWordList(newWordlistTitle.getText().toString(),null);
-                newWordlistTitle.setText(null);
-                break;
-            //Currently not in use.
-            case FabStatus.CANCEL:
-                //Because Next state should be ADD
-                handleFabStatus(FabStatus.ADD);
-                newWordlistTitle.setText(null);
-                showAddWordlistLayout(false);
-                break;
-            default:
-                handleFabStatus(FabStatus.ADD);
+                    //Show Edit Text
+                    newWordlistTitle.requestFocus();
+                    showAddWordlistLayout(true);
+                    break;
+                case FabStatus.ACCEPT:
+                    newWordlistTitle.setEnabled(false);
+                    handleFabStatus(FabStatus.ADD);
+                    showAddWordlistLayout(false);
+                    fab.setEnabled(true);
+                    wordListManager.createWordList(newWordlistTitle.getText().toString(), null);
+                    newWordlistTitle.setText(null);
+                    break;
+                //Currently not in use.
+                case FabStatus.CANCEL:
+                    //Because Next state should be ADD
+                    handleFabStatus(FabStatus.ADD);
+                    newWordlistTitle.setText(null);
+                    showAddWordlistLayout(false);
+                    break;
+                default:
+                    handleFabStatus(FabStatus.ADD);
+            }
         }
     }
 
@@ -252,7 +270,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
     }
 
     void showAddWordlistLayout(boolean visibility){
-        View fab = findViewById(R.id.fab);
+        final View fab = findViewById(R.id.fab);
         // get the center for the clipping circle
         int cx = (fab.getLeft() + fab.getRight()) / 2;
         int cy = (fab.getTop() + fab.getBottom()) / 2;
@@ -274,11 +292,12 @@ public class WordListViewPagerActivity extends VerbisActivity {
                 public void onAnimationStart() {
                     overlayToolbar.setVisibility(View.VISIBLE);
                     ((CollapsingToolbarLayout) findViewById(R.id.toolbar_layout)).setTitleEnabled(false);
+                    fab.setClickable(false);
                 }
 
                 @Override
                 public void onAnimationEnd() {
-
+                    fab.setClickable(true);
                 }
 
                 @Override
@@ -293,17 +312,17 @@ public class WordListViewPagerActivity extends VerbisActivity {
             });
             overLayoutToolbarAnimator.start();
         }else {
-            reverseOverlayToolbarAnimator.start();
             reverseOverlayToolbarAnimator.addListener(new SupportAnimator.AnimatorListener() {
                 @Override
                 public void onAnimationStart() {
-
+                    fab.setClickable(false);
                 }
 
                 @Override
                 public void onAnimationEnd() {
                     overlayToolbar.setVisibility(View.INVISIBLE);
                     ((CollapsingToolbarLayout) findViewById(R.id.toolbar_layout)).setTitleEnabled(true);
+                    fab.setClickable(true);
                 }
 
                 @Override
@@ -316,6 +335,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
 
                 }
             });
+            reverseOverlayToolbarAnimator.start();
         }
     }
 
@@ -323,6 +343,89 @@ public class WordListViewPagerActivity extends VerbisActivity {
     @StringDef({FabStatus.ADD,FabStatus.ACCEPT,FabStatus.CANCEL})
     @interface FabStatus{
         String ADD="add",ACCEPT = "accept",CANCEL = "cancel";
+    }
+
+
+    void setState(@WordListViewPagerState int state){
+        LayoutInflater layoutInflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View v = layoutInflater.inflate(R.layout.layout_image, null);
+        ImageView img =(ImageView) v.findViewById(R.id.imageView);
+
+        @DrawableRes
+        int placeholder = R.drawable.nowordlist; // TODO: Change this to Search Prompt
+
+        switch (state){
+            case LOADING:
+                // Loading View
+                img.setVisibility(View.GONE);
+                v.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                break;
+            case CONNECTION_ERROR:
+                placeholder = R.drawable.networkerror;
+                break;
+            case NO_WORD_LIST:
+                placeholder = R.drawable.nowordlist;
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handleFabStatus(FabStatus.ADD);
+                        onFabClick();
+                    }
+                });
+                break;
+            case FOUND_WORD_LIST:
+                hideAlternateLayout();
+                break;
+            case ERROR:
+                placeholder = R.drawable.error;
+                break;
+        }
+
+        if(state==LOADING){
+            img.setVisibility(View.GONE);
+            v.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+        }else {
+            img.setVisibility(View.VISIBLE);
+            v.findViewById(R.id.progressBar).setVisibility(View.GONE);
+        }
+
+        pageIndicator.setVisibility(state!=FOUND_WORD_LIST?View.INVISIBLE:View.VISIBLE);
+
+        if(state!= FOUND_WORD_LIST &&state!=LOADING){
+            Glide.with(App.getContext())
+                    .load(placeholder)
+                    .into(img);
+            showAlternateLayout(v);
+        }
+    }
+
+    void showAlternateLayout(View view){
+        if(alternateLayout.getChildCount()>0)
+            alternateLayout.removeAllViews();
+
+        mViewPager.setVisibility(View.GONE);
+        pageIndicator.setVisibility(View.GONE);
+        alternateLayout.setVisibility(View.VISIBLE);
+        alternateLayout.addView(view,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    void hideAlternateLayout(){
+        if(alternateLayout.getChildCount()>0)
+            alternateLayout.removeAllViews();
+
+        mViewPager.setVisibility(View.VISIBLE);
+        pageIndicator.setVisibility(View.VISIBLE);
+        alternateLayout.setVisibility(View.GONE);
+    }
+
+    @IntDef({CONNECTION_ERROR,
+            FOUND_WORD_LIST,
+            LOADING,
+            NO_WORD_LIST,
+            ERROR,})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface WordListViewPagerState {
+        int LOADING = 0,CONNECTION_ERROR = 2, NO_WORD_LIST = 3, FOUND_WORD_LIST = 4,ERROR = 5;
     }
 
 }

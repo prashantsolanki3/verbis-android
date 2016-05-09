@@ -3,7 +3,10 @@ package com.blackshift.verbis.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.rest.model.wordlist.Word;
 import com.blackshift.verbis.rest.model.wordlist.WordList;
@@ -21,12 +26,15 @@ import com.blackshift.verbis.ui.viewholders.WordViewHolder;
 import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
+import com.bumptech.glide.Glide;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import butterknife.Bind;
@@ -37,6 +45,12 @@ import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapSelecta
 import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapSelectableLayoutWrapper;
 import io.github.prashantsolanki3.snaplibrary.snap.listeners.selection.SelectionListener;
 import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectableOnItemClickListener;
+
+import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragmentState.CONNECTION_ERROR;
+import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragmentState.ERROR;
+import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragmentState.FOUND_WORDS;
+import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragmentState.LOADING;
+import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragmentState.NO_WORDS;
 
 /**
      * A placeholder fragment containing a simple view.
@@ -94,25 +108,11 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
             adapter = new SnapSelectableAdapter<>(getActivity(),
                     wrapper,
                     recyclerView,
+                    (ViewGroup)rootView.findViewById(R.id.recyclerView_alternate),
                     AbstractSnapSelectableAdapter.SelectionType.MULTIPLE_ON_LONG_PRESS);
-
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            adapter.setOnItemClickListener(new SnapSelectableOnItemClickListener(adapter) {
-                @Override
-                public void onItemClick(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
-                    if (!adapter.isSelectionEnabled()) {
-                        startActivity(DictionaryActivity.createIntent(WordListFragment.this.context, ((Word) snapSelectableViewHolder.getItemData()).getHeadword()));
-                    }
-                }
-
-                @Override
-                public void onItemLongPress(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
-
-                }
-            });
-
             adapter.setOnSelectionListener(new SelectionListener<Word>() {
                 @Override
                 public void onSelectionModeEnabled(AbstractSnapSelectableAdapter.SelectionType selectionType) {
@@ -149,17 +149,47 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
 
                 }
             });
+            //To set Empty View in Adapter, Required for adapter working
+            setState(NO_WORDS);
+            adapter.setAutoEmptyLayoutHandling(false);
+            setState(LOADING);
+
+            adapter.setOnItemClickListener(new SnapSelectableOnItemClickListener(adapter) {
+                @Override
+                public void onItemClick(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
+                    if (!adapter.isSelectionEnabled()&&adapter.getSelectedItems().size()<1) {
+                        startActivity(DictionaryActivity.createIntent(WordListFragment.this.context, ((Word) snapSelectableViewHolder.getItemData()).getHeadword()));
+                    }
+                }
+
+                @Override
+                public void onItemLongPress(SnapSelectableViewHolder snapSelectableViewHolder, View view, int i) {
+
+                }
+            });
 
             manager.getWordsFromWordList(wordlistId, new WordArrayListener() {
                 @Override
                 public void onSuccess(@Nullable List<Word> word) {
-                    if (word != null)
+                    if (word != null) {
                         adapter.set(word);
+                        if (word.size() == 0)
+                            setState(NO_WORDS);
+                        else
+                            setState(FOUND_WORDS);
+                    }else
+                        setState(NO_WORDS);
                 }
 
                 @Override
                 public void onFailure(FirebaseError firebaseError) {
-
+                    switch (firebaseError.getCode()){
+                        case FirebaseError.NETWORK_ERROR:
+                            setState(CONNECTION_ERROR);
+                            break;
+                        default:
+                            setState(ERROR);
+                    }
                 }
             });
 
@@ -185,7 +215,13 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
 
                 @Override
                 public void onCancelled(FirebaseError firebaseError) {
-
+                   /* switch (firebaseError.getCode()){
+                        case FirebaseError.NETWORK_ERROR:
+                            setState(CONNECTION_ERROR);
+                            break;
+                        default:
+                            setState(ERROR);
+                    }*/
                 }
             });
 
@@ -213,7 +249,7 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
 
                                 @Override
                                 public void onFailure(FirebaseError firebaseError) {
-                                    //Snackbar.make(mViewPager, "Unable to delete Wordlist.", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(recyclerView, "Unable to delete Wordlist.", Snackbar.LENGTH_SHORT).show();
                                 }
                             });
                             return true;
@@ -249,15 +285,63 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapSelectabl
             });
         }
 
+
+    void setState(@WordListFragmentState int state){
+
+        View v = adapter.getViewFromId(R.layout.layout_image);
+        ImageView img =(ImageView) v.findViewById(R.id.imageView);
+        @DrawableRes
+        int placeholder = R.drawable.nowordlist; // TODO: Change this to Search Prompt
+
+        switch (state){
+            case LOADING:
+                // Loading View
+                break;
+            case CONNECTION_ERROR:
+                placeholder = R.drawable.networkerror;
+                break;
+            case NO_WORDS:
+                adapter.setEmptyView(v);
+                placeholder = R.drawable.noword;
+                break;
+            case FOUND_WORDS:
+                adapter.hideAlternateLayout();
+                break;
+            case ERROR:
+                placeholder = R.drawable.error;
+                break;
+        }
+
+
+
+        if(state!=FOUND_WORDS&&state!=LOADING){
+            Glide.with(App.getContext())
+                    .load(placeholder)
+                    .into(img);
+            adapter.showAlternateLayout(v);
+        }
+    }
+
+    @IntDef({CONNECTION_ERROR,
+            FOUND_WORDS,
+            LOADING,
+            NO_WORDS,
+            ERROR,})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface WordListFragmentState {
+        int LOADING = 0,CONNECTION_ERROR = 2, NO_WORDS = 3, FOUND_WORDS = 4,ERROR = 5;
+    }
+
         void handleToolbarMode(boolean normal) {
 
             Menu menu = wordlistToolbar.getMenu();
 
-            menu.findItem(R.id.action_share_word_list).setVisible(normal);
+            //TODO: first setup public wordlists
+            menu.findItem(R.id.action_share_word_list).setVisible(false);
             menu.findItem(R.id.action_star_word_list).setVisible(normal);
             menu.findItem(R.id.action_delete_word_list).setVisible(normal);
 
             menu.findItem(R.id.action_delete_word).setVisible(!normal);
         }
 
-    }
+}

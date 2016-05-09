@@ -1,9 +1,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ui.fragments.WordListTitlesRecyclerFragment"
     tools:showIn="@layout/activity_word_list">
 
@@ -16,5 +18,6 @@
         android:id="@+id/recyclerView_alternate"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:layout_height="match_parent"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_height="wrap_content"/>
 </FrameLayout>

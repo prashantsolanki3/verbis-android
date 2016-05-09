@@ -40,7 +40,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:src="@color/colorAccent"
+                        android:src="?attr/colorAccent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
@@ -48,11 +48,17 @@
                         android:layout_width="match_parent"
                         android:layout_gravity="bottom"
                         android:paddingBottom="32dp"
+                        android:paddingStart="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingTop="16dp"
+                        app:theme="@style/MyEditTextTheme"
                         android:layout_height="wrap_content">
                         <EditText
                             android:id="@+id/new_wordlist_title"
-                            android:hint="New Wordlist"
                             android:textSize="22sp"
+                            android:hint="New Wordlist"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
                     </android.support.design.widget.TextInputLayout>
@@ -100,6 +106,16 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </LinearLayout>
+
+    <FrameLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/recyclerView_alternate"
+        android:layout_gravity="bottom"
+        app:layout_anchor="@id/layout_container"
+        android:visibility="gone"
+        app:layout_anchorGravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

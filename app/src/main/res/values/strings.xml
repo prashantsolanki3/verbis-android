@@ -39,4 +39,5 @@
     <string name="share_message_part_1">I found another new word -</string>
     <string name="share_message_part_2">. Use Verbis for android to know more</string>
     <string name="share_title">Share the Zeal</string>
+    <string name="verbis_base_url">http://verbis.in/</string>
 </resources>

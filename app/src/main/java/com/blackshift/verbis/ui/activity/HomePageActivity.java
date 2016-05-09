@@ -287,7 +287,7 @@ public class HomePageActivity extends VerbisActivity
         if (id == R.id.nav_home_activity) {
             // Handle the camera action
         } else if (id == R.id.nav_search_activity) {
-
+            startActivity(DictionaryActivity.createIntent(this,""));
         } else if (id == R.id.nav_wordlist_vp_activity) {
             startActivity(new Intent(this,WordListViewPagerActivity.class));
         }  else if (id == R.id.nav_share) {
