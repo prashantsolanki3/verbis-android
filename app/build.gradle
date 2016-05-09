@@ -36,7 +36,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         //Api keys should come here.
         buildConfigField("String", "PEARSON_CONSUMER_KEY", PEARSON_CONSUMER_KEY)
         buildConfigField("String", "PEARSON_CONSUMER_SECRET", PEARSON_CONSUMER_SECRET)
