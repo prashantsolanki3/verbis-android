@@ -3,6 +3,7 @@ package com.blackshift.verbis.auth;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -16,7 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
     @Bind(R.id.app_bar)
     AppBarLayout abl;
     @Bind(R.id.signingrp)
-    LinearLayout signingrp;
+    ViewGroup signingrp;
     private TwitterLoginButton loginButton;
     TwitterSession session;
     private LoginButton fbLoginButton;
@@ -138,8 +138,7 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
 
-        assert loginButton != null;
-        loginButton.setVisibility(View.GONE);
+
         //Twitter login starts
         assert loginButton != null;
         loginButton.setCallback(new Callback<TwitterSession>() {
@@ -269,6 +268,15 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                          @Override
                          public void run() {
                              abl.setExpanded(false, true);
+
+                            if(Build.VERSION.SDK_INT<21)
+                             new Handler().postDelayed(new Runnable() {
+                                 @Override
+                                 public void run() {
+                                     findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+                                 }
+                             },1000);
+
                          }
                      },1500);
                 }
