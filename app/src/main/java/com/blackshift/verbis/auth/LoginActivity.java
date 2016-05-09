@@ -23,6 +23,7 @@ import com.blackshift.verbis.ui.activity.HomePageActivity;
 import com.blackshift.verbis.utils.FirebaseErrorHandler;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.LoginEvent;
 import com.crashlytics.android.answers.SignUpEvent;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -172,6 +173,10 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 ref.authWithOAuthToken("twitter",options, new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {
+                        Answers.getInstance().logLogin(new LoginEvent()
+                                .putMethod("Twitter")
+                                .putSuccess(true));
+
                         checkSession();
                     }
                     @Override
@@ -181,6 +186,10 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                         errorMessage = firebaseErrorHandler.checkErrorCode();
                         Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
+                        Answers.getInstance().logLogin(new LoginEvent()
+                                .putMethod("Twitter")
+                                .putSuccess(false));
+
                     }
                 });
             }
@@ -205,6 +214,9 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                                 public void onAuthenticated(AuthData authData) {
                                     /*String msg = "Provider:" + authData.getProvider() + "Name" + authData.getProviderData().get("displayName");
                                     Log.e("Facebook:", msg);*/
+                                    Answers.getInstance().logLogin(new LoginEvent()
+                                            .putMethod("Facebook")
+                                            .putSuccess(true));
                                     checkSession();
                                 }
 
@@ -214,6 +226,9 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                                     errorMessage = firebaseErrorHandler.checkErrorCode();
                                     Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
+                                    Answers.getInstance().logLogin(new LoginEvent()
+                                            .putMethod("Facebook")
+                                            .putSuccess(false));
 
                                 }
                             });
@@ -364,6 +379,9 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 Log.e("Result:", res);*/
                 /*Snackbar.make(findViewById(R.id.signingrp), res, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show()*/;
+                Answers.getInstance().logLogin(new LoginEvent()
+                        .putMethod("Google")
+                        .putSuccess(true));
                 checkSession();
             }
 
@@ -373,7 +391,11 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
                 FirebaseErrorHandler firebaseErrorHandler = new FirebaseErrorHandler(firebaseError);
                 errorMessage = firebaseErrorHandler.checkErrorCode();
                 Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();   // there was an error
+                        .setAction("Action", null).show();
+                Answers.getInstance().logLogin(new LoginEvent()
+                        .putMethod("Google")
+                        .putSuccess(false));
+                // there was an error
             }
 
         });

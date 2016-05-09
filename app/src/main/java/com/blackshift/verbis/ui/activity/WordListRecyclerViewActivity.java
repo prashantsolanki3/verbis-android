@@ -23,23 +23,25 @@ public class WordListRecyclerViewActivity extends VerbisActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                WordListManager wordListManager = new WordListManager(App.getContext());
-                wordListManager.createWordList("Title" + SystemClock.elapsedRealtime(), new WordListListener() {
-                    @Override
-                    public void onSuccess(String s) {
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    WordListManager wordListManager = new WordListManager(App.getContext());
+                    wordListManager.createWordList("Title" + SystemClock.elapsedRealtime(), new WordListListener() {
+                        @Override
+                        public void onSuccess(String s) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(FirebaseError firebaseError) {
-                        Toast.makeText(App.getContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
+                        @Override
+                        public void onFailure(FirebaseError firebaseError) {
+                            Toast.makeText(App.getContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+        }
     }
 
 }
