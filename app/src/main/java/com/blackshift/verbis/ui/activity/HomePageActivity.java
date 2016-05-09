@@ -25,10 +25,13 @@ import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay;
+import com.blackshift.verbis.utils.AnswersKeys;
 import com.blackshift.verbis.utils.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.answers.CustomEvent;
+import com.crashlytics.android.answers.SearchEvent;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.firebase.client.AuthData;
@@ -54,6 +57,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static com.blackshift.verbis.App.getApp;
 import static com.blackshift.verbis.App.getContext;
+import com.crashlytics.android.answers.Answers;
 
 public class HomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -239,7 +243,12 @@ public class HomePageActivity extends VerbisActivity
                 mHistoryDatabase.addItem(new SearchItem(text));
                 Log.d("word in home", text + " " + position);
                 searchView.clearFocus();
+                Answers.getInstance().logSearch(new SearchEvent()
+                        .putQuery(text.toString())
+                        .putCustomAttribute(AnswersKeys.KEY_LOCATION,"Homepage->Searchview"));
                 openDictionaryActivity(text.toString());
+
+
             }
         });
         searchView.setAdapter(mSearchAdapter);
@@ -292,12 +301,26 @@ public class HomePageActivity extends VerbisActivity
         if (id == R.id.nav_home_activity) {
             // Handle the camera action
         } else if (id == R.id.nav_search_activity) {
+            Answers.getInstance().logCustom(new CustomEvent("NavDrawer item select")
+                    .putCustomAttribute(AnswersKeys.KEY_EVENT,"Navdrawer SearchActivity")
+                    .putCustomAttribute(AnswersKeys.KEY_LOCATION,"Navdrawer")
+            );
+
             startActivity(DictionaryActivity.createIntent(this,""));
         } else if (id == R.id.nav_wordlist_vp_activity) {
+            Answers.getInstance().logCustom(new CustomEvent("NavDrawer item select")
+                    .putCustomAttribute(AnswersKeys.KEY_EVENT,"Navdrawer WordlistActivity")
+                    .putCustomAttribute(AnswersKeys.KEY_LOCATION,"Navdrawer")
+            );
             startActivity(new Intent(this,WordListViewPagerActivity.class));
         }  else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_user_log_out) {
+
+            Answers.getInstance().logCustom(new CustomEvent("NavDrawer item select")
+                    .putCustomAttribute(AnswersKeys.KEY_EVENT,"Navdrawer Logout")
+                    .putCustomAttribute(AnswersKeys.KEY_LOCATION,"Navdrawer")
+            );
             App.getApp().getFirebase().unauth();
             Firebase ref = getApp().getFirebase();
             ref.addAuthStateListener(new Firebase.AuthStateListener() {
