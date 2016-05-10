@@ -3,7 +3,6 @@ package com.blackshift.verbis.ui.fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.LayoutRes
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -27,7 +26,7 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapOnItemCli
 /**
  * A placeholder fragment containing a simple view.
  */
-class WordListTitlesRecyclerFragment : Fragment() {
+class WordListTitlesRecyclerFragment : VerbisFragment() {
 
     lateinit internal var view: View
     lateinit internal var wordlistTitlesRecycler: RecyclerView

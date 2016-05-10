@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.utils.DateUtils;
-import com.blackshift.verbis.utils.FirebaseKeys;
+import com.blackshift.verbis.utils.keys.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.listeners.RecentWordListener;
 import com.blackshift.verbis.utils.listeners.WordListener;

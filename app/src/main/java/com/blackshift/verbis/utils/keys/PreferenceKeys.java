@@ -1,4 +1,4 @@
-package com.blackshift.verbis.utils;
+package com.blackshift.verbis.utils.keys;
 
 /**
  * Package com.blackshift.verbis.utils

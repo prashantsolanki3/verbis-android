@@ -20,7 +20,7 @@ import android.widget.ImageView;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
-import com.blackshift.verbis.utils.FirebaseErrorHandler;
+import com.blackshift.verbis.utils.error.FirebaseErrorHandler;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;

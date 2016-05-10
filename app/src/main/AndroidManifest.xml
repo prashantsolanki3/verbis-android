@@ -3,8 +3,6 @@
     package="com.blackshift.verbis" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:name=".App"
@@ -110,39 +108,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-        <!--
-            <activity
-            android:screenOrientation="portrait"
-            android:name=".ui.activity.WordyActivity"
-            android:label="@string/title_activity_wordy"
-            android:parentActivityName=".ui.activity.HomePageActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.blackshift.verbis.ui.activity.HomePageActivity" />
-        </activity>
 
-        <service
-            android:name=".services.WordyService"
-            android:enabled="true"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.activity.AlarmActivity"
-            android:label="@string/title_activity_alarm"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".ui.activity.AlarmReceiverActivity"
-            android:label="@string/title_activity_alarm_receiver"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".ui.activity.RepeatingAlarmReciever"
-            android:label="@string/title_activity_repeating_alarm_reciever"
-            android:theme="@style/AppTheme.NoActionBar" />
-        -->
     </application>
 
 </manifest>

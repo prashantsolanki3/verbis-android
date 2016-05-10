@@ -16,7 +16,7 @@ import retrofit.http.Query
  * Email: solankisrp2@gmail.com
  * Github: @prashantsolanki3
  */
-internal interface VerbisService{
+interface VerbisService{
 
     @GET("word-of-the-day/")
     fun getWordOfTheDay(@Query("from") from: Long,@Query("to") to:Long):Call<Response<List<WordOfTheDay>>>

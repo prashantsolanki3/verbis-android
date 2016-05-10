@@ -22,7 +22,6 @@ class DictionaryManager(val content:Context) {
 
 
     fun searchWord(query:String, listener: DictionaryListener){
-
         App.getDictionaryService().getWordDetail(content.getString(R.string.words_api_key), query).enqueue(object :Callback<WordsApiResult>{
 
             override fun onResponse(response: Response<WordsApiResult>?, retrofit: Retrofit?) {

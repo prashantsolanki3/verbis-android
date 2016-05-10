@@ -1,4 +1,4 @@
-package com.blackshift.verbis.ui.fragments;
+package com.blackshift.verbis.ui.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;

@@ -24,7 +24,7 @@ import io.github.prashantsolanki3.snaplibrary.snap.listeners.touch.SnapOnItemCli
  * Use the {@link SuggestionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SuggestionFragment extends Fragment {
+public class SuggestionFragment extends VerbisFragment {
 
     @Bind(R.id.wordlist_title_recycler)
     RecyclerView recyclerView;

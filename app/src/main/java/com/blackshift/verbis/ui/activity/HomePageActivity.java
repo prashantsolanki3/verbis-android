@@ -25,11 +25,12 @@ import com.blackshift.verbis.adapters.HomePageBaseAdapter;
 import com.blackshift.verbis.adapters.WordsOfTheWeekAdapter;
 import com.blackshift.verbis.rest.model.RecentWord;
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay;
-import com.blackshift.verbis.utils.AnswersKeys;
-import com.blackshift.verbis.utils.FirebaseKeys;
+import com.blackshift.verbis.utils.keys.AnswersKeys;
+import com.blackshift.verbis.utils.keys.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.SearchEvent;
 import com.facebook.FacebookSdk;
@@ -53,11 +54,10 @@ import io.github.prashantsolanki3.utiloid.Utiloid;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static com.blackshift.verbis.App.getApp;
-import static com.blackshift.verbis.App.getContext;
-import com.crashlytics.android.answers.Answers;
 
 public class HomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -155,13 +155,13 @@ public class HomePageActivity extends VerbisActivity
 
         wordsOfTheWeekAdapter = new WordsOfTheWeekAdapter(getSupportFragmentManager());
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class).findAll();
+        RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class)
+                .findAllSorted("date", Sort.DESCENDING);
         List<WordOfTheDay> wordOfTheDays = new ArrayList<>();
         int size = results.size()>7?7:results.size();
         for (int i = 0; i < size ; i++) {
             wordOfTheDays.add(results.get(i));
         }
-
         wordsOfTheWeekAdapter.setWords(wordOfTheDays);
 
         results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
@@ -176,7 +176,11 @@ public class HomePageActivity extends VerbisActivity
     }
 
     private void manageDrawer() {
-        Firebase ref= getApp().getFirebase();
+        Firebase ref =null;
+        if(getApp()!=null)
+        ref = getApp().getFirebase();
+
+        if( ref != null)
         ref.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
@@ -184,7 +188,7 @@ public class HomePageActivity extends VerbisActivity
                     String imgurl = (String) authData.getProviderData().get("profileImageURL");
                     String provider = authData.getProvider();
                     String name,email;
-                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(getContext())).into(imgview);
+                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(App.getContext())).into(imgview);
                     name = (String) authData.getProviderData().get("displayName");
                     Log.d("Name:",name);
                     nameTextView.setText(name);
@@ -321,7 +325,7 @@ public class HomePageActivity extends VerbisActivity
                     .putCustomAttribute(AnswersKeys.KEY_EVENT,"Navdrawer Logout")
                     .putCustomAttribute(AnswersKeys.KEY_LOCATION,"Navdrawer")
             );
-            App.getApp().getFirebase().unauth();
+            getApp().getFirebase().unauth();
             Firebase ref = getApp().getFirebase();
             ref.addAuthStateListener(new Firebase.AuthStateListener() {
                 @Override

@@ -55,9 +55,13 @@ public class App extends Application {
     private Firebase firebase;
     private AuthData authData;
 
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
     @Override
     public void onCreate() {
-        MultiDex.install(this);
         super.onCreate();
         app =this;
 //        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
