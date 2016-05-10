@@ -18,7 +18,7 @@ public class WordsApiResult {
 
     @SerializedName("rhymes")
     Rhymes rhymes;
-
+    
     @SerializedName("pronunciation")
     Pronunciation pronunciation;
 

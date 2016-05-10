@@ -20,6 +20,8 @@ class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     fun setWords(res: List<WordOfTheDay>){
         result = res
+        result = result!!.sortedByDescending { it.date }
+
         notifyDataSetChanged()
     }
 
@@ -32,7 +34,11 @@ class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getCount(): Int {
         if(result!=null)
-            return result!!.size
+            if(result!!.size<=7)
+                return result!!.size
+            else
+                return 7;
+
         return 0
     }
 }

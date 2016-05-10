@@ -157,13 +157,13 @@ public class HomePageActivity extends VerbisActivity
         Realm realm = Realm.getDefaultInstance();
         RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class)
                 .findAllSorted("date", Sort.DESCENDING);
-        List<WordOfTheDay> wordOfTheDays = new ArrayList<>();
+       /* List<WordOfTheDay> wordOfTheDays = new ArrayList<>();
         int size = results.size()>7?7:results.size();
         for (int i = 0; i < size ; i++) {
             wordOfTheDays.add(results.get(i));
-        }
-        wordsOfTheWeekAdapter.setWords(wordOfTheDays);
+        }*/
 
+        wordsOfTheWeekAdapter.setWords(results);
         results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
             @Override
             public void onChange(RealmResults<WordOfTheDay> element) {
@@ -174,6 +174,8 @@ public class HomePageActivity extends VerbisActivity
         viewPagerWordOfTheDay.setAdapter(wordsOfTheWeekAdapter);
         pageIndicator.setViewPager(viewPagerWordOfTheDay);
     }
+
+
 
     private void manageDrawer() {
         Firebase ref =null;
