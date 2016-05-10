@@ -1,5 +1,6 @@
 package com.blackshift.verbis.ui.viewholders
 
+
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
@@ -29,8 +30,8 @@ class WordListTitleViewHolder : SnapSelectableViewHolder<WordList> {
     internal val privacy: ImageView
 
     constructor(itemView: View, context: Context) : super(itemView, context) {
-        title = itemView.findViewById(R.id.wordlist_title) as TextView
-        star = itemView.findViewById(R.id.wordlist_title_start) as ImageView
+        title = itemView.findViewById(com.blackshift.verbis.R.id.wordlist_title) as TextView
+        star = itemView.findViewById(com.blackshift.verbis.R.id.wordlist_title_start) as ImageView
         privacy = itemView.findViewById(R.id.wordlist_title_privacy) as ImageView
     }
 
