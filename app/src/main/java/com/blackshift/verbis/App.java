@@ -115,7 +115,7 @@ public class App extends Application {
             verbisService = retrofitVerbis.create(VerbisService.class);
 
         //Fetches Word of the day and adds it to Realm
-        new WordOfTheDayManager(this).getWordOfTheDay();
+        new WordOfTheDayManager(this).getWordsOfTheWeek();
 
     }
 

@@ -19,27 +19,36 @@ import retrofit.Retrofit
  */
 open class WordOfTheDayManager(val content: Context){
 
-    fun getWordOfTheDay(){
 
-        var today = DateTime.now()
+    fun getWordOfTheDayRange(from: Long, to: Long){
 
-        App.getVerbisService().getWordOfTheDay(today.minusDays(7).withTimeAtStartOfDay().millis.div(1000),today.withTimeAtStartOfDay().millis.div(1000)).
+        App.getVerbisService().getWordOfTheDay(from,to).
                 enqueue(object :Callback<Response<List<WordOfTheDay>>> {
 
-            override fun onResponse(response: retrofit.Response<Response<List<WordOfTheDay>>>?, retrofit: Retrofit?) {
-                var realm = Realm.getDefaultInstance()
-                if(response?.body()?.statusCode==200){
-                    realm.beginTransaction()
-                    for(data in response?.body()?.data!!.iterator())
-                    realm.copyToRealmOrUpdate(data)
-                    realm.commitTransaction()
-                }
-            }
+                    override fun onResponse(response: retrofit.Response<Response<List<WordOfTheDay>>>?, retrofit: Retrofit?) {
+                        var realm = Realm.getDefaultInstance()
+                        if(response?.body()?.statusCode==200){
+                            realm.beginTransaction()
+                            for(data in response?.body()?.data!!.iterator())
+                                realm.copyToRealmOrUpdate(data)
+                            realm.commitTransaction()
+                        }
+                    }
 
-            override fun onFailure(t: Throwable?) {
-                t?.printStackTrace()
-            }
-        })
+                    override fun onFailure(t: Throwable?) {
+                        t?.printStackTrace()
+                    }
+                })
+
+    }
+
+    fun getWordsOfTheWeek(){
+
+        var today = DateTime.now()
+        var todayTimestamp = today.millis.div(1000)
+        var sevenDayAgoTimestamp = today.minusDays(7).millis.div(1000)
+        getWordOfTheDayRange(sevenDayAgoTimestamp,todayTimestamp)
+
     }
 
 }
