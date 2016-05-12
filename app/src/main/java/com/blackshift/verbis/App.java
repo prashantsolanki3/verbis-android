@@ -6,13 +6,16 @@ import android.content.Intent;
 import android.support.multidex.MultiDex;
 
 import com.blackshift.verbis.auth.LoginActivity;
+import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult;
+import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResultDeserializer;
 import com.blackshift.verbis.rest.service.DictionaryService;
 import com.blackshift.verbis.rest.service.VerbisService;
-import com.blackshift.verbis.utils.manager.WordOfTheDayManager;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
@@ -96,15 +99,20 @@ public class App extends Application {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(WordsApiResult.class,new WordsApiResultDeserializer())
+                .create();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(WORDS_API_ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(new OkHttpClient())
                 .build();
 
         Retrofit retrofitVerbis = new Retrofit.Builder()
                 .baseUrl(VERBIS_ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(new OkHttpClient())
                 .build();
 
@@ -113,9 +121,6 @@ public class App extends Application {
 
         if(verbisService==null)
             verbisService = retrofitVerbis.create(VerbisService.class);
-
-        //Fetches Word of the day and adds it to Realm
-        new WordOfTheDayManager(this).getWordsOfTheWeek();
 
     }
 

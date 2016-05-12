@@ -19,9 +19,7 @@ class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     }
 
     fun setWords(res: List<WordOfTheDay>){
-        result = res
-        result = result!!.sortedByDescending { it.date }
-
+        result = res.sortedByDescending { it.date }
         notifyDataSetChanged()
     }
 

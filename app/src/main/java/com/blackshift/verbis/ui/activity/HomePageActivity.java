@@ -29,6 +29,7 @@ import com.blackshift.verbis.utils.keys.AnswersKeys;
 import com.blackshift.verbis.utils.keys.FirebaseKeys;
 import com.blackshift.verbis.utils.listeners.RecentWordListListener;
 import com.blackshift.verbis.utils.manager.RecentWordsManager;
+import com.blackshift.verbis.utils.manager.WordOfTheDayManager;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -116,6 +117,8 @@ public class HomePageActivity extends VerbisActivity
     protected void onStart() {
         super.onStart();
         populateRecentWords();
+        //Fetches Word of the day and adds it to Realm
+        new WordOfTheDayManager(this).getWordsOfTheWeek();
     }
 
     private void initHeader() {
@@ -366,4 +369,6 @@ public class HomePageActivity extends VerbisActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
 }
