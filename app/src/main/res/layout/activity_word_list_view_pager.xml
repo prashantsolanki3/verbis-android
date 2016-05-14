@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
@@ -97,14 +98,15 @@
         <com.blackshift.verbis.ui.widgets.WordListViewPager
             android:layout_marginTop="24dp"
             android:id="@+id/container"
-            android:paddingLeft="32dp"
-            android:paddingStart="32dp"
+            android:paddingLeft="28dp"
+            android:paddingStart="28dp"
             android:paddingRight="12dp"
             android:paddingEnd="12dp"
             android:paddingBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     </LinearLayout>
 
     <FrameLayout
@@ -115,7 +117,17 @@
         android:visibility="gone"
         app:layout_anchorGravity="bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/banner_ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id" />
+
+    </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

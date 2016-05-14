@@ -106,7 +106,6 @@ public class HomePageActivity extends VerbisActivity
         manageToolbar();
         manageDrawer();
         manageWordOfTheDayViewPager();
-        mangeBaseViewPager();
         try {
             findViewById(R.id.appbar).getLayoutParams().height = (int) Utiloid.DISPLAY_UTILS.getScreenWidthPixels();
         }catch (NullPointerException e){
@@ -119,6 +118,7 @@ public class HomePageActivity extends VerbisActivity
         populateRecentWords();
         //Fetches Word of the day and adds it to Realm
         new WordOfTheDayManager(this).getWordsOfTheWeek();
+        mangeBaseViewPager();
     }
 
     private void initHeader() {

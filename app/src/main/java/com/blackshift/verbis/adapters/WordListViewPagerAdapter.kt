@@ -66,6 +66,6 @@ MutableList<WordList>?, internal var context: Context) : FragmentStatePagerAdapt
     }
 
     override fun getPageWidth(position: Int): Float {
-        return 0.90f
+        return 1.00f
     }
 }

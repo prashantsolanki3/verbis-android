@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,9 @@ import com.bumptech.glide.Glide;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -84,6 +88,8 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
         Toolbar wordlistToolbar;
         @Bind(R.id.list_words)
         RecyclerView recyclerView;
+        @Bind(R.id.banner_ad_view)
+        AdView adView;
         WordList wordList=null;
         SnapSelectableAdapter<Word> adapter;
         Context context;
@@ -99,8 +105,10 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_word_list_view_pager, container, false);
             ButterKnife.bind(this,rootView);
+            Log.d("size", rootView.getWidth() + " " + rootView.getHeight());
             manager = new WordListManager(getContext());
             initToolbar();
+            addAdView();
             wordlistId = getArguments().getString(ARG_WORDLIST_ID);
             handleToolbarMode(true);
             SnapSelectableLayoutWrapper wrapper = new SnapSelectableLayoutWrapper(Word.class, WordViewHolder.class,R.layout.word_item,1,true);
@@ -343,5 +351,17 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
 
             menu.findItem(R.id.action_delete_word).setVisible(!normal);
         }
+
+
+    private void addAdView() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        if (adView != null) {
+            //adView.setAdSize(new AdSize(280, 60));
+            //adView.setAdUnitId(getString(R.string.banner_ad_unit_id));
+            adView.loadAd(adRequest);
+        }
+    }
+
 
 }

@@ -31,6 +31,8 @@ import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
 import com.bumptech.glide.Glide;
 import com.firebase.client.FirebaseError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -86,6 +88,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
     Toolbar toolbar;
     @Bind(R.id.recyclerView_alternate)
     ViewGroup alternateLayout;
+    @Bind(R.id.banner_ad_view)
+    AdView adView;
 
     SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
 
@@ -407,6 +411,8 @@ public class WordListViewPagerActivity extends VerbisActivity {
         pageIndicator.setVisibility(View.GONE);
         alternateLayout.setVisibility(View.VISIBLE);
         alternateLayout.addView(view,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        alternateLayout.addView(adView);
+        addAdView();
     }
 
     void hideAlternateLayout(){
@@ -417,6 +423,15 @@ public class WordListViewPagerActivity extends VerbisActivity {
         pageIndicator.setVisibility(View.VISIBLE);
         alternateLayout.setVisibility(View.GONE);
     }
+
+
+    private void addAdView() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        assert adView != null;
+        adView.loadAd(adRequest);
+    }
+
 
     @IntDef({CONNECTION_ERROR,
             FOUND_WORD_LIST,

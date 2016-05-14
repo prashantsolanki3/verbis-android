@@ -2,15 +2,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:paddingBottom="16dp"
     android:background="@android:color/holo_blue_bright"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:layout_marginTop="56dp"
             android:id="@+id/list_words"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"/>
+
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/view"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp" />
+
+                <com.google.android.gms.ads.AdView
+            android:id="@+id/banner_ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_alignParentBottom="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id" />
+
+        </RelativeLayout>
 
         <FrameLayout
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -25,5 +50,6 @@
             android:id="@+id/wordlist_toolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"/>
+
 
 </android.support.v7.widget.CardView>
