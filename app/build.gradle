@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.1-2'
+    ext.kotlin_version = '1.0.2'
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         mavenCentral()
@@ -35,7 +35,7 @@ android {
         applicationId "com.blackshift.verbis"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 3
+        versionCode 4
         versionName "1.0.2"
         //Api keys should come here.
         buildConfigField("String", "PEARSON_CONSUMER_KEY", PEARSON_CONSUMER_KEY)
@@ -74,16 +74,7 @@ dependencies {
     compile('com.github.ozodrukh:CircularReveal:1.3.1@aar') {
         transitive = true;
     }
-    //pro
-    //    compile 'com.github.lisawray:passwordview:863c58fa25'
-//    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    //Pro
     kapt 'com.jakewharton:butterknife:7.0.1'
-    //Pro
-    //Pro
-    //Pro
-    //compile 'com.prashantsolanki:Synthesize:0.1.5'//Pro
-    //Fot Twitter
     //noinspection GradleDynamicVersion
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile('com.twitter.sdk.android:twitter:1.13.1@aar') {
@@ -120,7 +111,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
-    compile 'io.reactivex:rxjava:1.0.10'
+    //compile 'io.reactivex:rxjava:1.0.10'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'

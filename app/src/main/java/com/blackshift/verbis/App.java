@@ -10,6 +10,7 @@ import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResult;
 import com.blackshift.verbis.rest.model.wordapimodels.WordsApiResultDeserializer;
 import com.blackshift.verbis.rest.service.DictionaryService;
 import com.blackshift.verbis.rest.service.VerbisService;
+import com.blackshift.verbis.utils.manager.WordOfTheDayManager;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
@@ -121,7 +122,8 @@ public class App extends Application {
 
         if(verbisService==null)
             verbisService = retrofitVerbis.create(VerbisService.class);
-
+        //Fetches Word of the day and adds it to Realm
+        new WordOfTheDayManager(this).getWordsOfTheWeek();
     }
 
 

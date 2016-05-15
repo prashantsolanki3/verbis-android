@@ -105,7 +105,7 @@ public class HomePageActivity extends VerbisActivity
         initHeader();
         manageToolbar();
         manageDrawer();
-        manageWordOfTheDayViewPager();
+
         try {
             findViewById(R.id.appbar).getLayoutParams().height = (int) Utiloid.DISPLAY_UTILS.getScreenWidthPixels();
         }catch (NullPointerException e){
@@ -119,6 +119,7 @@ public class HomePageActivity extends VerbisActivity
         //Fetches Word of the day and adds it to Realm
         new WordOfTheDayManager(this).getWordsOfTheWeek();
         mangeBaseViewPager();
+        manageWordOfTheDayViewPager();
     }
 
     private void initHeader() {
@@ -158,19 +159,20 @@ public class HomePageActivity extends VerbisActivity
 
         wordsOfTheWeekAdapter = new WordsOfTheWeekAdapter(getSupportFragmentManager());
         Realm realm = Realm.getDefaultInstance();
+        /*realm.beginTransaction();
+        realm.copyToRealmOrUpdate(new WordOfTheDay("Word of the Day",1451606400)); //Dummy Data, Timestamp of 2016-01-01
+        realm.commitTransaction();*/
+        realm.setAutoRefresh(true);
         RealmResults<WordOfTheDay> results = realm.where(WordOfTheDay.class)
-                .findAllSorted("date", Sort.DESCENDING);
-       /* List<WordOfTheDay> wordOfTheDays = new ArrayList<>();
-        int size = results.size()>7?7:results.size();
-        for (int i = 0; i < size ; i++) {
-            wordOfTheDays.add(results.get(i));
-        }*/
+                .findAllSortedAsync("date", Sort.DESCENDING);
 
-        wordsOfTheWeekAdapter.setWords(results);
         results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
             @Override
             public void onChange(RealmResults<WordOfTheDay> element) {
+                if(element.size()>0) {
                     wordsOfTheWeekAdapter.setWords(element);
+                    wordsOfTheWeekAdapter.notifyDataSetChanged();
+                }
             }
         });
         viewPagerWordOfTheDay.setOffscreenPageLimit(4);

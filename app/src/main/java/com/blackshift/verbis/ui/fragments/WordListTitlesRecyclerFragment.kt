@@ -91,7 +91,9 @@ class WordListTitlesRecyclerFragment : VerbisFragment() {
                         Glide.with(App.getContext())
                                 .load(R.drawable.nowordlist)
                                 .into(img)
-
+                        v.setOnClickListener {
+                            startActivity(WordListViewPagerActivity.createIntent(context))
+                        }
                         wordListSnapAdapter.showAlternateLayout(v)
                     }
                 }else{

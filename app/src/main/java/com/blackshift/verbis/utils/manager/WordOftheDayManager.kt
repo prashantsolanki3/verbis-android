@@ -32,6 +32,7 @@ open class WordOfTheDayManager(val content: Context){
                             for(data in response?.body()?.data!!.iterator())
                                 realm.copyToRealmOrUpdate(data)
                             realm.commitTransaction()
+                            realm.isAutoRefresh = true
                         }
                     }
 

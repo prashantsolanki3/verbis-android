@@ -3,6 +3,7 @@ package com.blackshift.verbis.adapters
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.PagerAdapter
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
 import com.blackshift.verbis.ui.fragments.WordOfTheDayFragment
 
@@ -15,7 +16,7 @@ class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     var result:List<WordOfTheDay>?
 
     init {
-        result =null
+        result = arrayListOf()
     }
 
     fun setWords(res: List<WordOfTheDay>){
@@ -24,19 +25,18 @@ class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     }
 
     override fun getItem(position: Int): Fragment {
-        if(result!=null)
         return WordOfTheDayFragment.newInstance(result!![position])
-
-        return Fragment()
     }
 
     override fun getCount(): Int {
-        if(result!=null)
             if(result!!.size<=7)
                 return result!!.size
             else
                 return 7;
+    }
 
-        return 0
+    override fun getItemPosition(`object`: Any?): Int {
+        //To update fragment every time user navigates to it.
+        return PagerAdapter.POSITION_NONE
     }
 }

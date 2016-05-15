@@ -71,9 +71,9 @@ import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapLayoutWrap
 import static com.blackshift.verbis.ui.activity.DictionaryActivity.DictionaryState.CONNECTION_ERROR;
 import static com.blackshift.verbis.ui.activity.DictionaryActivity.DictionaryState.ERROR;
 import static com.blackshift.verbis.ui.activity.DictionaryActivity.DictionaryState.FOUND;
+import static com.blackshift.verbis.ui.activity.DictionaryActivity.DictionaryState.LOADING;
 import static com.blackshift.verbis.ui.activity.DictionaryActivity.DictionaryState.NOT_FOUND;
 import static com.blackshift.verbis.ui.activity.DictionaryActivity.DictionaryState.SEARCH_PROMPT;
-import static com.blackshift.verbis.ui.activity.WordListViewPagerActivity.WordListViewPagerState.LOADING;
 
 public class DictionaryActivity extends VerbisActivity {
 
@@ -429,7 +429,7 @@ public class DictionaryActivity extends VerbisActivity {
             Thing object = new Thing.Builder()
                     .setName(query)
                     .setUrl(getUriFromQuery(query))
-                    .setDescription("Find the meaning of" + query + "on Verbis")
+                    .setDescription("Find the meaning of " + query + " on Verbis")
                     .build();
 
             Action viewAction = new Action.Builder(Action.TYPE_VIEW)
@@ -444,11 +444,18 @@ public class DictionaryActivity extends VerbisActivity {
     }
 
     void showFab(boolean show){
+        addToListFAB.setClickable(show);
+        shareFAB.setClickable(show);
+        addToListFAB.setEnabled(show);
+        shareFAB.setEnabled(show);
+
         if(show){
             addToListFAB.show();
+
             shareFAB.show();
         }else {
             addToListFAB.hide();
+
             shareFAB.hide();
         }
     }
@@ -466,7 +473,7 @@ public class DictionaryActivity extends VerbisActivity {
     void setState(@DictionaryState int state){
 
         progressBar.setVisibility(state==LOADING?View.VISIBLE:View.GONE);
-
+        showFab(state==FOUND);
         if (findViewById(R.id.dictionary_scroll_view) != null)
             ((NestedScrollView) findViewById(R.id.dictionary_scroll_view)).smoothScrollTo(0, 0);
 
@@ -505,7 +512,7 @@ public class DictionaryActivity extends VerbisActivity {
                 //((AppBarLayout)findViewById(R.id.appbar)).setExpanded(true,true);
         }
 
-        showFab(state==FOUND);
+
         showFoundLayout(state==FOUND);
 
         if(state==LOADING){

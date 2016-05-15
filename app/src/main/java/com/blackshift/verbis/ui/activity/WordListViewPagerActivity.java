@@ -118,11 +118,11 @@ public class WordListViewPagerActivity extends VerbisActivity {
         ButterKnife.bind(this);
         handleFabStatus(FabStatus.ADD);
 
-        if(getIntent()!=null&&getIntent().getStringExtra(ARG_WORDLIST_ID)!=null&&moveToPos) {
+        if(getIntent()!=null&&getIntent().hasExtra(ARG_WORDLIST_ID)&&moveToPos) {
             wordlistId = getIntent().getStringExtra(ARG_WORDLIST_ID);
             moveToPos =false;
         }
-
+        toolbar.setCollapsible(false);
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

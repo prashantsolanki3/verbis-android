@@ -32,7 +32,6 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -310,6 +309,12 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
                 break;
             case NO_WORDS:
                 adapter.setEmptyView(v);
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(DictionaryActivity.createIntent(getActivity(),""));
+                    }
+                });
                 placeholder = R.drawable.noword;
                 break;
             case FOUND_WORDS:
