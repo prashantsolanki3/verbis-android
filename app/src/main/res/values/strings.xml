@@ -45,6 +45,7 @@
     <string name="share_title">Share the Zeal</string>
     <string name="verbis_base_url">http://verbis.in/</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
     <string name="viewpager_word_of_the_day">WordOfTheDay</string>
     <string name="wordlist_viewpager">WordlistViewPager</string>
 

@@ -133,7 +133,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
             @Override
             public void onSuccess(@Nullable List<WordList> wordList) {
                 if(wordList!=null) {
-                    mWordListViewPagerAdapter.set(wordList);
+                    mWordListViewPagerAdapter.set(includeStubsForAdInList(wordList));
                     if (wordList.size() < 1) {
                         setState(NO_WORD_LIST);
                     }else {
@@ -142,6 +142,16 @@ public class WordListViewPagerActivity extends VerbisActivity {
                         gotoWordList(wordlistId);
                     }
                 }
+            }
+
+            private List<WordList> includeStubsForAdInList(List<WordList> wordList) {
+
+                for (int i = 2; i < wordList.size() ; i+=3){
+
+                    wordList.add(i, new WordList("id", "#$#$STUB$#$#"));
+
+                }
+                return wordList;
             }
 
             @Override
@@ -223,7 +233,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
 
     void gotoWordList(String id){
         for(int i=0;i<mWordListViewPagerAdapter.getCount();++i){
-            WordList w=mWordListViewPagerAdapter.getAll().get(i);
+            WordList w = mWordListViewPagerAdapter.getAll().get(i);
             if(id!=null){
                 if(id.equals(w.getId()))
                     mViewPager.setCurrentItem(i,true);

@@ -6,8 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.blackshift.verbis.R;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import butterknife.Bind;
@@ -29,7 +32,9 @@ public class WordListViewPagerItemAdFragment extends VerbisFragment {
     private String mParam2;
 
     @Bind(R.id.banner_ad_view)
-    AdView adview;
+    AdView adView;
+    @Bind(R.id.progress)
+    ProgressBar progressBar;
 
     public WordListViewPagerItemAdFragment() {
         // Required empty public constructor
@@ -68,7 +73,40 @@ public class WordListViewPagerItemAdFragment extends VerbisFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_word_list_view_pager_item_ad, container, false);
         ButterKnife.bind(this, view);
+        addAdView();
         return view;
     }
 
+    private void addAdView() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+        adView.loadAd(adRequest);
+    }
 }
