@@ -10,7 +10,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +19,7 @@ import android.widget.ImageView;
 
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
+import com.blackshift.verbis.ui.activity.VerbisActivity;
 import com.blackshift.verbis.utils.error.FirebaseErrorHandler;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
@@ -66,7 +66,7 @@ import retrofit.Retrofit;
 
 import static com.blackshift.verbis.App.getApp;
 
-public class LoginActivity extends AppCompatActivity implements OnConnectionFailedListener {
+public class LoginActivity extends VerbisActivity implements OnConnectionFailedListener {
 
     private static final int RC_GOOGLE_LOGIN = 1;
     private static final int RC_TWITTER_LOGIN = 2;
@@ -437,7 +437,12 @@ public class LoginActivity extends AppCompatActivity implements OnConnectionFail
             });
         }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        callTracker(getString(R.string.title_activity_log_in));
     }
+}
 
 
 

@@ -118,4 +118,10 @@ class WordListTitlesRecyclerFragment : VerbisFragment() {
             }
         })
     }
+
+    override fun onResume() {
+        super.onResume()
+        callTracker(getString(R.string.title_fragment_word_list_titles))
+    }
+
 }

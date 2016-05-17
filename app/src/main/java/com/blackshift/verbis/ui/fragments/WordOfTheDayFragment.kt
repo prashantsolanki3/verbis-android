@@ -117,5 +117,4 @@ class WordOfTheDayFragment : VerbisFragment() {
         }
     }
 
-
 }// Required empty public constructor

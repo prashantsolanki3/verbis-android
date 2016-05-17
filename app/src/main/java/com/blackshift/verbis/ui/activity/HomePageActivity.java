@@ -63,7 +63,6 @@ import static com.blackshift.verbis.App.getApp;
 public class HomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
     private SearchHistoryTable mHistoryDatabase;
     private List<SearchItem> mSuggestionsList;
     private int mVersion = SearchCodes.VERSION_TOOLBAR;
@@ -177,6 +176,22 @@ public class HomePageActivity extends VerbisActivity
         });
         viewPagerWordOfTheDay.setOffscreenPageLimit(4);
         viewPagerWordOfTheDay.setAdapter(wordsOfTheWeekAdapter);
+        viewPagerWordOfTheDay.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                callTracker(getString(R.string.viewpager_word_of_the_day));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         pageIndicator.setViewPager(viewPagerWordOfTheDay);
     }
 
@@ -372,5 +387,10 @@ public class HomePageActivity extends VerbisActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        callTracker(getString(R.string.title_activity_home_page));
+    }
 
 }

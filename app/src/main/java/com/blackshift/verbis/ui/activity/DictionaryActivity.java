@@ -550,4 +550,9 @@ public class DictionaryActivity extends VerbisActivity {
         adView.loadAd(adRequest);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        callTracker(getString(R.string.title_activity_dictionary));
+    }
 }

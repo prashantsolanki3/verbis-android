@@ -14,6 +14,8 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 
 /**
@@ -33,10 +35,12 @@ public abstract class VerbisFragment extends Fragment {
         this.debugMode = debugMode;
     }
 
+    private Tracker mTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mTracker = App.getApp().getDefaultTracker();
         connection = App.getApp().getFirebase().child(".info").child("connected");
         connection.addValueEventListener(new ValueEventListener() {
             @Override
@@ -152,7 +156,13 @@ public abstract class VerbisFragment extends Fragment {
         if(debugMode)
         Log.i(getClass().getSimpleName(), "onSaveInstanceState");
     }
+    public void callTracker(String screenName) {
+        Log.i(screenName, "Setting screen name: " + screenName);
+        mTracker.setScreenName("Fragment~" + screenName);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
 
     public void onConnected(){}
     public void onDisconnected(){}
+
 }

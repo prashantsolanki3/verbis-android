@@ -159,6 +159,22 @@ public class WordListViewPagerActivity extends VerbisActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mWordListViewPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                callTracker(getString(R.string.wordlist_viewpager));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         mViewPager.setClipToPadding(false);
         pageIndicator.setViewPager(mViewPager);
@@ -441,6 +457,12 @@ public class WordListViewPagerActivity extends VerbisActivity {
     @Retention(RetentionPolicy.SOURCE)
     @interface WordListViewPagerState {
         int LOADING = 0,CONNECTION_ERROR = 2, NO_WORD_LIST = 3, FOUND_WORD_LIST = 4,ERROR = 5;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        callTracker(getString(R.string.title_activity_view_pager));
     }
 
 }

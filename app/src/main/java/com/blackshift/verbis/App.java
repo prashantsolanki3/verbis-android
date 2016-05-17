@@ -15,6 +15,8 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.joanzapata.iconify.Iconify;
@@ -47,12 +49,12 @@ public class App extends Application {
     private static final String TWITTER_KEY = "	rPxTRBmwxi3OOOjXOPoEDRf1p ";
     private static final String TWITTER_SECRET = "lD1UoXrxJIXsTULZ53SIszf7ftmfazCNKWAhV0ZEiTgX3gxeR4 ";
 
-
     final static public String FIREBASE_BASE_URL="https://verbis.firebaseio.com";
     final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries/";
     final static public String WORDS_API_ENDPOINT = "https://wordsapiv1.p.mashape.com/words/";
     final static public String VERBIS_ENDPOINT = "https://verbis-backend.herokuapp.com/";
 
+    private Tracker mTracker;
     static DictionaryService dictionaryService = null;
     static VerbisService verbisService = null;
     static App app;
@@ -154,5 +156,13 @@ public class App extends Application {
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(i);
+    }
+    synchronized public Tracker getDefaultTracker() {
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return mTracker;
     }
 }
