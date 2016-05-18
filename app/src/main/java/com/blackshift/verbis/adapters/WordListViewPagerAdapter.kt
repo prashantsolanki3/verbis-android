@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import com.blackshift.verbis.rest.model.wordlist.WordList
 import com.blackshift.verbis.ui.fragments.WordListFragment
+import com.blackshift.verbis.ui.fragments.WordListViewPagerItemAdFragment
 import java.util.*
 
 /**
@@ -41,15 +42,19 @@ MutableList<WordList>?, internal var context: Context) : FragmentStatePagerAdapt
     override fun getItem(position: Int): Fragment {
         // getItem is called to instantiate the fragment for the given page.
         // Return a WordListFragment (defined as a static inner class below).
-        return WordListFragment.newInstance(wordLists!![position].id)
+        if (wordLists!![position].id.equals("id")) {
+            return WordListViewPagerItemAdFragment.newInstance("","");
+        } else {
+            return WordListFragment.newInstance(wordLists!![position].id)
+        }
     }
-
     override fun getCount(): Int {
         var size = 0
         if (wordLists != null)
             size = wordLists!!.size
 
         return size
+
     }
 
     override fun getPageTitle(position: Int): CharSequence {
