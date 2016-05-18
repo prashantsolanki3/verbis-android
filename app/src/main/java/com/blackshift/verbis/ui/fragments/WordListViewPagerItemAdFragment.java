@@ -33,7 +33,7 @@ public class WordListViewPagerItemAdFragment extends VerbisFragment {
 
     @Bind(R.id.banner_ad_view)
     AdView adView;
-    @Bind(R.id.progress)
+    @Bind(R.id.progressBar)
     ProgressBar progressBar;
 
     public WordListViewPagerItemAdFragment() {

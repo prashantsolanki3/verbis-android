@@ -168,9 +168,8 @@ public class HomePageActivity extends VerbisActivity
         results.addChangeListener(new RealmChangeListener<RealmResults<WordOfTheDay>>() {
             @Override
             public void onChange(RealmResults<WordOfTheDay> element) {
-                if(element.size()>0) {
+                if(element.size()>0||!isFinishing()) {
                     wordsOfTheWeekAdapter.setWords(element);
-                    wordsOfTheWeekAdapter.notifyDataSetChanged();
                 }
             }
         });
