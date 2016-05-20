@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.PagerAdapter
 import com.blackshift.verbis.rest.model.verbismodels.WordOfTheDay
 import com.blackshift.verbis.ui.fragments.WordOfTheDayFragment
+import com.crashlytics.android.Crashlytics
 
 /**
  *
@@ -21,8 +22,12 @@ class WordsOfTheWeekAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     fun setWords(res: List<WordOfTheDay>){
         result = res.sortedByDescending { it.date }
-
-        notifyDataSetChanged()
+        try {
+            notifyDataSetChanged()
+        }catch(e:IllegalStateException){
+            e.printStackTrace()
+            Crashlytics.logException(e)
+        }
     }
 
     override fun getItem(position: Int): Fragment {
