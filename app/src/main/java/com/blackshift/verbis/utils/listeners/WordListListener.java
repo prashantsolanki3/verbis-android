@@ -1,6 +1,6 @@
 package com.blackshift.verbis.utils.listeners;
 
-import com.firebase.client.FirebaseError;
+import com.google.firebase.database.DatabaseError;
 
 /**
  * Package com.blackshift.verbis.utils.listeners
@@ -23,5 +23,5 @@ public abstract class WordListListener {
      *
      * @param firebaseError object containing the information about the error.
      * */
-    public abstract void onFailure(FirebaseError firebaseError);
+    public abstract void onFailure(DatabaseError firebaseError);
 }

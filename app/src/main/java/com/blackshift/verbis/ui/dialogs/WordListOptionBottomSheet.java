@@ -25,7 +25,7 @@ import com.blackshift.verbis.utils.listeners.ExistenceListener;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
-import com.firebase.client.FirebaseError;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +106,7 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
             }
 
             @Override
-            public void onFailure(FirebaseError firebaseError) {
+            public void onFailure(DatabaseError firebaseError) {
 
             }
         });
@@ -127,7 +127,7 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
                                             }
 
                                             @Override
-                                            public void onFailure(FirebaseError firebaseError) {
+                                            public void onFailure(DatabaseError firebaseError) {
                                                 Toast.makeText(WordListOptionBottomSheet.this.getContext(),
                                                         "Word could not be added. Check your Internet Connection.",
                                                         Toast.LENGTH_SHORT).show();
@@ -149,7 +149,7 @@ public class WordListOptionBottomSheet extends BottomSheetDialogFragment {
                     }
 
                     @Override
-                    public void onFailure(FirebaseError firebaseError) {
+                    public void onFailure(DatabaseError firebaseError) {
                         Toast.makeText(App.getContext(),
                                 "Word could not be added. Check your Internet Connection.",
                                 Toast.LENGTH_SHORT).show();

@@ -3,6 +3,7 @@ package com.blackshift.verbis;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 
 import com.blackshift.verbis.auth.LoginActivity;
@@ -13,10 +14,11 @@ import com.blackshift.verbis.rest.service.VerbisService;
 import com.blackshift.verbis.utils.manager.WordOfTheDayManager;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.joanzapata.iconify.Iconify;
@@ -49,7 +51,7 @@ public class App extends Application {
     private static final String TWITTER_KEY = "	rPxTRBmwxi3OOOjXOPoEDRf1p ";
     private static final String TWITTER_SECRET = "lD1UoXrxJIXsTULZ53SIszf7ftmfazCNKWAhV0ZEiTgX3gxeR4 ";
 
-    final static public String FIREBASE_BASE_URL="https://verbis.firebaseio.com";
+    final static public String FIREBASE_BASE_URL="https://blackshift-verbis.firebaseio.com/";
     final static public String DICTIONARY_API_ENDPOINT = "http://api.pearson.com/v2/dictionaries/";
     final static public String WORDS_API_ENDPOINT = "https://wordsapiv1.p.mashape.com/words/";
     final static public String VERBIS_ENDPOINT = "https://verbis-backend.herokuapp.com/";
@@ -58,8 +60,7 @@ public class App extends Application {
     static DictionaryService dictionaryService = null;
     static VerbisService verbisService = null;
     static App app;
-    private Firebase firebase;
-    private AuthData authData;
+    private DatabaseReference firebaseDatabase;
 
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -72,16 +73,24 @@ public class App extends Application {
         app =this;
 //        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this/*, new Twitter(authConfig)*/, new Crashlytics(), new Answers());
-        Firebase.setAndroidContext(this);
-        Firebase.getDefaultConfig().setPersistenceEnabled(true);
-        firebase = new Firebase(FIREBASE_BASE_URL);
-        firebase.keepSynced(true);
-        firebase.addAuthStateListener(new Firebase.AuthStateListener() {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseDatabase.keepSynced(true);
+
+        /*firebaseDatabase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
                 if(authData == null){
                     startLoginActivity();
                 }
+            }
+        });*/
+
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser()==null)
+                    startLoginActivity();
             }
         });
         Iconify.with(new MaterialModule());
@@ -140,8 +149,8 @@ public class App extends Application {
         return getApp().getApplicationContext();
     }
 
-    public synchronized Firebase getFirebase(){
-        return firebase;
+    public synchronized DatabaseReference getFirebaseDatabase(){
+        return firebaseDatabase;
     }
 
     public synchronized static DictionaryService getDictionaryService(){

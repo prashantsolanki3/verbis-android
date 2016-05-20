@@ -5,13 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.blackshift.verbis.App;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
-import static com.blackshift.verbis.App.getApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Package com.blackshift.verbis.ui.activity
@@ -32,10 +30,12 @@ public abstract class VerbisActivity extends AppCompatActivity {
 
         mTracker = App.getApp().getDefaultTracker();
 
-        App.getApp().getFirebase().child(".info").child("connected").addValueEventListener(new ValueEventListener() {
+
+
+        App.getApp().getFirebaseDatabase().child(".info").child("connected").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean connected = dataSnapshot.getValue(Boolean.class);
                 if (connected) {
                     onConnected();
                 } else {
@@ -44,7 +44,7 @@ public abstract class VerbisActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(FirebaseError error) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

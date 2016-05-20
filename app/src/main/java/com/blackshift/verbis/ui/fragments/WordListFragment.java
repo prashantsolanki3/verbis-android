@@ -28,11 +28,11 @@ import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
 import com.bumptech.glide.Glide;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -189,9 +189,9 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
                 }
 
                 @Override
-                public void onFailure(FirebaseError firebaseError) {
+                public void onFailure(DatabaseError firebaseError) {
                     switch (firebaseError.getCode()){
-                        case FirebaseError.NETWORK_ERROR:
+                        case DatabaseError.NETWORK_ERROR:
                             setState(CONNECTION_ERROR);
                             break;
                         default:
@@ -221,7 +221,7 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
                 }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                public void onCancelled(DatabaseError firebaseError) {
                    /* switch (firebaseError.getCode()){
                         case FirebaseError.NETWORK_ERROR:
                             setState(CONNECTION_ERROR);
@@ -255,7 +255,7 @@ import static com.blackshift.verbis.ui.fragments.WordListFragment.WordListFragme
                                 }
 
                                 @Override
-                                public void onFailure(FirebaseError firebaseError) {
+                                public void onFailure(DatabaseError firebaseError) {
                                     Snackbar.make(recyclerView, "Unable to delete Wordlist.", Snackbar.LENGTH_SHORT).show();
                                 }
                             });

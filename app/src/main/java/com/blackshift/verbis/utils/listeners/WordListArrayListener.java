@@ -3,7 +3,7 @@ package com.blackshift.verbis.utils.listeners;
 import android.support.annotation.Nullable;
 
 import com.blackshift.verbis.rest.model.wordlist.WordList;
-import com.firebase.client.FirebaseError;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.List;
 
@@ -31,5 +31,5 @@ public abstract class WordListArrayListener {
      *
      * @param firebaseError object containing the information about the error.
      * */
-    public abstract void onFailure(FirebaseError firebaseError);
+    public abstract void onFailure(DatabaseError firebaseError);
 }

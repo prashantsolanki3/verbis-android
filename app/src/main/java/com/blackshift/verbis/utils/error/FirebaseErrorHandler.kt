@@ -1,10 +1,10 @@
 package com.blackshift.verbis.utils.error
 
-import com.firebase.client.FirebaseError
 
 /**
  * Created by Sarneet Singh on 4/20/2016.
  */
+/*
 class FirebaseErrorHandler (val firebaseError: FirebaseError){
 
     fun checkErrorCode(): String {
@@ -22,3 +22,4 @@ class FirebaseErrorHandler (val firebaseError: FirebaseError){
         return message
     }
 }
+*/

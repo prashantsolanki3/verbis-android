@@ -2,6 +2,7 @@ package com.blackshift.verbis.utils.manager;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.rest.model.wordlist.Word;
@@ -14,11 +15,12 @@ import com.blackshift.verbis.utils.listeners.WordArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.listeners.WordListListener;
 import com.blackshift.verbis.utils.listeners.WordListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
-import com.firebase.client.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.prashantsolanki.secureprefmanager.encryptor.AESEncryptor;
 
 import java.sql.Timestamp;
@@ -57,7 +59,7 @@ public class WordListManager {
     public void createWordList(@NonNull String title, final WordListListener listener){
 
         //Go to Wordlist then go to user and then push to create a new object
-        Firebase firebase = getListFirebaseRef().push();
+        DatabaseReference firebase = getListFirebaseRef().push();
         if(title.isEmpty())
             throw new RuntimeException("Wordlist Title Cannot be Empty.");
 
@@ -65,11 +67,13 @@ public class WordListManager {
         long timeCreated = new Timestamp(DateUtils.getDateTimeUTC().getMillis()).getTime();
         wordList.setCreatedAt(timeCreated);
         wordList.setModifiedAt(timeCreated);
-        wordList.setOwner(App.getApp().getFirebase().getAuth().getUid());
-        firebase.setValue(wordList,App.getApp().getFirebase().getAuth().getUid() ,new Firebase.CompletionListener() {
+        wordList.setOwner(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        firebase.setValue(wordList,FirebaseAuth.getInstance().getCurrentUser().getUid() ,new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, firebase.getPath().toString(), listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                //TODO:See to this
+                Log.e("Firebase ToString",firebase.toString());
+                handleListener(firebaseError, firebase.toString(), listener);
             }
         });
     }
@@ -116,12 +120,12 @@ public class WordListManager {
      * @param listener called after the task if executed successfully or otherwise.
      * */
     public void deleteWordList(@NonNull String id, final WordListListener listener){
-        Firebase firebase = getListFirebaseRef();
+        DatabaseReference firebase = getListFirebaseRef();
         deleteAllWords(id,null);
-        firebase.child(id).removeValue(new Firebase.CompletionListener() {
+        firebase.child(id).removeValue(new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, firebase.getPath().toString(), listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                handleListener(firebaseError, firebase.toString(), listener);
             }
         });
     }
@@ -139,9 +143,9 @@ public class WordListManager {
      * */
     private void getWordListByPrivacy(int privacy, final WordListArrayListener listener){
         
-        final Firebase firebase = getListFirebaseRef();
+        final DatabaseReference firebase = getListFirebaseRef();
         Query base;
-        String rawUid = App.getApp().getFirebase().getAuth().getUid();
+        String rawUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //TODO: Fix Privacy
         if(privacy!=-1)
             base = firebase.orderByChild("owner").equalTo(rawUid);
@@ -178,12 +182,12 @@ public class WordListManager {
                     listener.onSuccess(wordLists);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    listener.onFailure(FirebaseError.fromException(e));
+                    listener.onFailure(DatabaseError.fromException(e));
                 }
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError firebaseError) {
                 firebaseError.toException().printStackTrace();
                 listener.onFailure(firebaseError);
             }
@@ -208,19 +212,19 @@ public class WordListManager {
                     listener.onSuccess(wordLists);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    listener.onFailure(FirebaseError.fromException(e));
+                    listener.onFailure(DatabaseError.fromException(e));
                 }
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError firebaseError) {
                 listener.onFailure(firebaseError);
             }
         });
     }
 
     public void containsWord(final String word, String wordListId, final ExistenceListener listener){
-        final Firebase firebase = getContentFirebaseRef();
+        final DatabaseReference firebase = getContentFirebaseRef();
         try{
             firebase.child(wordListId).orderByChild("headword").equalTo(word).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -235,14 +239,14 @@ public class WordListManager {
                 }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                public void onCancelled(DatabaseError firebaseError) {
                     listener.onFailure(firebaseError);
                 }
             });
         }catch (Exception e){
             e.printStackTrace();
             if(listener!=null)
-                listener.onFailure(FirebaseError.fromException(e));
+                listener.onFailure(DatabaseError.fromException(e));
         }
     }
 
@@ -255,22 +259,22 @@ public class WordListManager {
     }
 
     public void addWord(String headWord, String url, String wordListId, final WordListener listener){
-        Firebase firebase = getContentFirebaseRef();
+        DatabaseReference firebase = getContentFirebaseRef();
         try{
             String id = urlToWordId(url);
             final Word word = new Word(id, headWord, url);
             word.setAddedOn(DateUtils.getTimestampUTC());
 
-            firebase.child(wordListId).child(id).setValue(word, new Firebase.CompletionListener() {
+            firebase.child(wordListId).child(id).setValue(word, new DatabaseReference.CompletionListener() {
                 @Override
-                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                    handleListener(firebaseError, firebase.getPath().toString(), listener);
+                public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                    handleListener(firebaseError, firebase.toString(), listener);
                 }
             });
         }catch (Exception e){
             e.printStackTrace();
             if(listener!=null)
-                listener.onFailure(FirebaseError.fromException(e));
+                listener.onFailure(DatabaseError.fromException(e));
         }
     }
 
@@ -279,21 +283,21 @@ public class WordListManager {
     }
 
     public void deleteWord(String id, String wordListId, final WordListener listener){
-        Firebase firebase = getContentFirebaseRef();
-        firebase.child(wordListId).child(id).removeValue(new Firebase.CompletionListener() {
+        DatabaseReference firebase = getContentFirebaseRef();
+        firebase.child(wordListId).child(id).removeValue(new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, firebase.getPath().toString(), listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                handleListener(firebaseError, firebase.toString(), listener);
             }
         });
     }
 
     public void deleteAllWords(String wordlistId,final WordListener listener){
-        Firebase firebase = getContentFirebaseRef();
-        firebase.child(wordlistId).removeValue(new Firebase.CompletionListener() {
+        DatabaseReference firebase = getContentFirebaseRef();
+        firebase.child(wordlistId).removeValue(new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, firebase.getPath().toString(),listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                handleListener(firebaseError, firebase.toString(),listener);
             }
         });
     }
@@ -311,25 +315,25 @@ public class WordListManager {
     }
 
     public void starWordlist(String wordList, final WordListListener listener){
-        Firebase firebase = getListFirebaseRef().child(wordList);
+        DatabaseReference firebase = getListFirebaseRef().child(wordList);
         Map<String,Object> map =new HashMap<>();
         map.put("starred",true);
-        firebase.updateChildren(map, new Firebase.CompletionListener() {
+        firebase.updateChildren(map, new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError,firebase.getPath().toString(), listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                handleListener(firebaseError,firebase.toString(), listener);
             }
         });
     }
 
     public void unstarWordlist(String wordList, final WordListListener listener){
-        Firebase firebase = getListFirebaseRef().child(wordList);
+        DatabaseReference firebase = getListFirebaseRef().child(wordList);
         Map<String,Object> map =new HashMap<>();
         map.put("starred",false);
-        firebase.updateChildren(map, new Firebase.CompletionListener() {
+        firebase.updateChildren(map, new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError,firebase.getPath().toString(), listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                handleListener(firebaseError,firebase.toString(), listener);
             }
         });
     }
@@ -345,15 +349,15 @@ public class WordListManager {
      * @param map additional fields to be updated or null if only modifiedAt needs to be updated.
      * */
     public void updateModifiedAtWordlist(final String id,Map<String,Object> map, final WordListListener listener){
-        Firebase firebase = getListFirebaseRef().child(id);
+        DatabaseReference firebase = getListFirebaseRef().child(id);
         if(map==null)
             map = new HashMap<>();
 
         map.put("modifiedAt", DateUtils.getTimestampUTC());
-        firebase.updateChildren(map, new Firebase.CompletionListener() {
+        firebase.updateChildren(map, new DatabaseReference.CompletionListener() {
             @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                handleListener(firebaseError, firebase.getPath().toString(), listener);
+            public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                handleListener(firebaseError, firebase.toString(), listener);
             }
         });
     }
@@ -364,7 +368,7 @@ public class WordListManager {
      * @param firebaseError
      * @param listener
      * */
-    private void handleListener(FirebaseError firebaseError, String referenceString, WordListListener listener){
+    private void handleListener(DatabaseError firebaseError, String referenceString, WordListListener listener){
         if(firebaseError!=null){
             //Some Error has occurred.
             if (listener!=null)
@@ -382,7 +386,7 @@ public class WordListManager {
      * @param firebaseError
      * @param listener
      * */
-    private void handleListener(FirebaseError firebaseError, String referenceString, WordListener listener){
+    private void handleListener(DatabaseError firebaseError, String referenceString, WordListener listener){
         if(firebaseError!=null){
             //Some Error has occurred.
             if (listener!=null)
@@ -395,20 +399,20 @@ public class WordListManager {
     }
 
     /**
-     * @return Firebase instance pointing to the users wordlist.
+     * @return DatabaseReference instance pointing to the users wordlist.
      * */
-    public Firebase getListFirebaseRef(){
-        Firebase firebase = App.getApp().getFirebase();
+    public DatabaseReference getListFirebaseRef(){
+        DatabaseReference firebase = App.getApp().getFirebaseDatabase();
         return firebase.child(FirebaseKeys.WORD_LIST)
                 //.child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_LISTS);
     }
 
     /**
-     * @return Firebase instance pointing to the user's wordlist content.
+     * @return DatabaseReference instance pointing to the user's wordlist content.
      * */
-    public Firebase getContentFirebaseRef(){
-        Firebase firebase = App.getApp().getFirebase();
+    public DatabaseReference getContentFirebaseRef(){
+        DatabaseReference firebase = App.getApp().getFirebaseDatabase();
         return firebase.child(FirebaseKeys.WORD_LIST)
                 //.child(firebase.getAuth().getUid())
                 .child(FirebaseKeys.WORD_LIST_CONTENT);

@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -20,7 +21,6 @@ import android.widget.ImageView;
 import com.blackshift.verbis.R;
 import com.blackshift.verbis.ui.activity.HomePageActivity;
 import com.blackshift.verbis.ui.activity.VerbisActivity;
-import com.blackshift.verbis.utils.error.FirebaseErrorHandler;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
@@ -33,9 +33,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -46,6 +43,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -133,7 +136,7 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
         }
 
 
-        Firebase firebase = getApp().getFirebase();
+        final DatabaseReference firebase = getApp().getFirebaseDatabase();
         fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
@@ -164,12 +167,12 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
                 String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
 
                 Answers.getInstance().logSignUp(new SignUpEvent().putMethod("twitter").putSuccess(true));
-                Firebase ref = getApp().getFirebase();
+                DatabaseReference ref = getApp().getFirebaseDatabase();
                 Map<String, String> options = new HashMap<String, String>();
                 options.put("oauth_token", "719886346496643072-8AyUdNPxbQkIvMuuMfZpfnRaHcWdj1D");
                 options.put("oauth_token_secret","bdKD4aIYh7MNRgRP5gTlne7iBr38aYQ2DKGy0mv0hj6bm");
                 options.put("user_id",String.valueOf(session.getUserId()));
-                ref.authWithOAuthToken("twitter",options, new Firebase.AuthResultHandler() {
+                /*ref.authWithOAuthToken("twitter",options, new Firebase.AuthResultHandler() {
                     @Override
                     public void onAuthenticated(AuthData authData) {
                         Answers.getInstance().logLogin(new LoginEvent()
@@ -190,7 +193,7 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
                                 .putSuccess(false));
 
                     }
-                });
+                });*/
             }
 
             @Override
@@ -206,13 +209,13 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
             @Override
             public void onSuccess(LoginResult loginResult) {
               AccessToken accessToken = loginResult.getAccessToken();
-                Firebase ref = getApp().getFirebase();
+                /*Firebase ref = getApp().getFirebaseDatabase();
                         if (accessToken != null) {
                             ref.authWithOAuthToken("facebook", accessToken.getToken(), new Firebase.AuthResultHandler() {
                                 @Override
                                 public void onAuthenticated(AuthData authData) {
-                                    /*String msg = "Provider:" + authData.getProvider() + "Name" + authData.getProviderData().get("displayName");
-                                    Log.e("Facebook:", msg);*/
+                                    *//*String msg = "Provider:" + authData.getProvider() + "Name" + authData.getProviderData().get("displayName");
+                                    Log.e("Facebook:", msg);*//*
                                     Answers.getInstance().logLogin(new LoginEvent()
                                             .putMethod("Facebook")
                                             .putSuccess(true));
@@ -232,7 +235,7 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
                                 }
                             });
 
-                    }
+                    }*/
 
 
         }
@@ -254,40 +257,40 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
 
 
 
-
-
-
-        firebase.addAuthStateListener(new Firebase.AuthStateListener() {
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(AuthData authData) {
-                if (authData != null) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() != null) {
                     startMainActivity();
                 } else {
-                     final Handler handler =  new Handler();
-                     handler.postDelayed(new Runnable() {
-                         @Override
-                         public void run() {
-                             abl.setExpanded(false, true);
+                    final Handler handler =  new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            abl.setExpanded(false, true);
 
                             if(Build.VERSION.SDK_INT<21)
-                             new Handler().postDelayed(new Runnable() {
-                                 @Override
-                                 public void run() {
-                                     findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-                                 }
-                             },1000);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+                                    }
+                                },1000);
 
-                         }
-                     },1500);
+                        }
+                    },1500);
                 }
+                FirebaseAuth.getInstance().removeAuthStateListener(this);
             }
         });
+
 
 
         ///Google LOGIN
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         // Build a GoogleApiClient with access to the Google Sign-In API and the
@@ -323,9 +326,12 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
             if (result.isSuccess()) {
                 progressDialog = ProgressDialog.show(LoginActivity.this,"","  Logging you in.....");
                 GoogleSignInAccount acct = result.getSignInAccount();
+                if(acct!=null){
                 String emailAddress = acct.getEmail();
                 Log.d("Login", emailAddress);
-                getGoogleOAuthToken(emailAddress);
+                onGoogleLoginWithIdToken(acct.getIdToken());
+                //getGoogleOAuthToken(emailAddress);
+                }
             }
         }
         else if(requestCode== TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE)
@@ -366,7 +372,7 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
             protected void onPostExecute(String token) {
 
                 if (token != null) {
-                    onGoogleLoginWithToken(token);
+                    onGoogleLoginWithIdToken(token);
                 } else
                     showLoginError(errorMessage);
 
@@ -378,34 +384,30 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
             Log.e("Login error:",error );
         }
 
-    private void onGoogleLoginWithToken(String oAuthToken) {
-        Firebase firebase = getApp().getFirebase();
-        firebase.authWithOAuthToken("google", oAuthToken, new Firebase.AuthResultHandler() {
+    private void onGoogleLoginWithIdToken(String oAuthToken) {
+        final FirebaseAuth firebase = FirebaseAuth.getInstance();
+
+        firebase.signInWithCredential(GoogleAuthProvider.getCredential(oAuthToken,null)).addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
             @Override
-            public void onAuthenticated(AuthData authData) {
-                /*String res = "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider();
-                Log.e("Result:", res);*/
-                /*Snackbar.make(findViewById(R.id.signingrp), res, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show()*/;
+            public void onSuccess(AuthResult authResult) {
+                Log.d("Login","Success");
                 Answers.getInstance().logLogin(new LoginEvent()
                         .putMethod("Google")
                         .putSuccess(true));
-                checkSession();
+                progressDialog.dismiss();
+                startMainActivity();
             }
-
+        }).addOnFailureListener(this, new OnFailureListener() {
             @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-
-                FirebaseErrorHandler firebaseErrorHandler = new FirebaseErrorHandler(firebaseError);
-                errorMessage = firebaseErrorHandler.checkErrorCode();
-                Snackbar.make(findViewById(R.id.signingrp), errorMessage, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
                 Answers.getInstance().logLogin(new LoginEvent()
                         .putMethod("Google")
                         .putSuccess(false));
-                // there was an error
+                progressDialog.dismiss();
+                Snackbar.make(findViewById(R.id.signingrp), "Looks like something went wrong. Try logging in again", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
-
         });
     }
 
@@ -417,24 +419,6 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
             Intent i = new Intent(this, HomePageActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             this.startActivity(i);
-        }
-
-        void checkSession() {
-            Firebase refs = getApp().getFirebase();
-            refs.addAuthStateListener(new Firebase.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(AuthData authData) {
-                    if (authData != null) {
-                        progressDialog.dismiss();
-                        startMainActivity();
-                    } else {
-                        progressDialog.dismiss();
-                        Snackbar.make(findViewById(R.id.signingrp), "Looks like something went wrong. Try logging in again", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-
-                    }
-                }
-            });
         }
 
     @Override

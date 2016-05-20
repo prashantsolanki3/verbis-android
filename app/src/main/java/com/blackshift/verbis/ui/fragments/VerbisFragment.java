@@ -10,12 +10,12 @@ import android.view.ViewGroup;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.BuildConfig;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -25,7 +25,7 @@ public abstract class VerbisFragment extends Fragment {
 
     private boolean debugMode = BuildConfig.DEBUG;
 
-    private Firebase connection;
+    private DatabaseReference connection;
 
     public boolean isDebugMode() {
         return debugMode;
@@ -41,7 +41,7 @@ public abstract class VerbisFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mTracker = App.getApp().getDefaultTracker();
-        connection = App.getApp().getFirebase().child(".info").child("connected");
+        connection = App.getApp().getFirebaseDatabase().child(".info").child("connected");
         connection.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -54,7 +54,7 @@ public abstract class VerbisFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(FirebaseError error) {
+            public void onCancelled(DatabaseError error) {
 
             }
         });

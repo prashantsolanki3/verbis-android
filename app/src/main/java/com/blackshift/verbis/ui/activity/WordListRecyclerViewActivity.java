@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import com.blackshift.verbis.App;
 import com.blackshift.verbis.R;
-import com.blackshift.verbis.utils.manager.WordListManager;
 import com.blackshift.verbis.utils.listeners.WordListListener;
-import com.firebase.client.FirebaseError;
+import com.blackshift.verbis.utils.manager.WordListManager;
+import com.google.firebase.database.DatabaseError;
 
 public class WordListRecyclerViewActivity extends VerbisActivity {
 
@@ -35,7 +35,7 @@ public class WordListRecyclerViewActivity extends VerbisActivity {
                         }
 
                         @Override
-                        public void onFailure(FirebaseError firebaseError) {
+                        public void onFailure(DatabaseError firebaseError) {
                             Toast.makeText(App.getContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
                         }
                     });

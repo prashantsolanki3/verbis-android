@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -35,10 +36,9 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.SearchEvent;
 import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.history.SearchHistoryTable;
@@ -57,8 +57,6 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
-import static com.blackshift.verbis.App.getApp;
 
 public class HomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -139,7 +137,7 @@ public class HomePageActivity extends VerbisActivity
             }
 
             @Override
-            public void onFailure(FirebaseError firebaseError) {
+            public void onFailure(DatabaseError firebaseError) {
                 Log.d("error", firebaseError.toString());
             }
         });
@@ -197,24 +195,15 @@ public class HomePageActivity extends VerbisActivity
 
 
     private void manageDrawer() {
-        Firebase ref =null;
-        if(getApp()!=null)
-        ref = getApp().getFirebase();
-
-        if( ref != null)
-        ref.addAuthStateListener(new Firebase.AuthStateListener() {
+        FirebaseAuth ref =FirebaseAuth.getInstance();
+        ref.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(AuthData authData) {
-                if (authData != null) {
-                    String imgurl = (String) authData.getProviderData().get("profileImageURL");
-                    String provider = authData.getProvider();
-                    String name,email;
-                    Glide.with(getApplicationContext()).load(imgurl).bitmapTransform(new CropCircleTransformation(App.getContext())).into(imgview);
-                    name = (String) authData.getProviderData().get("displayName");
-                    Log.d("Name:",name);
-                    nameTextView.setText(name);
-                    email = (String) authData.getProviderData().get("email");
-                    emailTextView.setText(email);
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser()!=null){
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    Glide.with(getApplicationContext()).load(user.getPhotoUrl()).bitmapTransform(new CropCircleTransformation(App.getContext())).into(imgview);
+                    nameTextView.setText(user.getDisplayName());
+                    emailTextView.setText(user.getEmail());
                 }
             }
         });
@@ -346,8 +335,8 @@ public class HomePageActivity extends VerbisActivity
                     .putCustomAttribute(AnswersKeys.KEY_EVENT,"Navdrawer Logout")
                     .putCustomAttribute(AnswersKeys.KEY_LOCATION,"Navdrawer")
             );
-            getApp().getFirebase().unauth();
-            Firebase ref = getApp().getFirebase();
+            FirebaseAuth.getInstance().signOut();
+            /*Firebase ref = getApp().getFirebaseDatabase();
             ref.addAuthStateListener(new Firebase.AuthStateListener() {
                 @Override
                 public void onAuthStateChanged(AuthData authData) {
@@ -358,7 +347,7 @@ public class HomePageActivity extends VerbisActivity
 
                     }
                 }
-            });
+            });*/
 
 
             if(Build.VERSION.SDK_INT>=21)

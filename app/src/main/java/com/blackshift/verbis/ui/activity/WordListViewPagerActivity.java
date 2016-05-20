@@ -30,9 +30,9 @@ import com.blackshift.verbis.ui.widgets.WordListViewPager;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
 import com.bumptech.glide.Glide;
-import com.firebase.client.FirebaseError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.database.DatabaseError;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -155,10 +155,10 @@ public class WordListViewPagerActivity extends VerbisActivity {
             }
 
             @Override
-            public void onFailure(FirebaseError firebaseError) {
+            public void onFailure(DatabaseError firebaseError) {
                 firebaseError.toException().printStackTrace();
                 switch (firebaseError.getCode()){
-                    case FirebaseError.NETWORK_ERROR:
+                    case DatabaseError.NETWORK_ERROR:
                         setState(CONNECTION_ERROR);
                         break;
                     default:

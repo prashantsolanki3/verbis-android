@@ -17,7 +17,7 @@ import com.blackshift.verbis.ui.viewholders.WordListTitleViewHolder
 import com.blackshift.verbis.utils.listeners.WordListArrayListener
 import com.blackshift.verbis.utils.manager.WordListManager
 import com.bumptech.glide.Glide
-import com.firebase.client.FirebaseError
+import com.google.firebase.database.DatabaseError
 import io.github.prashantsolanki3.snaplibrary.snap.adapter.SnapAdapter
 import io.github.prashantsolanki3.snaplibrary.snap.layout.viewholder.SnapViewHolder
 import io.github.prashantsolanki3.snaplibrary.snap.layout.wrapper.SnapSelectableLayoutWrapper
@@ -101,12 +101,12 @@ class WordListTitlesRecyclerFragment : VerbisFragment() {
                 }
             }
 
-            override fun onFailure(firebaseError: FirebaseError) {
+            override fun onFailure(firebaseError: DatabaseError) {
                 var v:View? =  wordListSnapAdapter.getViewFromId(R.layout.layout_image)
                 var image:Int?
 
                 when(firebaseError.code){
-                    FirebaseError.NETWORK_ERROR -> image = R.drawable.networkerror
+                        DatabaseError.NETWORK_ERROR -> image = R.drawable.networkerror
                     else -> image = R.drawable.error
                 }
                 if(v!=null) {

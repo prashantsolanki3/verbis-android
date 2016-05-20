@@ -1,6 +1,6 @@
 package com.blackshift.verbis.utils.listeners;
 
-import com.firebase.client.FirebaseError;
+import com.google.firebase.database.DatabaseError;
 
 /**
  * Package com.blackshift.verbis.utils.listeners
@@ -22,6 +22,6 @@ public interface ExistenceListener {
      *
      * @param firebaseError object containing the information about the error.
      * */
-    void onFailure(FirebaseError firebaseError);
+    void onFailure(DatabaseError firebaseError);
 
 }

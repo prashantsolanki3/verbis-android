@@ -1,7 +1,7 @@
 package com.blackshift.verbis.utils.listeners;
 
 import com.blackshift.verbis.rest.model.RecentWord;
-import com.firebase.client.FirebaseError;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.List;
 
@@ -20,5 +20,5 @@ public abstract class RecentWordListListener {
      *
      * @param firebaseError object containing the information about the error.
      * */
-    public abstract void onFailure(FirebaseError firebaseError);
+    public abstract void onFailure(DatabaseError firebaseError);
 }

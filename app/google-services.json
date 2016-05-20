@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "884193976507",
-    "project_id": "blackshift-verbis"
+    "firebase_url": "https://blackshift-verbis.firebaseio.com",
+    "project_id": "blackshift-verbis",
+    "storage_bucket": "blackshift-verbis.appspot.com"
   },
   "client": [
     {
@@ -53,6 +55,10 @@
           }
         },
         {
+          "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "884193976507-ige922ag0kjqau32bte5gf3hqrbq7ssa.apps.googleusercontent.com",
           "client_type": 3
         },
@@ -77,15 +83,13 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "884193976507-ige922ag0kjqau32bte5gf3hqrbq7ssa.apps.googleusercontent.com",
+              "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         },
         "ads_service": {
-          "status": 2,
-          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
-          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+          "status": 2
         }
       }
     },
@@ -138,6 +142,10 @@
           }
         },
         {
+          "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "884193976507-ige922ag0kjqau32bte5gf3hqrbq7ssa.apps.googleusercontent.com",
           "client_type": 3
         },
@@ -162,15 +170,13 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "884193976507-ige922ag0kjqau32bte5gf3hqrbq7ssa.apps.googleusercontent.com",
+              "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         },
         "ads_service": {
-          "status": 2,
-          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
-          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+          "status": 2
         }
       }
     }
