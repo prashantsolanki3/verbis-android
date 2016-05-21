@@ -1,0 +1,185 @@
+{
+  "project_info": {
+    "project_number": "884193976507",
+    "firebase_url": "https://blackshift-verbis.firebaseio.com",
+    "project_id": "blackshift-verbis",
+    "storage_bucket": "blackshift-verbis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884193976507:android:27d6981b09e0e7af",
+        "android_client_info": {
+          "package_name": "com.blackshift.verbis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884193976507-q7o4u1869lcp2dcr24u9rn5madcl2oil.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis",
+            "certificate_hash": "FED5D34D486A9803B6A040E31878C02B2C75D814"
+          }
+        },
+        {
+          "client_id": "884193976507-h7105tahtufud8p645rbg80u2ract48r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis",
+            "certificate_hash": "7910118AD8A967292E8DDBDDE322975B30CBAF0D"
+          }
+        },
+        {
+          "client_id": "884193976507-7opugr9bq90lss36e6ie5s9iji5aonq3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis",
+            "certificate_hash": "21A87E87378F387296A652B89BB51F361A7B8CDA"
+          }
+        },
+        {
+          "client_id": "884193976507-41npfal6h18re61pu29tie2v4epnk34e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis",
+            "certificate_hash": "BEAC67917E18F212813A577FE7A19B33D80674F7"
+          }
+        },
+        {
+          "client_id": "884193976507-8d52e24pcd8vjb7gke7ns64tc8q6jenb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis",
+            "certificate_hash": "8C9DAAAF9D7F83C919127388183AEBD8E45F68BD"
+          }
+        },
+        {
+          "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "884193976507-ige922ag0kjqau32bte5gf3hqrbq7ssa.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "884193976507-l00p7996i4q76v9bge245s0hr9rutakb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEwcztdknxDhPvhA0dY7_8lNh8pf7aV-U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-77566313-2"
+          }
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884193976507:android:f6dc48ef8b4e5f7b",
+        "android_client_info": {
+          "package_name": "com.blackshift.verbis.playground"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884193976507-djkkod0c6j41d4qsvc4ecvkg318bkacl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis.playground",
+            "certificate_hash": "FED5D34D486A9803B6A040E31878C02B2C75D814"
+          }
+        },
+        {
+          "client_id": "884193976507-os856voc2ffh1ulp8fk98e74cuophisp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis.playground",
+            "certificate_hash": "7910118AD8A967292E8DDBDDE322975B30CBAF0D"
+          }
+        },
+        {
+          "client_id": "884193976507-o5bcu7av5v2nqlit81lv96evm52adr7g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis.playground",
+            "certificate_hash": "BEAC67917E18F212813A577FE7A19B33D80674F7"
+          }
+        },
+        {
+          "client_id": "884193976507-pvkvu819qd4413sd8har99gp0pbiqt1r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis.playground",
+            "certificate_hash": "8C9DAAAF9D7F83C919127388183AEBD8E45F68BD"
+          }
+        },
+        {
+          "client_id": "884193976507-pr1hltrl0niblofhdmip25rpgo0t015t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blackshift.verbis.playground",
+            "certificate_hash": "21A87E87378F387296A652B89BB51F361A7B8CDA"
+          }
+        },
+        {
+          "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "884193976507-ige922ag0kjqau32bte5gf3hqrbq7ssa.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "884193976507-l00p7996i4q76v9bge245s0hr9rutakb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEwcztdknxDhPvhA0dY7_8lNh8pf7aV-U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-77566313-3"
+          }
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884193976507-ih275sg1ep8jmp66of99o1167eq3d3ku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

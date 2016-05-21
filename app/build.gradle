@@ -49,6 +49,16 @@ android {
         }
     }
 
+    productFlavors {
+        free {
+            minSdkVersion 15
+        }
+        paid {
+            applicationIdSuffix ".paid"
+            minSdkVersion 15
+        }
+    }
+
     packagingOptions {
         //Required for Butterknife.
         exclude 'META-INF/services/javax.annotation.processing.Processor'

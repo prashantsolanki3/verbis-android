@@ -94,7 +94,6 @@ public class LoginActivity extends VerbisActivity implements OnConnectionFailedL
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult.getErrorMessage());
-
     }
 
 

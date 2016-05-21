@@ -3,7 +3,7 @@
     package="com.blackshift.verbis" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -91,7 +91,7 @@
 
         <provider
             android:name=".rest.providers.RecentSuggestionsProvider"
-            android:authorities="com.blackshift.verbis.rest.providers.RecentSuggestionsProvider"
+            android:authorities="${applicationId}.rest.providers.RecentSuggestionsProvider"
             android:enabled="true"
             android:multiprocess="true" />
         <!--
@@ -109,11 +109,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-
-        <activity android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            />
-
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
     </application>
 
 </manifest>
