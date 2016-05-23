@@ -126,13 +126,9 @@ dependencies {
     compile "com.google.firebase:firebase-core:$gms_library_version"
     compile "com.google.firebase:firebase-auth:$gms_library_version"
     compile 'joda-time:joda-time:2.9.2'
-    //compile 'com.prashantsolanki:FABToolbar:0.9.0'
-    //compile 'com.github.devikamehra:Shade-Melange:v2.0'
-    //compile 'io.saeid:fab-loading:0.6.0'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.github.davidpizarro:autolabelui:1.0.1'
-    //compile 'io.reactivex:rxjava:1.0.10'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'
