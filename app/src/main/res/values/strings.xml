@@ -24,21 +24,16 @@
     <!-- Words Api key -->
     <string name="words_api_key" translatable="false">78Pf7h8ETzmshnDZfYE8TKguXcggp15HC36jsnvctF2ifJzN0V</string>
     <string name="title_activity_log_in">Login</string>
-    <string name="title_activity_home_page">HomePage</string>
+    <string name="title_activity_home_page">Home</string>
     <string name="title_activity_recycler_view">RecyclerView</string>
     <string name="title_activity_view_pager">ViewPager</string>
     <string name="title_fragment_word_list_titles">WordListTitles</string>
     <string name="error_type_0">Oops!! \n Internet not found. \n Please check your internet connection or try again.</string>
     <string name="error_message_1">Sorry \n Failed to find the word you were searching for.</string>
-    <string name="title_activity_wordy">WordyActivity</string>
-    <string name="title_activity_alarm">AlarmActivity</string>
     <string name="facebook_app_id">1741118362770209</string>
 
-    <string name="title_activity_alarm_reciever">AlarmRecieverActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_alarm_receiver">AlarmReceiverActivity</string>
-    <string name="title_activity_repeating_alarm_reciever">RepeatingAlarmReciever</string>
     <string name="share_app_sub">Checkout Verbis for Android</string>
     <string name="share_message_part_1">I found another new word -</string>
     <string name="share_message_part_2">. Find it on Verbis</string>
@@ -47,7 +42,7 @@
     <string name="banner_ad_unit_id">ca-app-pub-1618299036309788/1503113358</string>
     <string name="banner_wordlist_viewpager__native_ad_id">ca-app-pub-1618299036309788/9408156554</string>
     <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="viewpager_word_of_the_day">WordOfTheDay</string>
-    <string name="wordlist_viewpager">WordlistViewPager</string>
+    <string name="viewpager_word_of_the_day">Word Of The Day</string>
+    <string name="wordlist_viewpager">Your Wordlist</string>
 
 </resources>

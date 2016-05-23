@@ -45,8 +45,6 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.SearchEvent;
 import com.dpizarro.autolabel.library.AutoLabelUI;
 import com.dpizarro.autolabel.library.Label;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -95,7 +93,7 @@ public class DictionaryActivity extends VerbisActivity {
     RecentWordsManager wordNotFoundManager;
     ProgressBar progressBar;
     AutoLabelUI synonyms,antonyms;
-    AdView adView;
+    //AdView adView;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -146,7 +144,7 @@ public class DictionaryActivity extends VerbisActivity {
         synonyms = (AutoLabelUI) findViewById(R.id.synonyms);
         antonyms = (AutoLabelUI) findViewById(R.id.antonyms);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        adView = (AdView)findViewById(R.id.banner_ad_view);
+        //adView = (AdView)findViewById(R.id.banner_ad_view);
 
         //Recycler should only be initialized once
         recyclerView.setLayoutManager(new SnapNestedLinearLayoutManger(recyclerView,this));
@@ -412,7 +410,6 @@ public class DictionaryActivity extends VerbisActivity {
 
             AppIndex.AppIndexApi.start(client, viewAction);
         }
-        addAdView();
 
     }
 
@@ -542,12 +539,6 @@ public class DictionaryActivity extends VerbisActivity {
     @Retention(RetentionPolicy.SOURCE)
     @interface DictionaryState {
        int LOADING = 0,CONNECTION_ERROR = 2, NOT_FOUND = 3, FOUND = 4,ERROR = 5,SEARCH_PROMPT=6;
-    }
-
-    private void addAdView() {
-        AdRequest adRequest = new AdRequest.Builder()
-                                    .build();
-        adView.loadAd(adRequest);
     }
 
     @Override

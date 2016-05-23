@@ -30,8 +30,6 @@ import com.blackshift.verbis.ui.widgets.WordListViewPager;
 import com.blackshift.verbis.utils.listeners.WordListArrayListener;
 import com.blackshift.verbis.utils.manager.WordListManager;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.firebase.database.DatabaseError;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -88,8 +86,6 @@ public class WordListViewPagerActivity extends VerbisActivity {
     Toolbar toolbar;
     @Bind(R.id.recyclerView_alternate)
     ViewGroup alternateLayout;
-    @Bind(R.id.banner_ad_view)
-    AdView adView;
 
     SupportAnimator overLayoutToolbarAnimator,reverseOverlayToolbarAnimator;
 
@@ -122,7 +118,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
             wordlistId = getIntent().getStringExtra(ARG_WORDLIST_ID);
             moveToPos =false;
         }
-        toolbar.setCollapsible(false);
+
         setSupportActionBar(toolbar);
         if(getSupportActionBar()!=null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -133,7 +129,7 @@ public class WordListViewPagerActivity extends VerbisActivity {
             @Override
             public void onSuccess(@Nullable List<WordList> wordList) {
                 if(wordList!=null) {
-                    mWordListViewPagerAdapter.set(includeStubsForAdInList(wordList));
+                    mWordListViewPagerAdapter.set(wordList);
                     if (wordList.size() < 1) {
                         setState(NO_WORD_LIST);
                     }else {
@@ -144,15 +140,6 @@ public class WordListViewPagerActivity extends VerbisActivity {
                 }
             }
 
-            private List<WordList> includeStubsForAdInList(List<WordList> wordList) {
-
-                for (int i = 2; i < wordList.size() ; i+=3){
-
-                    wordList.add(i, new WordList("id", "#$#$STUB$#$#"));
-
-                }
-                return wordList;
-            }
 
             @Override
             public void onFailure(DatabaseError firebaseError) {
@@ -436,9 +423,6 @@ public class WordListViewPagerActivity extends VerbisActivity {
         mViewPager.setVisibility(View.GONE);
         pageIndicator.setVisibility(View.GONE);
         alternateLayout.setVisibility(View.VISIBLE);
-        alternateLayout.addView(view,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        alternateLayout.addView(adView);
-        addAdView();
     }
 
     void hideAlternateLayout(){
@@ -448,14 +432,6 @@ public class WordListViewPagerActivity extends VerbisActivity {
         mViewPager.setVisibility(View.VISIBLE);
         pageIndicator.setVisibility(View.VISIBLE);
         alternateLayout.setVisibility(View.GONE);
-    }
-
-
-    private void addAdView() {
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        assert adView != null;
-        adView.loadAd(adRequest);
     }
 
 
