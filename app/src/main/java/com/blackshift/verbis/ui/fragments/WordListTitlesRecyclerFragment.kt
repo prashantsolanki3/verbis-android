@@ -14,6 +14,7 @@ import com.blackshift.verbis.R
 import com.blackshift.verbis.rest.model.wordlist.WordList
 import com.blackshift.verbis.ui.activity.WordListViewPagerActivity
 import com.blackshift.verbis.ui.viewholders.WordListTitleViewHolder
+import com.blackshift.verbis.utils.annotations.PrivacyLevel
 import com.blackshift.verbis.utils.listeners.WordListArrayListener
 import com.blackshift.verbis.utils.manager.WordListManager
 import com.bumptech.glide.Glide
@@ -32,9 +33,30 @@ class WordListTitlesRecyclerFragment : VerbisFragment() {
     lateinit internal var wordlistTitlesRecycler: RecyclerView
     lateinit  internal var wordListSnapAdapter: SnapAdapter<WordList>
     lateinit internal var context: Context
+    var privacyLevel: Int = 10;
+
 
     @LayoutRes
     val progressBar:Int = R.layout.progressbar_circular_full
+
+    companion object{
+        private val ARG_PARAM1 = "privacyLevel"
+
+        fun newInstance(@PrivacyLevel privacyLevel: Int): WordListTitlesRecyclerFragment {
+            val fragment = WordListTitlesRecyclerFragment()
+            val args = Bundle()
+            args.putInt(ARG_PARAM1, privacyLevel)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if(arguments!=null){
+            privacyLevel = arguments.getInt(ARG_PARAM1)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -61,6 +83,19 @@ class WordListTitlesRecyclerFragment : VerbisFragment() {
 
         wordListSnapAdapter.showAlternateLayout(progressBar)
 
+        val layoutManager = GridLayoutManager(context, 2)
+        wordlistTitlesRecycler.layoutManager = layoutManager
+        wordlistTitlesRecycler.adapter = wordListSnapAdapter
+        loadItems()
+        setRecyclerViewOnclick()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        callTracker(getString(R.string.title_fragment_word_list_titles))
+    }
+
+    fun setRecyclerViewOnclick(){
         wordListSnapAdapter.setOnItemClickListener(object :SnapOnItemClickListener{
             override fun onItemLongPress(p0: SnapViewHolder<*>?, p1: View?, p2: Int) {
             }
@@ -75,53 +110,49 @@ class WordListTitlesRecyclerFragment : VerbisFragment() {
 
             }
         })
-
-        val layoutManager = GridLayoutManager(context, 2)
-        wordlistTitlesRecycler.layoutManager = layoutManager
-        wordlistTitlesRecycler.adapter = wordListSnapAdapter
-        wordListManager.getAllWordLists(object : WordListArrayListener() {
-            override fun onSuccess(wordList: List<WordList>?) {
-                wordListSnapAdapter.set(wordList)
-                if(wordList==null||wordList.isEmpty()){
-                    wordListSnapAdapter.hideAlternateLayout()
-
-                    var v:View? =  wordListSnapAdapter.getViewFromId(R.layout.layout_image)
-                    if(v!=null) {
-                        val img  = v.findViewById(R.id.imageView) as ImageView
-                        Glide.with(App.getContext())
-                                .load(R.drawable.nowordlist)
-                                .into(img)
-                        v.setOnClickListener {
-                            startActivity(WordListViewPagerActivity.createIntent(context))
-                        }
-                        wordListSnapAdapter.showAlternateLayout(v)
-                    }
-                }else{
-                    wordListSnapAdapter.hideAlternateLayout()
-                }
-            }
-
-            override fun onFailure(firebaseError: DatabaseError) {
-                var v:View? =  wordListSnapAdapter.getViewFromId(R.layout.layout_image)
-                var image:Int?
-
-                when(firebaseError.code){
-                        DatabaseError.NETWORK_ERROR -> image = R.drawable.networkerror
-                    else -> image = R.drawable.error
-                }
-                if(v!=null) {
-                    Glide.with(App.getContext())
-                            .load(image)
-                            .into(v.findViewById(R.id.imageView) as ImageView)
-                    wordListSnapAdapter.showAlternateLayout(v)
-                }
-            }
-        })
     }
 
-    override fun onResume() {
-        super.onResume()
-        callTracker(getString(R.string.title_fragment_word_list_titles))
+    fun loadItems() {
+        wordListManager.getWordLists(privacyLevel,wordlistListener)
+    }
+
+    val wordlistListener = object : WordListArrayListener() {
+        override fun onSuccess(wordList: List<WordList>?) {
+            wordListSnapAdapter.set(wordList)
+            if(wordList==null||wordList.isEmpty()){
+                wordListSnapAdapter.hideAlternateLayout()
+
+                var v:View? =  wordListSnapAdapter.getViewFromId(R.layout.layout_image)
+                if(v!=null) {
+                    val img  = v.findViewById(R.id.imageView) as ImageView
+                    Glide.with(App.getContext())
+                            .load(R.drawable.nowordlist)
+                            .into(img)
+                    v.setOnClickListener {
+                        startActivity(WordListViewPagerActivity.createIntent(context))
+                    }
+                    wordListSnapAdapter.showAlternateLayout(v)
+                }
+            }else{
+                wordListSnapAdapter.hideAlternateLayout()
+            }
+        }
+
+        override fun onFailure(firebaseError: DatabaseError) {
+            var v:View? =  wordListSnapAdapter.getViewFromId(R.layout.layout_image)
+            var image:Int?
+
+            when(firebaseError.code){
+                DatabaseError.NETWORK_ERROR -> image = R.drawable.networkerror
+                else -> image = R.drawable.error
+            }
+            if(v!=null) {
+                Glide.with(App.getContext())
+                        .load(image)
+                        .into(v.findViewById(R.id.imageView) as ImageView)
+                wordListSnapAdapter.showAlternateLayout(v)
+            }
+        }
     }
 
 }

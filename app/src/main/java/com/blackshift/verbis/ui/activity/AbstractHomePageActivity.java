@@ -58,7 +58,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-public class HomePageActivity extends VerbisActivity
+public class AbstractHomePageActivity extends VerbisActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private SearchHistoryTable mHistoryDatabase;

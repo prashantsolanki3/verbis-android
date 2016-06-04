@@ -1,7 +1,7 @@
 package com.blackshift.verbis;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 public class StubFree extends AppCompatActivity {
 
